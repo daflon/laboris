@@ -777,19 +777,6 @@ body {
   }
 
   /* Mobile bottom navigation */
-  .mobile-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #1e293b;
-    border-top: 1px solid #334155;
-    z-index: 1000;
-    justify-content: space-around;
-    padding: 0.4rem 0;
-  }
-
   .mobile-nav-link {
     display: flex;
     flex-direction: column;
@@ -818,9 +805,23 @@ body {
 }
 
 /* Hide mobile nav on desktop */
-@media (min-width: 481px) {
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 480px) {
   .mobile-nav {
-    display: none;
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1e293b;
+    border-top: 1px solid #334155;
+    z-index: 1000;
+    justify-content: space-around;
+    padding: 0.5rem 0;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
   }
 }
 
