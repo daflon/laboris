@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome } from 'react-icons/fi';
+import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiMoon, FiSun } from 'react-icons/fi';
 import api from '../services/api';
 import GlobalSearch from './GlobalSearch';
 import './Layout.css';
 
 export default function Layout() {
   const [openCount, setOpenCount] = useState(0);
+  const [companyName, setCompanyName] = useState('OS Laboris');
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
 
   useEffect(() => {
     api.get('/dashboard/stats')
@@ -15,13 +17,26 @@ export default function Layout() {
         setOpenCount((s.aberta || 0) + (s.aprovada || 0) + (s.aguardando_peca || 0));
       })
       .catch(() => {});
+
+    api.get('/company')
+      .then((res) => {
+        if (res.data.data && res.data.data.name) {
+          setCompanyName(res.data.data.name);
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
 
   return (
     <div className="layout">
       <aside className="sidebar">
         <div className="sidebar-header">
-          <h1>OS Laboris</h1>
+          <h1>{companyName}</h1>
           <span className="subtitle">Assistência Técnica</span>
         </div>
         <nav className="sidebar-nav">
@@ -51,6 +66,9 @@ export default function Layout() {
       <main className="main-content">
         <div className="top-bar">
           <GlobalSearch />
+          <button className="theme-toggle" onClick={() => setDarkMode(!darkMode)} title={darkMode ? 'Modo Claro' : 'Modo Escuro'}>
+            {darkMode ? <FiSun /> : <FiMoon />}
+          </button>
         </div>
         <Outlet />
       </main>

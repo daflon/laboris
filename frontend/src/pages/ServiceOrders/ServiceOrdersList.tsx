@@ -118,7 +118,7 @@ export default function ServiceOrdersList() {
             <tbody>
               {orders.map((order) => (
                 <tr key={order.id}>
-                  <td><strong>#{String(order.order_number).padStart(4, '0')}</strong></td>
+                  <td><span className="os-number">#{String(order.order_number).padStart(4, '0')}</span></td>
                   <td>{order.client_name}</td>
                   <td>{order.equipment_brand} {order.equipment_model}</td>
                   <td>{order.technician_name}</td>
@@ -148,7 +148,7 @@ export default function ServiceOrdersList() {
                       ))}
                     </select>
                   </td>
-                  <td>{order.entry_date ? new Date(order.entry_date).toLocaleDateString('pt-BR') : '—'}</td>
+                  <td>{order.entry_date ? new Date(order.entry_date + 'T12:00:00').toLocaleDateString('pt-BR') : '—'}</td>
                   <td className="actions-cell">
                     <button className="btn-icon" title="Ver detalhes" onClick={() => navigate(`/os/${order.id}`)}>
                       <FiEye />

@@ -4,7 +4,7 @@ import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy } from 'react-
 import toast from 'react-hot-toast';
 import { serviceOrdersService, ServiceOrder, STATUSES } from '../../services/serviceOrders.service';
 import PageHeader from '../../components/PageHeader';
-import { formatDocument, formatPhone } from '../../utils/masks';
+import { formatDocument, formatPhone, formatCurrency, formatDate } from '../../utils/masks';
 
 function getStatusLabel(status: string) {
   return STATUSES.find((s) => s.value === status)?.label || status;
@@ -144,9 +144,9 @@ export default function ServiceOrderDetails() {
         <div className="detail-section">
           <h3>Dados da OS</h3>
           <div className="detail-grid">
-            <div><strong>Nº:</strong> #{String(order.order_number).padStart(4, '0')}</div>
-            <div><strong>Data Entrada:</strong> {order.entry_date ? new Date(order.entry_date).toLocaleDateString('pt-BR') : '—'}</div>
-            <div><strong>Data Conclusão:</strong> {order.completion_date ? new Date(order.completion_date).toLocaleDateString('pt-BR') : '—'}</div>
+            <div><strong>Nº:</strong> <span className="os-number">#{String(order.order_number).padStart(4, '0')}</span></div>
+            <div><strong>Data Entrada:</strong> {formatDate(order.entry_date)}</div>
+            <div><strong>Data Conclusão:</strong> {formatDate(order.completion_date || '')}</div>
           </div>
         </div>
 
@@ -206,15 +206,15 @@ export default function ServiceOrderDetails() {
                   <tr key={i}>
                     <td>{item.quantity}</td>
                     <td>{item.description}</td>
-                    <td>R$ {Number(item.unit_price).toFixed(2)}</td>
-                    <td><strong>R$ {(item.quantity * item.unit_price).toFixed(2)}</strong></td>
+                    <td>{formatCurrency(Number(item.unit_price))}</td>
+                    <td><strong>{formatCurrency(item.quantity * item.unit_price)}</strong></td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
                 <tr>
                   <td colSpan={3} style={{ textAlign: 'right', fontWeight: 600 }}>VALOR TOTAL:</td>
-                  <td style={{ fontWeight: 700, fontSize: '1.1rem' }}>R$ {totalValue.toFixed(2)}</td>
+                  <td style={{ fontWeight: 700, fontSize: '1.1rem' }}>{formatCurrency(totalValue)}</td>
                 </tr>
               </tfoot>
             </table>
