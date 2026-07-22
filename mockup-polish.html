@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OS Laboris — UI Polish Mockup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #1e293b;
+      background: #f1f5f9;
+    }
+
+    /* Layout */
+    .layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem 1.5rem 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-header .company-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 2px;
+    }
+
+    .sidebar-header .subtitle {
+      font-size: 0.7rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sidebar-nav {
+      padding: 0.75rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 1.5rem;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,0.04);
+      color: #e2e8f0;
+    }
+
+    .nav-link.active {
+      background: rgba(56, 189, 248, 0.08);
+      color: #38bdf8;
+      border-left-color: #38bdf8;
+    }
+
+    .nav-link svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: #ef4444;
+      color: white;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      min-width: 20px;
+      text-align: center;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .sidebar-footer {
+      padding: 0.75rem 0;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Main */
+    .main-content {
+      flex: 1;
+      margin-left: 250px;
+      padding: 2rem 2.5rem;
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-header h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    /* Dashboard Cards */
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .dash-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .dash-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      border-color: rgba(0,0,0,0.08);
+    }
+
+    .dash-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .dash-card-icon.blue { background: #dbeafe; color: #2563eb; }
+    .dash-card-icon.yellow { background: #fef3c7; color: #d97706; }
+    .dash-card-icon.purple { background: #ede9fe; color: #7c3aed; }
+    .dash-card-icon.green { background: #dcfce7; color: #16a34a; }
+    .dash-card-icon.gray { background: #f1f5f9; color: #475569; }
+    .dash-card-icon.dark { background: #f1f5f9; color: #1e293b; }
+
+    .dash-card-content { display: flex; flex-direction: column; }
+    .dash-card-value { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+    .dash-card-label {
+      font-size: 0.7rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 500;
+    }
+
+    /* Panels Grid */
+    .panels-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Ranking */
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0;
+    }
+
+    .rank-medal { font-size: 1.2rem; width: 28px; text-align: center; }
+
+    .rank-info { flex: 1; }
+    .rank-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .rank-count { color: #64748b; font-weight: 600; }
+
+    .rank-bar {
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .rank-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+    .rank-bar-fill.gold { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .rank-bar-fill.silver { background: linear-gradient(90deg, #94a3b8, #cbd5e1); }
+    .rank-bar-fill.bronze { background: linear-gradient(90deg, #b45309, #d97706); }
+
+    /* Status dots */
+    .status-dots {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .status-dot {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+    }
+
+    .status-dot .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* Recent OS */
+    .recent-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #f8fafc;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin: 0 -0.5rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      border-radius: 6px;
+    }
+
+    .recent-item:hover { background: #f8fafc; }
+    .recent-item:last-child { border-bottom: none; }
+
+    .recent-os-num {
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 0.8rem;
+    }
+
+    .recent-client {
+      color: #64748b;
+      font-size: 0.8rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-blue { background: #dbeafe; color: #1d4ed8; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-purple { background: #ede9fe; color: #6d28d9; }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-gray { background: #f1f5f9; color: #475569; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+      box-shadow: 0 1px 3px rgba(59,130,246,0.3);
+    }
+    .btn-primary:hover {
+      background: #2563eb;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+      transform: translateY(-1px);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #94a3b8;
+    }
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    .empty-state-text {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .empty-state-sub {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="company-name">Eletrotécnica São Miguel</div>
+        <div class="subtitle">Assistência Técnica</div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-link active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </a>
+        <a href="#" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Ordens de Serviço
+          <span class="nav-badge">36</span>
+        </a>
+        <a href="#" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Clientes
+        </a>
+        <a href="#" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          Técnicos
+        </a>
+        <a href="#" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Equipamentos
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Configurações
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header">
+        <h2>Dashboard</h2>
+        <a href="#" class="btn btn-primary">+ Nova OS</a>
+      </div>
+
+      <!-- Cards -->
+      <div class="dashboard-cards">
+        <div class="dash-card">
+          <div class="dash-card-icon blue">⚠️</div>
+          <div class="dash-card-content">
+            <span class="dash-card-value">11</span>
+            <span class="dash-card-label">Abertas</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon yellow">✅</div>
+          <div class="dash-card-content">
+            <span class="dash-card-value">13</span>
+            <span class="dash-card-label">Aprovadas</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon purple">⏳</div>
+          <div class="dash-card-content">
+            <span class="dash-card-value">12</span>
+            <span class="dash-card-label">Aguardando Peça</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon green">✔️</div>
+          <div class="dash-card-content">
+            <span class="dash-card-value">13</span>
+            <span class="dash-card-label">Concluídas</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon gray">📦</div>
+          <div class="dash-card-content">
+            <span class="dash-card-value">14</span>
+            <span class="dash-card-label">Entregues</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon dark">👥</div>
+          <div class="dash-card-content">
+            <span class="dash-card-value">13</span>
+            <span class="dash-card-label">Clientes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panels -->
+      <div class="panels-grid">
+        <!-- Em andamento -->
+        <div class="panel">
+          <div class="panel-title">📋 Em andamento (36)</div>
+          <div class="status-dots">
+            <div class="status-dot">
+              <span class="dot" style="background:#3b82f6"></span>
+              Aberta: <strong>11</strong>
+            </div>
+            <div class="status-dot">
+              <span class="dot" style="background:#f59e0b"></span>
+              Aprovada: <strong>13</strong>
+            </div>
+            <div class="status-dot">
+              <span class="dot" style="background:#8b5cf6"></span>
+              Ag. Peça: <strong>12</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ranking -->
+        <div class="panel">
+          <div class="panel-title">🏆 Ranking de Técnicos</div>
+          <div class="rank-item">
+            <span class="rank-medal">🥇</span>
+            <div class="rank-info">
+              <div class="rank-name"><span>Fernando</span><span class="rank-count">22 OS</span></div>
+              <div class="rank-bar"><div class="rank-bar-fill gold" style="width:100%"></div></div>
+            </div>
+          </div>
+          <div class="rank-item">
+            <span class="rank-medal">🥈</span>
+            <div class="rank-info">
+              <div class="rank-name"><span>Igor</span><span class="rank-count">18 OS</span></div>
+              <div class="rank-bar"><div class="rank-bar-fill silver" style="width:82%"></div></div>
+            </div>
+          </div>
+          <div class="rank-item">
+            <span class="rank-medal">🥉</span>
+            <div class="rank-info">
+              <div class="rank-name"><span>Felipe</span><span class="rank-count">15 OS</span></div>
+              <div class="rank-bar"><div class="rank-bar-fill bronze" style="width:68%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Últimas OS -->
+        <div class="panel">
+          <div class="panel-title">🕐 Últimas OS</div>
+          <div class="recent-item">
+            <div>
+              <span class="recent-os-num">#0063</span>
+              <span class="recent-client">Ana Paula — Aspirador Arno</span>
+            </div>
+            <span class="badge badge-gray">Entregue</span>
+          </div>
+          <div class="recent-item">
+            <div>
+              <span class="recent-os-num">#0062</span>
+              <span class="recent-client">Claudia — Soprador Bosch</span>
+            </div>
+            <span class="badge badge-purple">Ag. Peça</span>
+          </div>
+          <div class="recent-item">
+            <div>
+              <span class="recent-os-num">#0061</span>
+              <span class="recent-client">Claudia — Soprador Bosch</span>
+            </div>
+            <span class="badge badge-yellow">Aprovada</span>
+          </div>
+          <div class="recent-item">
+            <div>
+              <span class="recent-os-num">#0060</span>
+              <span class="recent-client">Claudia — Serra DeWalt</span>
+            </div>
+            <span class="badge badge-yellow">Aprovada</span>
+          </div>
+          <div class="recent-item">
+            <div>
+              <span class="recent-os-num">#0059</span>
+              <span class="recent-client">Claudia — Serra DeWalt</span>
+            </div>
+            <span class="badge badge-blue">Aberta</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
