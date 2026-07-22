@@ -51,18 +51,51 @@
 /* Dark Mode */
 [data-theme="dark"] {
   --bg-body: #1B1D1F;
-  --bg-surface: #242729;
-  --bg-surface-hover: #2C2F32;
-  --border-color: #3A3D40;
-  --border-light: #2C2F32;
+  --bg-surface: #1B1D1F;
+  --bg-surface-hover: #242729;
+  --border-color: #2C2F32;
+  --border-light: #242729;
 
   --text-primary: #EDEDEC;
   --text-secondary: #9A9FA6;
   --text-muted: #6E7378;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-sm: none;
+  --shadow-md: none;
   --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .dash-card,
+[data-theme="dark"] .detail-card,
+[data-theme="dark"] .form-card,
+[data-theme="dark"] .panel,
+[data-theme="dark"] .data-table {
+  background: #242729;
+  border: 1px solid #2C2F32;
+}
+
+[data-theme="dark"] .data-table th {
+  background: #2C2F32;
+}
+
+[data-theme="dark"] .data-table td {
+  border-top-color: #2C2F32;
+}
+
+[data-theme="dark"] .history-item {
+  background: #242729;
+  border-color: #2C2F32;
+  border-left-color: var(--accent);
+}
+
+[data-theme="dark"] .modal-content {
+  background: #242729;
+  border: 1px solid #3A3D40;
+}
+
+[data-theme="dark"] .global-search-dropdown {
+  background: #242729;
+  border-color: #3A3D40;
 }
 
 /* ========== RESET & BASE ========== */
