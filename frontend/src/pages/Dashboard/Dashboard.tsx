@@ -53,42 +53,42 @@ export default function Dashboard() {
 
       {/* Cards */}
       <div className="dashboard-cards">
-        <div className="dash-card dash-card-blue" onClick={() => navigate('/os?status=aberta')}>
+        <div className="dash-card" onClick={() => navigate('/os?status=aberta')}>
           <div className="dash-card-icon"><FiAlertCircle /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.aberta || 0}</span>
             <span className="dash-card-label">Abertas</span>
           </div>
         </div>
-        <div className="dash-card dash-card-yellow" onClick={() => navigate('/os?status=aprovada')}>
+        <div className="dash-card" onClick={() => navigate('/os?status=aprovada')}>
           <div className="dash-card-icon"><FiCheckCircle /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.aprovada || 0}</span>
             <span className="dash-card-label">Aprovadas</span>
           </div>
         </div>
-        <div className="dash-card dash-card-purple" onClick={() => navigate('/os?status=aguardando_peca')}>
+        <div className="dash-card" onClick={() => navigate('/os?status=aguardando_peca')}>
           <div className="dash-card-icon"><FiClock /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.aguardando_peca || 0}</span>
             <span className="dash-card-label">Aguardando Peça</span>
           </div>
         </div>
-        <div className="dash-card dash-card-green" onClick={() => navigate('/os?status=concluida')}>
+        <div className="dash-card" onClick={() => navigate('/os?status=concluida')}>
           <div className="dash-card-icon"><FiCheckCircle /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.concluida || 0}</span>
             <span className="dash-card-label">Concluídas</span>
           </div>
         </div>
-        <div className="dash-card dash-card-gray" onClick={() => navigate('/os?status=entregue')}>
+        <div className="dash-card" onClick={() => navigate('/os?status=entregue')}>
           <div className="dash-card-icon"><FiClipboard /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.entregue || 0}</span>
             <span className="dash-card-label">Entregues</span>
           </div>
         </div>
-        <div className="dash-card dash-card-dark">
+        <div className="dash-card">
           <div className="dash-card-icon"><FiUsers /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.total_clients}</span>

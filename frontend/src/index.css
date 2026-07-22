@@ -14,24 +14,25 @@
   --text-muted: #94a3b8;
   --text-inverse: #f1f5f9;
 
-  /* Accent */
-  --accent: #f59e0b;
-  --accent-bg: rgba(245, 158, 11, 0.1);
+  /* Accent — reserved for: active sidebar, primary buttons, status "aguardando_peca" */
+  --accent: #F0A23D;
+  --accent-bg: rgba(240, 162, 61, 0.1);
   --accent-text: #d97706;
 
   /* Actions */
-  --btn-primary: #3b82f6;
-  --btn-primary-hover: #2563eb;
+  --btn-primary: #F0A23D;
+  --btn-primary-hover: #d4891f;
   --btn-danger: #ef4444;
   --btn-success: #25d366;
 
-  /* Status */
-  --status-aberta: #3b82f6;
-  --status-aprovada: #f59e0b;
-  --status-aguardando: #8b5cf6;
-  --status-concluida: #10b981;
-  --status-entregue: #6b7280;
+  /* Status — consistent mapping */
+  --status-aberta: #6E7378;
+  --status-aprovada: #B98CE0;
+  --status-aguardando: #F0A23D;
+  --status-concluida: #4CAF7D;
+  --status-entregue: #4CAF7D;
   --status-cancelada: #ef4444;
+  --status-em-andamento: #5B9BD5;
 
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
@@ -59,9 +60,9 @@
   --text-secondary: #9A9FA6;
   --text-muted: #6E7378;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
 /* ========== RESET & BASE ========== */
@@ -112,6 +113,7 @@ h2, h3 {
 }
 
 .page-header h2 {
+  font-family: 'Barlow Condensed', sans-serif;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -559,18 +561,13 @@ h2, h3 {
   padding: 0.6rem;
   border-radius: var(--radius-md);
   display: flex;
+  background: var(--bg-surface-hover);
+  color: var(--text-muted);
 }
 
 .dash-card-content { display: flex; flex-direction: column; }
-.dash-card-value { font-size: 1.4rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.dash-card-value { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; color: var(--text-primary); }
 .dash-card-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
-
-.dash-card-blue .dash-card-icon { background: #dbeafe; color: #2563eb; }
-.dash-card-yellow .dash-card-icon { background: #fef3c7; color: #d97706; }
-.dash-card-purple .dash-card-icon { background: #ede9fe; color: #7c3aed; }
-.dash-card-green .dash-card-icon { background: #dcfce7; color: #16a34a; }
-.dash-card-dark .dash-card-icon { background: var(--bg-surface-hover); color: var(--text-primary); }
-.dash-card-gray .dash-card-icon { background: var(--bg-surface-hover); color: var(--text-secondary); }
 
 /* Sidebar badge */
 .nav-badge {
