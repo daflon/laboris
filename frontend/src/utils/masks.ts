@@ -71,23 +71,3 @@ export function formatPhone(phone: string): string {
   if (!phone) return '';
   return maskPhone(phone.replace(/\D/g, ''));
 }
-
-
-/**
- * Formata valor monetário no padrão pt-BR: R$ 1.500,00
- */
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(value);
-}
-
-/**
- * Formata data ISO para dd/mm/aaaa
- */
-export function formatDate(dateStr: string): string {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString('pt-BR');
-}

@@ -52,11 +52,11 @@ export interface ServiceOrderFormData {
 }
 
 export const STATUSES = [
-  { value: 'aberta', label: 'Aberta', color: '#6E7378' },
-  { value: 'aprovada', label: 'Aprovada', color: '#B98CE0' },
-  { value: 'aguardando_peca', label: 'Aguardando Peça', color: '#F0A23D' },
-  { value: 'concluida', label: 'Concluída', color: '#4CAF7D' },
-  { value: 'entregue', label: 'Entregue', color: '#4CAF7D' },
+  { value: 'aberta', label: 'Aberta', color: '#3b82f6' },
+  { value: 'aprovada', label: 'Aprovada', color: '#f59e0b' },
+  { value: 'aguardando_peca', label: 'Aguardando Peça', color: '#8b5cf6' },
+  { value: 'concluida', label: 'Concluída', color: '#10b981' },
+  { value: 'entregue', label: 'Entregue', color: '#6b7280' },
   { value: 'cancelada', label: 'Cancelada', color: '#ef4444' },
 ];
 

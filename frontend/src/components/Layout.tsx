@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiMoon, FiSun } from 'react-icons/fi';
+import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome } from 'react-icons/fi';
 import api from '../services/api';
 import GlobalSearch from './GlobalSearch';
 import './Layout.css';
 
 export default function Layout() {
   const [openCount, setOpenCount] = useState(0);
-  const [companyName, setCompanyName] = useState('OS Laboris');
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
 
   useEffect(() => {
     api.get('/dashboard/stats')
@@ -17,26 +15,13 @@ export default function Layout() {
         setOpenCount((s.aberta || 0) + (s.aprovada || 0) + (s.aguardando_peca || 0));
       })
       .catch(() => {});
-
-    api.get('/company')
-      .then((res) => {
-        if (res.data.data && res.data.data.name) {
-          setCompanyName(res.data.data.name);
-        }
-      })
-      .catch(() => {});
   }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
-    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
-  }, [darkMode]);
 
   return (
     <div className="layout">
       <aside className="sidebar">
         <div className="sidebar-header">
-          <h1>{companyName}</h1>
+          <h1>OS Laboris</h1>
           <span className="subtitle">Assistência Técnica</span>
         </div>
         <nav className="sidebar-nav">
@@ -63,15 +48,37 @@ export default function Layout() {
           </NavLink>
         </div>
       </aside>
+
       <main className="main-content">
         <div className="top-bar">
           <GlobalSearch />
-          <button className="theme-toggle" onClick={() => setDarkMode(!darkMode)} title={darkMode ? 'Modo Claro' : 'Modo Escuro'}>
-            {darkMode ? <FiSun /> : <FiMoon />}
-          </button>
         </div>
         <Outlet />
       </main>
+
+      {/* Mobile bottom navigation */}
+      <nav className="mobile-nav">
+        <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
+          <FiHome />
+          <span>Início</span>
+        </NavLink>
+        <NavLink to="/os" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
+          <FiClipboard />
+          <span>OS</span>
+        </NavLink>
+        <NavLink to="/clientes" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
+          <FiUsers />
+          <span>Clientes</span>
+        </NavLink>
+        <NavLink to="/tecnicos" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
+          <FiTool />
+          <span>Técnicos</span>
+        </NavLink>
+        <NavLink to="/configuracoes" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
+          <FiSettings />
+          <span>Config</span>
+        </NavLink>
+      </nav>
     </div>
   );
 }

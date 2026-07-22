@@ -24,7 +24,7 @@
 .sidebar-header h1 {
   font-size: 1.3rem;
   margin: 0;
-  color: #F0A23D;
+  color: #38bdf8;
 }
 
 .sidebar-header .subtitle {
@@ -56,9 +56,9 @@
 }
 
 .nav-link.active {
-  background: rgba(240, 162, 61, 0.08);
-  color: #F0A23D;
-  border-left-color: #F0A23D;
+  background: #0f172a;
+  color: #38bdf8;
+  border-left: 3px solid #38bdf8;
 }
 
 .main-content {
