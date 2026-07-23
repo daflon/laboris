@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Usa o mesmo hostname que o browser está acessando (funciona tanto em localhost quanto via IP na rede)
 const baseURL = `${window.location.protocol}//${window.location.hostname}:3000/api/v1`;
 
 const api = axios.create({
@@ -9,5 +8,29 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Interceptor — adiciona token em toda request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Interceptor — redireciona pra login se 401
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

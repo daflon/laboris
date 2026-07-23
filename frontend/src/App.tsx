@@ -1,6 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { authService } from './services/auth.service';
 import Layout from './components/Layout';
+import Login from './pages/Login/Login';
+import MasterDashboard from './pages/Master/MasterDashboard';
+import CreateTenant from './pages/Master/CreateTenant';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ClientsList from './pages/Clients/ClientsList';
 import ClientForm from './pages/Clients/ClientForm';
@@ -15,41 +19,55 @@ import ServiceOrderForm from './pages/ServiceOrders/ServiceOrderForm';
 import ServiceOrderDetails from './pages/ServiceOrders/ServiceOrderDetails';
 import CompanySettingsPage from './pages/Settings/CompanySettings';
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  if (!authService.isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+}
+
+function SuperAdminRoute({ children }: { children: React.ReactNode }) {
+  if (!authService.isAuthenticated()) return <Navigate to="/login" replace />;
+  if (!authService.isSuperAdmin()) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
+        {/* Public */}
+        <Route path="/login" element={<Login />} />
 
-          {/* Dashboard */}
+        {/* Super Admin */}
+        <Route path="/master" element={<SuperAdminRoute><MasterDashboard /></SuperAdminRoute>} />
+        <Route path="/master/tenants/novo" element={<SuperAdminRoute><CreateTenant /></SuperAdminRoute>} />
+
+        {/* Tenant routes */}
+        <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
 
-          {/* Ordens de Serviço */}
           <Route path="os" element={<ServiceOrdersList />} />
           <Route path="os/nova" element={<ServiceOrderForm />} />
           <Route path="os/:id" element={<ServiceOrderDetails />} />
           <Route path="os/:id/editar" element={<ServiceOrderForm />} />
 
-          {/* Clientes */}
           <Route path="clientes" element={<ClientsList />} />
           <Route path="clientes/novo" element={<ClientForm />} />
           <Route path="clientes/:id" element={<ClientDetails />} />
           <Route path="clientes/:id/editar" element={<ClientForm />} />
 
-          {/* Técnicos */}
           <Route path="tecnicos" element={<TechniciansList />} />
           <Route path="tecnicos/novo" element={<TechnicianForm />} />
           <Route path="tecnicos/:id/editar" element={<TechnicianForm />} />
 
-          {/* Equipamentos */}
           <Route path="equipamentos" element={<EquipmentList />} />
           <Route path="equipamentos/novo" element={<EquipmentForm />} />
           <Route path="equipamentos/:id/editar" element={<EquipmentForm />} />
           <Route path="equipamentos/:id/historico" element={<EquipmentHistory />} />
 
-          {/* Configurações */}
           <Route path="configuracoes" element={<CompanySettingsPage />} />
         </Route>
       </Routes>
