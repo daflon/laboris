@@ -67,3 +67,33 @@
   padding: 2rem;
   background: #f8fafc;
 }
+
+
+/* Sidebar footer brand */
+.sidebar-footer-brand {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid #334155;
+  text-align: center;
+}
+
+.sidebar-brand-name {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-support {
+  display: block;
+  font-size: 0.65rem;
+  color: #4ade80;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.sidebar-support:hover {
+  color: #86efac;
+}

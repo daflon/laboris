@@ -10,6 +10,7 @@ export default function Layout() {
   const navigate = useNavigate();
   const [openCount, setOpenCount] = useState(0);
   const [modules, setModules] = useState<string[]>(['os']);
+  const [companyName, setCompanyName] = useState('');
   const isMasterImpersonating = !!localStorage.getItem('master_token');
 
   useEffect(() => {
@@ -20,7 +21,7 @@ export default function Layout() {
       })
       .catch(() => {});
 
-    // Carregar módulos do tenant — master impersonando tem tudo
+    // Carregar módulos e nome da empresa
     if (isMasterImpersonating) {
       setModules(['os', 'financeiro']);
     } else {
@@ -33,6 +34,13 @@ export default function Layout() {
         })
         .catch(() => {});
     }
+
+    // Pegar nome da empresa das configurações
+    api.get('/company')
+      .then((res) => {
+        if (res.data.data?.name) setCompanyName(res.data.data.name);
+      })
+      .catch(() => {});
   }, []);
 
   const handleLogout = () => {
@@ -69,7 +77,7 @@ export default function Layout() {
     <div className="layout">
       <aside className="sidebar">
         <div className="sidebar-header">
-          <h1>OS Laboris</h1>
+          <h1>{companyName || 'OS Laboris'}</h1>
           <span className="subtitle">Assistência Técnica</span>
         </div>
         <nav className="sidebar-nav">
@@ -109,6 +117,12 @@ export default function Layout() {
           <button onClick={handleLogout} className="nav-link" style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
             <FiLogOut /> <span>Sair</span>
           </button>
+        </div>
+        <div className="sidebar-footer-brand">
+          <span className="sidebar-brand-name">OS Laboris</span>
+          <a href="https://wa.me/5521974303932" target="_blank" rel="noopener noreferrer" className="sidebar-support">
+            Suporte: (21) 97430-3932
+          </a>
         </div>
       </aside>
 
