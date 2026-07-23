@@ -50,6 +50,20 @@ export default function MasterDashboard() {
     } catch { toast.error('Erro ao alterar status'); }
   };
 
+  const handleImpersonate = async (tenantId: string) => {
+    try {
+      const res = await api.post(`/master/tenants/${tenantId}/impersonate`);
+      const { token, tenant } = res.data.data;
+      // Salva token original pra poder voltar
+      localStorage.setItem('master_token', localStorage.getItem('token') || '');
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify({ ...authService.getUser(), tenant_id: tenant.id, role: 'tenant_user' }));
+      toast.success(`Acessando como: ${tenant.name}`);
+      navigate('/dashboard');
+      window.location.reload();
+    } catch { toast.error('Erro ao acessar conta'); }
+  };
+
   const handleLogout = () => {
     authService.removeToken();
     navigate('/login');
@@ -128,6 +142,12 @@ export default function MasterDashboard() {
                     </span>
                   </td>
                   <td className="actions-cell">
+                    <button className="btn-icon" title="Editar" onClick={() => navigate(`/master/tenants/${t.id}/editar`)}>
+                      ✏️
+                    </button>
+                    <button className="btn-icon" title="Acessar como esta empresa" onClick={() => handleImpersonate(t.id)}>
+                      🔑
+                    </button>
                     <button className="btn-icon" title={t.active ? 'Desativar' : 'Ativar'} onClick={() => handleToggle(t.id)}>
                       {t.active ? '⏸' : '▶'}
                     </button>

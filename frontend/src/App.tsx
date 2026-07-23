@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import Login from './pages/Login/Login';
 import MasterDashboard from './pages/Master/MasterDashboard';
 import CreateTenant from './pages/Master/CreateTenant';
+import EditTenant from './pages/Master/EditTenant';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ClientsList from './pages/Clients/ClientsList';
 import ClientForm from './pages/Clients/ClientForm';
@@ -43,6 +44,7 @@ export default function App() {
         {/* Super Admin */}
         <Route path="/master" element={<SuperAdminRoute><MasterDashboard /></SuperAdminRoute>} />
         <Route path="/master/tenants/novo" element={<SuperAdminRoute><CreateTenant /></SuperAdminRoute>} />
+        <Route path="/master/tenants/:id/editar" element={<SuperAdminRoute><EditTenant /></SuperAdminRoute>} />
 
         {/* Tenant routes */}
         <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>

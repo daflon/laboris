@@ -1,12 +1,45 @@
 import { useEffect, useState } from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
-import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome } from 'react-icons/fi';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield } from 'react-icons/fi';
 import api from '../services/api';
+import { authService } from '../services/auth.service';
 import GlobalSearch from './GlobalSearch';
 import './Layout.css';
 
 export default function Layout() {
+  const navigate = useNavigate();
   const [openCount, setOpenCount] = useState(0);
+  const isMasterImpersonating = !!localStorage.getItem('master_token');
+
+  useEffect(() => {
+    api.get('/dashboard/stats')
+      .then((res) => {
+        const s = res.data.data.statuses;
+        setOpenCount((s.aberta || 0) + (s.aprovada || 0) + (s.aguardando_peca || 0));
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleLogout = () => {
+    authService.removeToken();
+    navigate('/login');
+  };
+
+  const handleBackToMaster = () => {
+    const masterToken = localStorage.getItem('master_token');
+    if (masterToken) {
+      localStorage.setItem('token', masterToken);
+      localStorage.removeItem('master_token');
+      const user = authService.getUser();
+      if (user) {
+        user.role = 'super_admin';
+        user.tenant_id = null;
+        authService.setUser(user);
+      }
+      navigate('/master');
+      window.location.reload();
+    }
+  };
 
   useEffect(() => {
     api.get('/dashboard/stats')
@@ -43,9 +76,17 @@ export default function Layout() {
           </NavLink>
         </nav>
         <div style={{ marginTop: 'auto', padding: '1rem 0' }}>
+          {isMasterImpersonating && (
+            <button onClick={handleBackToMaster} className="nav-link" style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', color: '#f59e0b' }}>
+              <FiShield /> <span>Voltar ao Master</span>
+            </button>
+          )}
           <NavLink to="/configuracoes" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <FiSettings /> <span>Configurações</span>
           </NavLink>
+          <button onClick={handleLogout} className="nav-link" style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+            <FiLogOut /> <span>Sair</span>
+          </button>
         </div>
       </aside>
 

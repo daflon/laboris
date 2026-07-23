@@ -172,13 +172,41 @@ router.patch('/tenants/:id/toggle', async (req, res, next) => {
   try {
     const tenant = await db('tenants').where({ id: req.params.id }).first();
     if (!tenant) return res.status(404).json({ success: false, error: { message: 'Tenant não encontrado' } });
-
     await db('tenants').where({ id: req.params.id }).update({ active: !tenant.active, updated_at: new Date().toISOString() });
     const updated = await db('tenants').where({ id: req.params.id }).first();
     res.json({ success: true, data: updated });
-  } catch (error) {
-    next(error);
-  }
+  } catch (error) { next(error); }
+});
+
+// Reset password de um user do tenant
+router.put('/tenants/:id/reset-password', async (req, res, next) => {
+  try {
+    const { user_id, new_password } = req.body;
+    if (!new_password || new_password.length < 4) {
+      return res.status(400).json({ success: false, error: { message: 'Senha deve ter no mínimo 4 caracteres' } });
+    }
+    const user = await db('users').where({ id: user_id, tenant_id: req.params.id }).first();
+    if (!user) return res.status(404).json({ success: false, error: { message: 'Usuário não encontrado' } });
+    const password_hash = await bcrypt.hash(new_password, 10);
+    await db('users').where({ id: user_id }).update({ password_hash, updated_at: new Date().toISOString() });
+    res.json({ success: true, data: { message: 'Senha alterada com sucesso' } });
+  } catch (error) { next(error); }
+});
+
+// Acessar como tenant (impersonate — gera token do tenant pro super admin)
+router.post('/tenants/:id/impersonate', async (req, res, next) => {
+  try {
+    const tenant = await db('tenants').where({ id: req.params.id }).first();
+    if (!tenant) return res.status(404).json({ success: false, error: { message: 'Tenant não encontrado' } });
+    const { generateToken } = require('../middlewares/auth');
+    const token = generateToken({
+      userId: req.user.userId,
+      tenantId: tenant.id,
+      role: 'tenant_user',
+      email: req.user.email,
+    });
+    res.json({ success: true, data: { token, tenant } });
+  } catch (error) { next(error); }
 });
 
 module.exports = router;
