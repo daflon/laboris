@@ -1,25 +1,20 @@
-const crypto = require('crypto');
 const db = require('../database/connection');
 
 const TABLE = 'technicians';
 
 const techniciansRepository = {
-  async create(data) {
-    const id = crypto.randomUUID();
-    const now = new Date().toISOString();
-    const record = { id, ...data, created_at: now, updated_at: now };
-    await db(TABLE).insert(record);
-    return record;
+  async create(tenantId, data) {
+    const [technician] = await db(TABLE)
+      .insert({ ...data, tenant_id: tenantId })
+      .returning('*');
+    return technician;
   },
 
-  async findAll({ search, status, limit, offset }) {
-    const query = db(TABLE).whereNull('deleted_at');
+  async findAll(tenantId, { search, status, limit, offset }) {
+    const query = db(TABLE).where({ tenant_id: tenantId }).whereNull('deleted_at');
 
-    if (status === 'active') {
-      query.where('active', true);
-    } else if (status === 'inactive') {
-      query.where('active', false);
-    }
+    if (status === 'active') query.where('active', true);
+    else if (status === 'inactive') query.where('active', false);
 
     if (search) {
       const term = `%${search.toLowerCase()}%`;
@@ -30,45 +25,39 @@ const techniciansRepository = {
     }
 
     const [{ count }] = await query.clone().count('* as count');
-    const technicians = await query
-      .select('*')
-      .orderBy('name', 'asc')
-      .limit(limit)
-      .offset(offset);
+    const technicians = await query.select('*').orderBy('name', 'asc').limit(limit).offset(offset);
 
     return { technicians, total: parseInt(count) };
   },
 
-  async findById(id) {
-    return db(TABLE).where({ id }).whereNull('deleted_at').first();
+  async findById(tenantId, id) {
+    return db(TABLE).where({ id, tenant_id: tenantId }).whereNull('deleted_at').first();
   },
 
-  async update(id, data) {
-    const now = new Date().toISOString();
-    await db(TABLE)
-      .where({ id })
+  async update(tenantId, id, data) {
+    const [technician] = await db(TABLE)
+      .where({ id, tenant_id: tenantId })
       .whereNull('deleted_at')
-      .update({ ...data, updated_at: now });
-    return this.findById(id);
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .returning('*');
+    return technician;
   },
 
-  async toggleStatus(id) {
-    const technician = await this.findById(id);
-    if (!technician) return null;
-    const now = new Date().toISOString();
-    await db(TABLE)
-      .where({ id })
-      .whereNull('deleted_at')
-      .update({ active: !technician.active, updated_at: now });
-    return this.findById(id);
+  async toggleStatus(tenantId, id) {
+    const tech = await this.findById(tenantId, id);
+    if (!tech) return null;
+    const [updated] = await db(TABLE)
+      .where({ id, tenant_id: tenantId })
+      .update({ active: !tech.active, updated_at: new Date().toISOString() })
+      .returning('*');
+    return updated;
   },
 
-  async softDelete(id) {
-    const now = new Date().toISOString();
+  async softDelete(tenantId, id) {
     await db(TABLE)
-      .where({ id })
+      .where({ id, tenant_id: tenantId })
       .whereNull('deleted_at')
-      .update({ deleted_at: now });
+      .update({ deleted_at: new Date().toISOString() });
   },
 };
 

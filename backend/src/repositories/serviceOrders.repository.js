@@ -1,45 +1,38 @@
-const crypto = require('crypto');
 const db = require('../database/connection');
 
 const TABLE = 'service_orders';
 const ITEMS_TABLE = 'service_order_items';
 
 const serviceOrdersRepository = {
-  async getNextOrderNumber() {
-    const result = await db(TABLE).max('order_number as max').first();
+  async getNextOrderNumber(tenantId) {
+    const result = await db(TABLE).where({ tenant_id: tenantId }).max('order_number as max').first();
     return (result.max || 0) + 1;
   },
 
-  async create(data, items = []) {
-    const id = crypto.randomUUID();
-    const now = new Date().toISOString();
-    const orderNumber = await this.getNextOrderNumber();
+  async create(tenantId, data, items = []) {
+    const orderNumber = await this.getNextOrderNumber(tenantId);
 
-    const record = {
-      id,
-      order_number: orderNumber,
-      client_id: data.client_id,
-      equipment_id: data.equipment_id,
-      technician_id: data.technician_id,
-      status: data.status || 'aberta',
-      reported_defect: data.reported_defect || null,
-      diagnosis: data.diagnosis || null,
-      notes: data.notes || null,
-      payment_method: data.payment_method || null,
-      warranty_days: data.warranty_days ?? 90,
-      entry_date: data.entry_date || new Date().toISOString().split('T')[0],
-      completion_date: data.completion_date || null,
-      created_at: now,
-      updated_at: now,
-    };
+    const [order] = await db(TABLE)
+      .insert({
+        tenant_id: tenantId,
+        order_number: orderNumber,
+        client_id: data.client_id,
+        equipment_id: data.equipment_id,
+        technician_id: data.technician_id,
+        status: data.status || 'aberta',
+        reported_defect: data.reported_defect || null,
+        diagnosis: data.diagnosis || null,
+        notes: data.notes || null,
+        payment_method: data.payment_method || null,
+        warranty_days: data.warranty_days ?? 90,
+        entry_date: data.entry_date || new Date().toISOString().split('T')[0],
+        completion_date: data.completion_date || null,
+      })
+      .returning('*');
 
-    await db(TABLE).insert(record);
-
-    // Inserir itens
     if (items.length > 0) {
       const itemRecords = items.map((item) => ({
-        id: crypto.randomUUID(),
-        service_order_id: id,
+        service_order_id: order.id,
         quantity: item.quantity,
         description: item.description,
         unit_price: item.unit_price,
@@ -47,19 +40,18 @@ const serviceOrdersRepository = {
       await db(ITEMS_TABLE).insert(itemRecords);
     }
 
-    return this.findById(id);
+    return this.findById(tenantId, order.id);
   },
 
-  async findAll({ search, status, limit, offset }) {
+  async findAll(tenantId, { search, status, limit, offset }) {
     const query = db(TABLE)
+      .where(`${TABLE}.tenant_id`, tenantId)
       .whereNull(`${TABLE}.deleted_at`)
       .leftJoin('clients', 'clients.id', `${TABLE}.client_id`)
       .leftJoin('equipment', 'equipment.id', `${TABLE}.equipment_id`)
       .leftJoin('technicians', 'technicians.id', `${TABLE}.technician_id`);
 
-    if (status && status !== 'all') {
-      query.where(`${TABLE}.status`, status);
-    }
+    if (status && status !== 'all') query.where(`${TABLE}.status`, status);
 
     if (search) {
       const term = `%${search.toLowerCase()}%`;
@@ -70,12 +62,10 @@ const serviceOrdersRepository = {
     }
 
     const countQuery = db(TABLE)
+      .where(`${TABLE}.tenant_id`, tenantId)
       .whereNull(`${TABLE}.deleted_at`)
       .leftJoin('clients', 'clients.id', `${TABLE}.client_id`);
-
-    if (status && status !== 'all') {
-      countQuery.where(`${TABLE}.status`, status);
-    }
+    if (status && status !== 'all') countQuery.where(`${TABLE}.status`, status);
     if (search) {
       const term = `%${search.toLowerCase()}%`;
       countQuery.where(function () {
@@ -85,7 +75,6 @@ const serviceOrdersRepository = {
     }
 
     const [{ count }] = await countQuery.count('* as count');
-
     const orders = await query
       .select(
         `${TABLE}.*`,
@@ -103,9 +92,10 @@ const serviceOrdersRepository = {
     return { orders, total: parseInt(count) };
   },
 
-  async findById(id) {
+  async findById(tenantId, id) {
     const order = await db(TABLE)
       .where(`${TABLE}.id`, id)
+      .where(`${TABLE}.tenant_id`, tenantId)
       .whereNull(`${TABLE}.deleted_at`)
       .leftJoin('clients', 'clients.id', `${TABLE}.client_id`)
       .leftJoin('equipment', 'equipment.id', `${TABLE}.equipment_id`)
@@ -125,40 +115,21 @@ const serviceOrdersRepository = {
       .first();
 
     if (!order) return null;
-
-    const items = await db(ITEMS_TABLE)
-      .where({ service_order_id: id });
-
+    const items = await db(ITEMS_TABLE).where({ service_order_id: id });
     return { ...order, items };
   },
 
-  async update(id, data, items) {
-    const now = new Date().toISOString();
+  async update(tenantId, id, data, items) {
+    const updateData = { updated_at: new Date().toISOString() };
+    const fields = ['client_id', 'equipment_id', 'technician_id', 'status', 'reported_defect', 'diagnosis', 'notes', 'payment_method', 'warranty_days', 'entry_date', 'completion_date'];
+    fields.forEach((f) => { if (data[f] !== undefined) updateData[f] = data[f] || null; });
 
-    const updateData = {
-      updated_at: now,
-    };
+    await db(TABLE).where({ id, tenant_id: tenantId }).whereNull('deleted_at').update(updateData);
 
-    const fields = [
-      'client_id', 'equipment_id', 'technician_id', 'status',
-      'reported_defect', 'diagnosis', 'notes', 'payment_method',
-      'warranty_days', 'entry_date', 'completion_date'
-    ];
-
-    fields.forEach((field) => {
-      if (data[field] !== undefined) {
-        updateData[field] = data[field] || null;
-      }
-    });
-
-    await db(TABLE).where({ id }).whereNull('deleted_at').update(updateData);
-
-    // Atualizar itens: remove todos e reinsere
     if (items !== undefined) {
       await db(ITEMS_TABLE).where({ service_order_id: id }).del();
       if (items.length > 0) {
         const itemRecords = items.map((item) => ({
-          id: item.id || crypto.randomUUID(),
           service_order_id: id,
           quantity: item.quantity,
           description: item.description,
@@ -168,39 +139,28 @@ const serviceOrdersRepository = {
       }
     }
 
-    return this.findById(id);
+    return this.findById(tenantId, id);
   },
 
-  async updateStatus(id, status) {
-    const now = new Date().toISOString();
-    const updateData = { status, updated_at: now };
+  async updateStatus(tenantId, id, status) {
+    const updateData = { status, updated_at: new Date().toISOString() };
+    if (status === 'concluida') updateData.completion_date = new Date().toISOString().split('T')[0];
 
-    // Se concluída, marca data de conclusão
-    if (status === 'concluida') {
-      updateData.completion_date = now.split('T')[0];
-    }
-
-    await db(TABLE).where({ id }).whereNull('deleted_at').update(updateData);
-    return this.findById(id);
+    await db(TABLE).where({ id, tenant_id: tenantId }).whereNull('deleted_at').update(updateData);
+    return this.findById(tenantId, id);
   },
 
-  async softDelete(id) {
-    const now = new Date().toISOString();
-    await db(TABLE).where({ id }).whereNull('deleted_at').update({ deleted_at: now });
+  async softDelete(tenantId, id) {
+    await db(TABLE).where({ id, tenant_id: tenantId }).whereNull('deleted_at').update({ deleted_at: new Date().toISOString() });
   },
 
-  async findByEquipmentId(equipmentId) {
-    const orders = await db(TABLE)
-      .where({ equipment_id: equipmentId })
+  async findByEquipmentId(tenantId, equipmentId) {
+    return db(TABLE)
+      .where({ equipment_id: equipmentId, [`${TABLE}.tenant_id`]: tenantId })
       .whereNull(`${TABLE}.deleted_at`)
       .leftJoin('technicians', 'technicians.id', `${TABLE}.technician_id`)
-      .select(
-        `${TABLE}.*`,
-        'technicians.name as technician_name'
-      )
+      .select(`${TABLE}.*`, 'technicians.name as technician_name')
       .orderBy('entry_date', 'desc');
-
-    return orders;
   },
 };
 

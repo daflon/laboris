@@ -1,52 +1,31 @@
 const techniciansRepository = require('../repositories/technicians.repository');
 
 class AppError extends Error {
-  constructor(message, statusCode, code) {
-    super(message);
-    this.statusCode = statusCode;
-    this.code = code;
-  }
+  constructor(message, statusCode, code) { super(message); this.statusCode = statusCode; this.code = code; }
 }
 
 const techniciansService = {
-  async create(data) {
-    return techniciansRepository.create(data);
+  async create(tenantId, data) { return techniciansRepository.create(tenantId, data); },
+  async findAll(tenantId, params) { return techniciansRepository.findAll(tenantId, params); },
+  async findById(tenantId, id) {
+    const t = await techniciansRepository.findById(tenantId, id);
+    if (!t) throw new AppError('Técnico não encontrado', 404, 'NOT_FOUND');
+    return t;
   },
-
-  async findAll(params) {
-    return techniciansRepository.findAll(params);
+  async update(tenantId, id, data) {
+    const t = await techniciansRepository.findById(tenantId, id);
+    if (!t) throw new AppError('Técnico não encontrado', 404, 'NOT_FOUND');
+    return techniciansRepository.update(tenantId, id, data);
   },
-
-  async findById(id) {
-    const technician = await techniciansRepository.findById(id);
-    if (!technician) {
-      throw new AppError('Técnico não encontrado', 404, 'NOT_FOUND');
-    }
-    return technician;
+  async toggleStatus(tenantId, id) {
+    const t = await techniciansRepository.findById(tenantId, id);
+    if (!t) throw new AppError('Técnico não encontrado', 404, 'NOT_FOUND');
+    return techniciansRepository.toggleStatus(tenantId, id);
   },
-
-  async update(id, data) {
-    const technician = await techniciansRepository.findById(id);
-    if (!technician) {
-      throw new AppError('Técnico não encontrado', 404, 'NOT_FOUND');
-    }
-    return techniciansRepository.update(id, data);
-  },
-
-  async toggleStatus(id) {
-    const technician = await techniciansRepository.findById(id);
-    if (!technician) {
-      throw new AppError('Técnico não encontrado', 404, 'NOT_FOUND');
-    }
-    return techniciansRepository.toggleStatus(id);
-  },
-
-  async delete(id) {
-    const technician = await techniciansRepository.findById(id);
-    if (!technician) {
-      throw new AppError('Técnico não encontrado', 404, 'NOT_FOUND');
-    }
-    return techniciansRepository.softDelete(id);
+  async delete(tenantId, id) {
+    const t = await techniciansRepository.findById(tenantId, id);
+    if (!t) throw new AppError('Técnico não encontrado', 404, 'NOT_FOUND');
+    return techniciansRepository.softDelete(tenantId, id);
   },
 };
 
