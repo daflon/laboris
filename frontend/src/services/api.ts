@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const baseURL = `${window.location.protocol}//${window.location.hostname}:3000/api/v1`;
+// Em produção (mesmo domínio): /api/v1
+// Em desenvolvimento (portas separadas): hostname:3000/api/v1
+const isDev = window.location.port === '5173';
+const baseURL = isDev
+  ? `${window.location.protocol}//${window.location.hostname}:3000/api/v1`
+  : '/api/v1';
 
 const api = axios.create({
   baseURL,
