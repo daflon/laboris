@@ -124,35 +124,39 @@ export default function FinanceiroPage() {
         </div>
       )}
 
-      {/* Form de novo lançamento */}
+      {/* Modal de novo lançamento */}
       {showForm && (
-        <div className="form-card" style={{ marginBottom: '1.5rem' }}>
-          <form onSubmit={handleCreate}>
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Tipo</label>
-                <select value={form.type} onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}>
-                  <option value="receita">Receita</option>
-                  <option value="despesa">Despesa</option>
-                </select>
+        <div className="modal-overlay" onClick={() => setShowForm(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
+            <h3>Novo Lançamento</h3>
+            <form onSubmit={handleCreate}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
+                <div className="form-group">
+                  <label>Tipo</label>
+                  <select value={form.type} onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}>
+                    <option value="receita">Receita</option>
+                    <option value="despesa">Despesa</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Descrição</label>
+                  <input value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} required placeholder="Ex: OS #0001 - Serra Mármore" />
+                </div>
+                <div className="form-group">
+                  <label>Valor (R$)</label>
+                  <input type="number" step="0.01" min="0" value={form.amount} onChange={(e) => setForm((p) => ({ ...p, amount: e.target.value }))} required />
+                </div>
+                <div className="form-group">
+                  <label>Data de Vencimento</label>
+                  <input type="date" value={form.due_date} onChange={(e) => setForm((p) => ({ ...p, due_date: e.target.value }))} />
+                </div>
               </div>
-              <div className="form-group col-span-2">
-                <label>Descrição</label>
-                <input value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} required placeholder="Ex: OS #0001 - Serra Mármore" />
-              </div>
-              <div className="form-group">
-                <label>Valor (R$)</label>
-                <input type="number" step="0.01" min="0" value={form.amount} onChange={(e) => setForm((p) => ({ ...p, amount: e.target.value }))} required />
-              </div>
-              <div className="form-group">
-                <label>Data de Vencimento</label>
-                <input type="date" value={form.due_date} onChange={(e) => setForm((p) => ({ ...p, due_date: e.target.value }))} />
-              </div>
-              <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancelar</button>
                 <button type="submit" className="btn btn-primary">Salvar</button>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       )}
 
