@@ -69,6 +69,25 @@ export default function MasterDashboard() {
     navigate('/login');
   };
 
+  // Super admin acessa o app como o primeiro tenant (ou o seu próprio)
+  const handleGoToApp = async () => {
+    if (tenants.length === 0) {
+      toast.error('Crie uma conta primeiro pra acessar o app');
+      return;
+    }
+    // Usa o primeiro tenant ativo como "seu" app
+    const myTenant = tenants.find((t) => t.active) || tenants[0];
+    try {
+      const res = await api.post(`/master/tenants/${myTenant.id}/impersonate`);
+      const { token, tenant } = res.data.data;
+      localStorage.setItem('master_token', localStorage.getItem('token') || '');
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify({ ...authService.getUser(), tenant_id: tenant.id, role: 'tenant_user' }));
+      navigate('/dashboard');
+      window.location.reload();
+    } catch { toast.error('Erro ao acessar app'); }
+  };
+
   if (loading) return <p className="loading-text">Carregando...</p>;
 
   return (
@@ -76,9 +95,7 @@ export default function MasterDashboard() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>🛡️ Painel Master</h2>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          {localStorage.getItem('master_token') && (
-            <button className="btn btn-secondary" onClick={() => navigate('/dashboard')}>Ir ao App</button>
-          )}
+          <button className="btn btn-primary" onClick={handleGoToApp} style={{ background: '#10b981' }}>🚀 Meu App</button>
           <Link to="/master/tenants/novo" className="btn btn-primary"><FiPlus /> Nova Conta</Link>
           <button className="btn btn-secondary" onClick={handleLogout}>Sair</button>
         </div>
