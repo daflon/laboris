@@ -5,9 +5,9 @@ const VALID_PAYMENTS = ['Dinheiro', 'PIX', 'Cartão Crédito', 'Cartão Débito'
 
 const serviceOrderItemSchema = z.object({
   id: z.string().optional(),
-  quantity: z.number().positive('Quantidade deve ser maior que zero'),
+  quantity: z.union([z.number(), z.string()]).transform((val) => Number(val)),
   description: z.string().min(1, 'Descrição é obrigatória'),
-  unit_price: z.number().min(0, 'Valor não pode ser negativo'),
+  unit_price: z.union([z.number(), z.string()]).transform((val) => Number(val)),
 });
 
 const createServiceOrderSchema = z.object({
