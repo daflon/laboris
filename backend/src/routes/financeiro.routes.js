@@ -5,6 +5,12 @@ const router = Router();
 
 // Middleware: verificar se módulo financeiro está habilitado pro tenant
 async function checkFinanceiroModule(req, res, next) {
+  // Super admin impersonando tem acesso total
+  const masterUser = await db('users').where({ id: req.user.userId }).first();
+  if (masterUser && masterUser.role === 'super_admin') {
+    return next();
+  }
+
   const tenant = await db('tenants').where({ id: req.tenantId }).first();
   if (!tenant) return res.status(404).json({ success: false, error: { message: 'Tenant não encontrado' } });
 
