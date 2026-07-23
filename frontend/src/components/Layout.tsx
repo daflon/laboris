@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield } from 'react-icons/fi';
+import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign } from 'react-icons/fi';
 import api from '../services/api';
 import { authService } from '../services/auth.service';
 import GlobalSearch from './GlobalSearch';
@@ -9,6 +9,7 @@ import './Layout.css';
 export default function Layout() {
   const navigate = useNavigate();
   const [openCount, setOpenCount] = useState(0);
+  const [modules, setModules] = useState<string[]>(['os']);
   const isMasterImpersonating = !!localStorage.getItem('master_token');
 
   useEffect(() => {
@@ -16,6 +17,16 @@ export default function Layout() {
       .then((res) => {
         const s = res.data.data.statuses;
         setOpenCount((s.aberta || 0) + (s.aprovada || 0) + (s.aguardando_peca || 0));
+      })
+      .catch(() => {});
+
+    // Carregar módulos do tenant
+    api.get('/auth/me')
+      .then((res) => {
+        if (res.data.data.tenant?.modules) {
+          const mods = res.data.data.tenant.modules;
+          setModules(typeof mods === 'string' ? JSON.parse(mods) : mods);
+        }
       })
       .catch(() => {});
   }, []);
@@ -74,6 +85,11 @@ export default function Layout() {
           <NavLink to="/equipamentos" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <FiMonitor /> <span>Equipamentos</span>
           </NavLink>
+          {modules.includes('financeiro') && (
+            <NavLink to="/financeiro" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <FiDollarSign /> <span>Financeiro</span>
+            </NavLink>
+          )}
         </nav>
         <div style={{ marginTop: 'auto', padding: '1rem 0' }}>
           {isMasterImpersonating && (

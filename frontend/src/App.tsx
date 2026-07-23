@@ -19,6 +19,7 @@ import ServiceOrdersList from './pages/ServiceOrders/ServiceOrdersList';
 import ServiceOrderForm from './pages/ServiceOrders/ServiceOrderForm';
 import ServiceOrderDetails from './pages/ServiceOrders/ServiceOrderDetails';
 import CompanySettingsPage from './pages/Settings/CompanySettings';
+import FinanceiroPage from './pages/Financeiro/FinanceiroPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!authService.isAuthenticated()) {
@@ -79,6 +80,7 @@ export default function App() {
           <Route path="equipamentos/:id/historico" element={<EquipmentHistory />} />
 
           <Route path="configuracoes" element={<CompanySettingsPage />} />
+          <Route path="financeiro" element={<FinanceiroPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
