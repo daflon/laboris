@@ -69,56 +69,52 @@ Sistema de Ordem de Serviço para assistência técnica (ferramentas elétricas)
 
 ---
 
-## 🔜 Etapa 6 — Autenticação e Controle de Acesso
+## 🔜 Etapa 6 — SaaS Multi-tenant + Deploy
 
-- [ ] Login com email/senha (JWT)
-- [ ] Dois níveis: Administrador e Técnico
-- [ ] Admin: acesso total (incluindo exclusões e configurações)
-- [ ] Técnico: vê apenas suas OS, não acessa configurações nem exclui registros
-- [ ] Exclusões visíveis apenas para admin (botão oculto para técnicos)
-- [ ] Ao excluir cliente, exclui equipamentos vinculados (cascade) — bloqueia se houver OS ativa
-- [ ] Cadastro de usuários pelo admin
-- [ ] Proteção de rotas no frontend e backend
+- [ ] Migrar banco para PostgreSQL
+- [ ] Tabelas `tenants` + `users` + autenticação JWT
+- [ ] `tenant_id` em todas as tabelas + middleware de isolamento
+- [ ] Tela de Login
+- [ ] Painel Master (Super Admin): criar/gerenciar contas, ativar módulos
+- [ ] Módulo Financeiro (faturamento: receitas, status, resumo mensal)
+- [ ] Sistema de módulos por tenant (ativar/desativar)
+- [ ] Deploy no Railway (backend + PostgreSQL + frontend)
+- [ ] Domínio + HTTPS
 
 ---
 
-## 📋 Etapa 7 — Melhorias Adicionais
+## 📋 Etapa 7 — Melhorias Pós-deploy
 
 - [ ] Indicador visual de OS antigas (> 30 dias sem movimento)
 - [ ] Alerta de equipamentos com mais de 180 dias sem retirada (PL 2545/22)
-- [ ] UI Polish (dark mode, tokens CSS, tipografia Barlow — já prototipado no git)
-
----
-
-## 📊 Etapa 8 — Relatórios
-
-- [ ] Relatório mensal de faturamento
-- [ ] Relatório de OS por técnico (produtividade detalhada)
-- [ ] Relatório de peças/serviços mais frequentes
+- [ ] UI Polish (dark mode, tokens CSS, tipografia — já prototipado no git)
+- [ ] Financeiro expandido: despesas, categorias, fluxo de caixa
+- [ ] Relatório mensal de faturamento por tenant
+- [ ] Relatório de OS por técnico (produtividade)
 - [ ] Exportação de relatórios (PDF ou CSV)
 
 ---
 
-## ☁️ Etapa 9 — Deploy e Produção
+## ☁️ Etapa 8 — Escala e Operações
 
-- [ ] Migrar banco para PostgreSQL em cloud
-- [ ] Deploy do backend (Render / Railway / AWS)
-- [ ] Deploy do frontend (Vercel / Netlify)
-- [ ] Domínio próprio
-- [ ] HTTPS / SSL
-- [ ] Backup automático do banco
-- [ ] Variáveis de ambiente de produção
+- [ ] Monitoramento de uptime
+- [ ] Logs centralizados
+- [ ] Backup automático do banco com retenção
+- [ ] Rate limiting na API
+- [ ] CDN para assets estáticos
 
 ---
 
 ## 💡 Futuro (ideias)
 
-- Módulo Financeiro (faturamento, relatórios de receita, controle de pagamentos)
+- Planos pagos / cobrança automática (Stripe/Mercado Pago)
+- Cadastro self-service (cliente cria conta sozinho)
 - Foto do equipamento na entrada (documentar avarias)
 - Notificação por email quando OS muda de status
 - Integração com gateway de pagamento
 - Controle de estoque de peças
 - Agenda de atendimento por técnico
+- Backup com restauração pelo painel master
 
 ---
 
