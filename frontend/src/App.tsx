@@ -24,12 +24,20 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!authService.isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
+  // Super admin sem impersonate não pode acessar rotas de tenant
+  const user = authService.getUser();
+  if (user?.role === 'super_admin' && !user?.tenant_id && !localStorage.getItem('master_token')) {
+    return <Navigate to="/master" replace />;
+  }
   return <>{children}</>;
 }
 
 function SuperAdminRoute({ children }: { children: React.ReactNode }) {
   if (!authService.isAuthenticated()) return <Navigate to="/login" replace />;
-  if (!authService.isSuperAdmin()) return <Navigate to="/dashboard" replace />;
+  // Aceita se é super_admin OU se tem master_token salvo (impersonando)
+  if (!authService.isSuperAdmin() && !localStorage.getItem('master_token')) {
+    return <Navigate to="/dashboard" replace />;
+  }
   return <>{children}</>;
 }
 

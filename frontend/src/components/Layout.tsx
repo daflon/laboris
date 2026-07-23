@@ -77,9 +77,11 @@ export default function Layout() {
         </nav>
         <div style={{ marginTop: 'auto', padding: '1rem 0' }}>
           {isMasterImpersonating && (
-            <button onClick={handleBackToMaster} className="nav-link" style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', color: '#f59e0b' }}>
-              <FiShield /> <span>Voltar ao Master</span>
-            </button>
+            <>
+              <button onClick={handleBackToMaster} className="nav-link" style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', color: '#f59e0b' }}>
+                <FiShield /> <span>Painel Master</span>
+              </button>
+            </>
           )}
           <NavLink to="/configuracoes" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <FiSettings /> <span>Configurações</span>

@@ -76,6 +76,9 @@ export default function MasterDashboard() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>🛡️ Painel Master</h2>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
+          {localStorage.getItem('master_token') && (
+            <button className="btn btn-secondary" onClick={() => navigate('/dashboard')}>Ir ao App</button>
+          )}
           <Link to="/master/tenants/novo" className="btn btn-primary"><FiPlus /> Nova Conta</Link>
           <button className="btn btn-secondary" onClick={handleLogout}>Sair</button>
         </div>
