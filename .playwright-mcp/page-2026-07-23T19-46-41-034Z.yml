@@ -1,0 +1,36 @@
+- generic [ref=f2e2]:
+  - status [ref=f2e113]: Cliente criado com sucesso
+  - generic [ref=f2e3]:
+    - complementary [ref=f2e4]:
+      - generic [ref=f2e5]:
+        - heading "OS Laboris" [level=1] [ref=f2e6]
+        - text: Assistência Técnica
+      - navigation [ref=f2e7]:
+        - link "Dashboard" [ref=f2e8] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Ordens de Serviço 19" [ref=f2e106] [cursor=pointer]:
+          - /url: /os
+          - generic [ref=f2e17]: Ordens de Serviço
+          - generic [ref=f2e107]: "19"
+        - link "Clientes" [ref=f2e18] [cursor=pointer]:
+          - /url: /clientes
+        - link "Técnicos" [ref=f2e25] [cursor=pointer]:
+          - /url: /tecnicos
+        - link "Equipamentos" [ref=f2e29] [cursor=pointer]:
+          - /url: /equipamentos
+        - link "Financeiro" [ref=f2e33] [cursor=pointer]:
+          - /url: /financeiro
+      - generic [ref=f2e37]:
+        - button "Painel Master" [ref=f2e38] [cursor=pointer]
+        - link "Configurações" [ref=f2e42] [cursor=pointer]:
+          - /url: /configuracoes
+        - button "Sair" [ref=f2e47] [cursor=pointer]
+    - main [ref=f2e52]:
+      - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=f2e59]
+      - generic [ref=f2e114]:
+        - generic [ref=f2e115]:
+          - heading "Clientes" [level=2] [ref=f2e116]
+          - link "Novo Cliente" [ref=f2e118] [cursor=pointer]:
+            - /url: /clientes/novo
+        - textbox "Buscar por nome ou documento..." [ref=f2e125]
+        - paragraph [ref=f2e126]: Carregando...

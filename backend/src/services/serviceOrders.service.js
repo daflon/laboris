@@ -39,7 +39,33 @@ const serviceOrdersService = {
   async updateStatus(tenantId, id, status) {
     const order = await serviceOrdersRepository.findById(tenantId, id);
     if (!order) throw new AppError('OS não encontrada', 404, 'NOT_FOUND');
-    return serviceOrdersRepository.updateStatus(tenantId, id, status);
+
+    const result = await serviceOrdersRepository.updateStatus(tenantId, id, status);
+
+    // Auto-gerar lançamento financeiro quando OS é concluída ou entregue
+    if ((status === 'concluida' || status === 'entregue') && order.status !== 'concluida' && order.status !== 'entregue') {
+      const db = require('../database/connection');
+      const items = order.items || [];
+      const total = items.reduce((s, item) => s + (parseFloat(item.quantity) * parseFloat(item.unit_price)), 0);
+
+      if (total > 0) {
+        // Verificar se já existe lançamento pra essa OS
+        const existing = await db('financial_entries').where({ tenant_id: tenantId, service_order_id: id }).first();
+        if (!existing) {
+          await db('financial_entries').insert({
+            tenant_id: tenantId,
+            type: 'receita',
+            description: `OS #${String(order.order_number).padStart(4, '0')} - ${order.client_name || ''}`,
+            amount: total,
+            due_date: new Date().toISOString().split('T')[0],
+            status: 'pendente',
+            service_order_id: id,
+          });
+        }
+      }
+    }
+
+    return result;
   },
 
   async delete(tenantId, id) {

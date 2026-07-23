@@ -1,0 +1,437 @@
+- generic [ref=f1e3]:
+  - complementary [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - heading "OS Laboris" [level=1] [ref=f1e6]
+      - text: Assistência Técnica
+    - navigation [ref=f1e7]:
+      - link "Dashboard" [ref=f1e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Ordens de Serviço 19" [active] [ref=f1e13] [cursor=pointer]:
+        - /url: /os
+        - generic [ref=f1e17]: Ordens de Serviço
+        - generic [ref=f1e18]: "19"
+      - link "Clientes" [ref=f1e19] [cursor=pointer]:
+        - /url: /clientes
+      - link "Técnicos" [ref=f1e26] [cursor=pointer]:
+        - /url: /tecnicos
+      - link "Equipamentos" [ref=f1e30] [cursor=pointer]:
+        - /url: /equipamentos
+      - link "Financeiro" [ref=f1e34] [cursor=pointer]:
+        - /url: /financeiro
+    - generic [ref=f1e38]:
+      - button "Painel Master" [ref=f1e39] [cursor=pointer]
+      - link "Configurações" [ref=f1e43] [cursor=pointer]:
+        - /url: /configuracoes
+      - button "Sair" [ref=f1e48] [cursor=pointer]
+  - main [ref=f1e53]:
+    - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=f1e60]
+    - generic [ref=f1e179]:
+      - generic [ref=f1e180]:
+        - heading "Ordens de Serviço" [level=2] [ref=f1e181]
+        - link "Nova OS" [ref=f1e183] [cursor=pointer]:
+          - /url: /os/nova
+      - generic [ref=f1e185]:
+        - textbox "Buscar por nº da OS ou nome do cliente..." [ref=f1e190]
+        - combobox [ref=f1e191]:
+          - option "Todos os status" [selected]
+          - option "Aberta"
+          - option "Aprovada"
+          - option "Aguardando Peça"
+          - option "Concluída"
+          - option "Entregue"
+          - option "Cancelada"
+      - table [ref=f1e192]:
+        - rowgroup [ref=f1e193]:
+          - row [ref=f1e194]:
+            - columnheader "Nº" [ref=f1e195]
+            - columnheader "Cliente" [ref=f1e196]
+            - columnheader "Equipamento" [ref=f1e197]
+            - columnheader "Técnico" [ref=f1e198]
+            - columnheader "Status" [ref=f1e199]
+            - columnheader "Data Entrada" [ref=f1e200]
+            - columnheader "Ações" [ref=f1e201]
+        - rowgroup [ref=f1e202]:
+          - row [ref=f1e203]:
+            - cell [ref=f1e204]:
+              - strong [ref=f1e205]: "#0032"
+            - cell "Patrícia Gomes" [ref=f1e206]
+            - cell "Bosch GHO 700" [ref=f1e207]
+            - cell "Igor" [ref=f1e208]
+            - cell "Entregue" [ref=f1e209]:
+              - combobox [ref=f1e210] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue" [selected]
+                - option "Cancelada"
+            - cell "29/06/2026" [ref=f1e211]
+            - cell [ref=f1e212]:
+              - button "Ver detalhes" [ref=f1e213] [cursor=pointer]
+              - button "Editar" [ref=f1e217] [cursor=pointer]
+              - button "Excluir" [ref=f1e220] [cursor=pointer]
+          - row [ref=f1e223]:
+            - cell [ref=f1e224]:
+              - strong [ref=f1e225]: "#0031"
+            - cell "Patrícia Gomes" [ref=f1e226]
+            - cell "Bosch GHO 700" [ref=f1e227]
+            - cell "Fernando" [ref=f1e228]
+            - cell "Aberta" [ref=f1e229]:
+              - combobox [ref=f1e230] [cursor=pointer]:
+                - option "Aberta" [selected]
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "14/07/2026" [ref=f1e231]
+            - cell [ref=f1e232]:
+              - button "Ver detalhes" [ref=f1e233] [cursor=pointer]
+              - button "Editar" [ref=f1e237] [cursor=pointer]
+              - button "Excluir" [ref=f1e240] [cursor=pointer]
+          - row [ref=f1e243]:
+            - cell [ref=f1e244]:
+              - strong [ref=f1e245]: "#0030"
+            - cell "Patrícia Gomes" [ref=f1e246]
+            - cell "Makita RT0700C" [ref=f1e247]
+            - cell "Fernando" [ref=f1e248]
+            - cell "Aberta" [ref=f1e249]:
+              - combobox [ref=f1e250] [cursor=pointer]:
+                - option "Aberta" [selected]
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "11/06/2026" [ref=f1e251]
+            - cell [ref=f1e252]:
+              - button "Ver detalhes" [ref=f1e253] [cursor=pointer]
+              - button "Editar" [ref=f1e257] [cursor=pointer]
+              - button "Excluir" [ref=f1e260] [cursor=pointer]
+          - row [ref=f1e263]:
+            - cell [ref=f1e264]:
+              - strong [ref=f1e265]: "#0029"
+            - cell "Patrícia Gomes" [ref=f1e266]
+            - cell "Makita RT0700C" [ref=f1e267]
+            - cell "Felipe" [ref=f1e268]
+            - cell "Entregue" [ref=f1e269]:
+              - combobox [ref=f1e270] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue" [selected]
+                - option "Cancelada"
+            - cell "12/06/2026" [ref=f1e271]
+            - cell [ref=f1e272]:
+              - button "Ver detalhes" [ref=f1e273] [cursor=pointer]
+              - button "Editar" [ref=f1e277] [cursor=pointer]
+              - button "Excluir" [ref=f1e280] [cursor=pointer]
+          - row [ref=f1e283]:
+            - cell [ref=f1e284]:
+              - strong [ref=f1e285]: "#0028"
+            - cell "Lucas Martins" [ref=f1e286]
+            - cell "Black+Decker QS800" [ref=f1e287]
+            - cell "Felipe" [ref=f1e288]
+            - cell "Entregue" [ref=f1e289]:
+              - combobox [ref=f1e290] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue" [selected]
+                - option "Cancelada"
+            - cell "11/07/2026" [ref=f1e291]
+            - cell [ref=f1e292]:
+              - button "Ver detalhes" [ref=f1e293] [cursor=pointer]
+              - button "Editar" [ref=f1e297] [cursor=pointer]
+              - button "Excluir" [ref=f1e300] [cursor=pointer]
+          - row [ref=f1e303]:
+            - cell [ref=f1e304]:
+              - strong [ref=f1e305]: "#0027"
+            - cell "Lucas Martins" [ref=f1e306]
+            - cell "Black+Decker QS800" [ref=f1e307]
+            - cell "Igor" [ref=f1e308]
+            - cell "Concluída" [ref=f1e309]:
+              - combobox [ref=f1e310] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída" [selected]
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "27/06/2026" [ref=f1e311]
+            - cell [ref=f1e312]:
+              - button "Ver detalhes" [ref=f1e313] [cursor=pointer]
+              - button "Editar" [ref=f1e317] [cursor=pointer]
+              - button "Excluir" [ref=f1e320] [cursor=pointer]
+          - row [ref=f1e323]:
+            - cell [ref=f1e324]:
+              - strong [ref=f1e325]: "#0026"
+            - cell "Lucas Martins" [ref=f1e326]
+            - cell "Bosch GST 650" [ref=f1e327]
+            - cell "Igor" [ref=f1e328]
+            - cell "Concluída" [ref=f1e329]:
+              - combobox [ref=f1e330] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída" [selected]
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "17/07/2026" [ref=f1e331]
+            - cell [ref=f1e332]:
+              - button "Ver detalhes" [ref=f1e333] [cursor=pointer]
+              - button "Editar" [ref=f1e337] [cursor=pointer]
+              - button "Excluir" [ref=f1e340] [cursor=pointer]
+          - row [ref=f1e343]:
+            - cell [ref=f1e344]:
+              - strong [ref=f1e345]: "#0025"
+            - cell "Lucas Martins" [ref=f1e346]
+            - cell "Bosch GST 650" [ref=f1e347]
+            - cell "Fernando" [ref=f1e348]
+            - cell "Aguardando Peça" [ref=f1e349]:
+              - combobox [ref=f1e350] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça" [selected]
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "27/06/2026" [ref=f1e351]
+            - cell [ref=f1e352]:
+              - button "Ver detalhes" [ref=f1e353] [cursor=pointer]
+              - button "Editar" [ref=f1e357] [cursor=pointer]
+              - button "Excluir" [ref=f1e360] [cursor=pointer]
+          - row [ref=f1e363]:
+            - cell [ref=f1e364]:
+              - strong [ref=f1e365]: "#0024"
+            - cell "Fernanda Almeida" [ref=f1e366]
+            - cell "Makita GA4530" [ref=f1e367]
+            - cell "Fernando" [ref=f1e368]
+            - cell "Aguardando Peça" [ref=f1e369]:
+              - combobox [ref=f1e370] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça" [selected]
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "18/06/2026" [ref=f1e371]
+            - cell [ref=f1e372]:
+              - button "Ver detalhes" [ref=f1e373] [cursor=pointer]
+              - button "Editar" [ref=f1e377] [cursor=pointer]
+              - button "Excluir" [ref=f1e380] [cursor=pointer]
+          - row [ref=f1e383]:
+            - cell [ref=f1e384]:
+              - strong [ref=f1e385]: "#0023"
+            - cell "Fernanda Almeida" [ref=f1e386]
+            - cell "Makita GA4530" [ref=f1e387]
+            - cell "Felipe" [ref=f1e388]
+            - cell "Aprovada" [ref=f1e389]:
+              - combobox [ref=f1e390] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada" [selected]
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "09/06/2026" [ref=f1e391]
+            - cell [ref=f1e392]:
+              - button "Ver detalhes" [ref=f1e393] [cursor=pointer]
+              - button "Editar" [ref=f1e397] [cursor=pointer]
+              - button "Excluir" [ref=f1e400] [cursor=pointer]
+          - row [ref=f1e403]:
+            - cell [ref=f1e404]:
+              - strong [ref=f1e405]: "#0022"
+            - cell "Fernanda Almeida" [ref=f1e406]
+            - cell "DeWalt DCD796" [ref=f1e407]
+            - cell "Felipe" [ref=f1e408]
+            - cell "Aprovada" [ref=f1e409]:
+              - combobox [ref=f1e410] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada" [selected]
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "11/07/2026" [ref=f1e411]
+            - cell [ref=f1e412]:
+              - button "Ver detalhes" [ref=f1e413] [cursor=pointer]
+              - button "Editar" [ref=f1e417] [cursor=pointer]
+              - button "Excluir" [ref=f1e420] [cursor=pointer]
+          - row [ref=f1e423]:
+            - cell [ref=f1e424]:
+              - strong [ref=f1e425]: "#0021"
+            - cell "Fernanda Almeida" [ref=f1e426]
+            - cell "DeWalt DCD796" [ref=f1e427]
+            - cell "Igor" [ref=f1e428]
+            - cell "Aberta" [ref=f1e429]:
+              - combobox [ref=f1e430] [cursor=pointer]:
+                - option "Aberta" [selected]
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "08/06/2026" [ref=f1e431]
+            - cell [ref=f1e432]:
+              - button "Ver detalhes" [ref=f1e433] [cursor=pointer]
+              - button "Editar" [ref=f1e437] [cursor=pointer]
+              - button "Excluir" [ref=f1e440] [cursor=pointer]
+          - row [ref=f1e443]:
+            - cell [ref=f1e444]:
+              - strong [ref=f1e445]: "#0020"
+            - cell "Pedro Costa" [ref=f1e446]
+            - cell "Bosch GSB 13 RE" [ref=f1e447]
+            - cell "Igor" [ref=f1e448]
+            - cell "Aberta" [ref=f1e449]:
+              - combobox [ref=f1e450] [cursor=pointer]:
+                - option "Aberta" [selected]
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "15/06/2026" [ref=f1e451]
+            - cell [ref=f1e452]:
+              - button "Ver detalhes" [ref=f1e453] [cursor=pointer]
+              - button "Editar" [ref=f1e457] [cursor=pointer]
+              - button "Excluir" [ref=f1e460] [cursor=pointer]
+          - row [ref=f1e463]:
+            - cell [ref=f1e464]:
+              - strong [ref=f1e465]: "#0019"
+            - cell "Pedro Costa" [ref=f1e466]
+            - cell "Bosch GSB 13 RE" [ref=f1e467]
+            - cell "Fernando" [ref=f1e468]
+            - cell "Entregue" [ref=f1e469]:
+              - combobox [ref=f1e470] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue" [selected]
+                - option "Cancelada"
+            - cell "07/07/2026" [ref=f1e471]
+            - cell [ref=f1e472]:
+              - button "Ver detalhes" [ref=f1e473] [cursor=pointer]
+              - button "Editar" [ref=f1e477] [cursor=pointer]
+              - button "Excluir" [ref=f1e480] [cursor=pointer]
+          - row [ref=f1e483]:
+            - cell [ref=f1e484]:
+              - strong [ref=f1e485]: "#0018"
+            - cell "Pedro Costa" [ref=f1e486]
+            - cell "Makita 4100NH" [ref=f1e487]
+            - cell "Fernando" [ref=f1e488]
+            - cell "Entregue" [ref=f1e489]:
+              - combobox [ref=f1e490] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue" [selected]
+                - option "Cancelada"
+            - cell "12/07/2026" [ref=f1e491]
+            - cell [ref=f1e492]:
+              - button "Ver detalhes" [ref=f1e493] [cursor=pointer]
+              - button "Editar" [ref=f1e497] [cursor=pointer]
+              - button "Excluir" [ref=f1e500] [cursor=pointer]
+          - row [ref=f1e503]:
+            - cell [ref=f1e504]:
+              - strong [ref=f1e505]: "#0017"
+            - cell "Pedro Costa" [ref=f1e506]
+            - cell "Makita 4100NH" [ref=f1e507]
+            - cell "Felipe" [ref=f1e508]
+            - cell "Concluída" [ref=f1e509]:
+              - combobox [ref=f1e510] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída" [selected]
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "16/06/2026" [ref=f1e511]
+            - cell [ref=f1e512]:
+              - button "Ver detalhes" [ref=f1e513] [cursor=pointer]
+              - button "Editar" [ref=f1e517] [cursor=pointer]
+              - button "Excluir" [ref=f1e520] [cursor=pointer]
+          - row [ref=f1e523]:
+            - cell [ref=f1e524]:
+              - strong [ref=f1e525]: "#0016"
+            - cell "Ana Paula Rodrigues" [ref=f1e526]
+            - cell "Bosch GHO 700" [ref=f1e527]
+            - cell "Felipe" [ref=f1e528]
+            - cell "Concluída" [ref=f1e529]:
+              - combobox [ref=f1e530] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída" [selected]
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "05/06/2026" [ref=f1e531]
+            - cell [ref=f1e532]:
+              - button "Ver detalhes" [ref=f1e533] [cursor=pointer]
+              - button "Editar" [ref=f1e537] [cursor=pointer]
+              - button "Excluir" [ref=f1e540] [cursor=pointer]
+          - row [ref=f1e543]:
+            - cell [ref=f1e544]:
+              - strong [ref=f1e545]: "#0015"
+            - cell "Ana Paula Rodrigues" [ref=f1e546]
+            - cell "Bosch GHO 700" [ref=f1e547]
+            - cell "Igor" [ref=f1e548]
+            - cell "Aguardando Peça" [ref=f1e549]:
+              - combobox [ref=f1e550] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça" [selected]
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "08/06/2026" [ref=f1e551]
+            - cell [ref=f1e552]:
+              - button "Ver detalhes" [ref=f1e553] [cursor=pointer]
+              - button "Editar" [ref=f1e557] [cursor=pointer]
+              - button "Excluir" [ref=f1e560] [cursor=pointer]
+          - row [ref=f1e563]:
+            - cell [ref=f1e564]:
+              - strong [ref=f1e565]: "#0014"
+            - cell "Ana Paula Rodrigues" [ref=f1e566]
+            - cell "Makita RT0700C" [ref=f1e567]
+            - cell "Igor" [ref=f1e568]
+            - cell "Aguardando Peça" [ref=f1e569]:
+              - combobox [ref=f1e570] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada"
+                - option "Aguardando Peça" [selected]
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "26/06/2026" [ref=f1e571]
+            - cell [ref=f1e572]:
+              - button "Ver detalhes" [ref=f1e573] [cursor=pointer]
+              - button "Editar" [ref=f1e577] [cursor=pointer]
+              - button "Excluir" [ref=f1e580] [cursor=pointer]
+          - row [ref=f1e583]:
+            - cell [ref=f1e584]:
+              - strong [ref=f1e585]: "#0013"
+            - cell "Ana Paula Rodrigues" [ref=f1e586]
+            - cell "Makita RT0700C" [ref=f1e587]
+            - cell "Fernando" [ref=f1e588]
+            - cell "Aprovada" [ref=f1e589]:
+              - combobox [ref=f1e590] [cursor=pointer]:
+                - option "Aberta"
+                - option "Aprovada" [selected]
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - cell "29/06/2026" [ref=f1e591]
+            - cell [ref=f1e592]:
+              - button "Ver detalhes" [ref=f1e593] [cursor=pointer]
+              - button "Editar" [ref=f1e597] [cursor=pointer]
+              - button "Excluir" [ref=f1e600] [cursor=pointer]
+      - generic [ref=f1e603]:
+        - button "Anterior" [disabled] [ref=f1e604]
+        - generic [ref=f1e605]: Página 1 de 2
+        - button "Próxima" [ref=f1e606] [cursor=pointer]

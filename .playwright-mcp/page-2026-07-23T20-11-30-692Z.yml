@@ -1,0 +1,48 @@
+- generic [ref=f4e3]:
+  - complementary [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - heading "OS Laboris" [level=1] [ref=f4e6]
+      - text: Assistência Técnica
+    - navigation [ref=f4e7]:
+      - link "Dashboard" [ref=f4e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Ordens de Serviço" [ref=f4e13] [cursor=pointer]:
+        - /url: /os
+      - link "Clientes" [ref=f4e18] [cursor=pointer]:
+        - /url: /clientes
+      - link "Técnicos" [ref=f4e25] [cursor=pointer]:
+        - /url: /tecnicos
+      - link "Equipamentos" [ref=f4e29] [cursor=pointer]:
+        - /url: /equipamentos
+      - link "Financeiro" [ref=f4e33] [cursor=pointer]:
+        - /url: /financeiro
+    - generic [ref=f4e37]:
+      - button "Painel Master" [ref=f4e38] [cursor=pointer]
+      - link "Configurações" [ref=f4e42] [cursor=pointer]:
+        - /url: /configuracoes
+      - button "Sair" [ref=f4e47] [cursor=pointer]
+  - main [ref=f4e52]:
+    - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=f4e59]
+    - generic [ref=f4e60]:
+      - generic [ref=f4e61]:
+        - heading "Financeiro" [level=2] [ref=f4e62]
+        - button "Novo Lançamento" [ref=f4e64] [cursor=pointer]
+      - generic [ref=f4e66]:
+        - combobox [ref=f4e67]:
+          - option "Janeiro"
+          - option "Fevereiro"
+          - option "Março"
+          - option "Abril"
+          - option "Maio"
+          - option "Junho"
+          - option "Julho" [selected]
+          - option "Agosto"
+          - option "Setembro"
+          - option "Outubro"
+          - option "Novembro"
+          - option "Dezembro"
+        - combobox [ref=f4e68]:
+          - option "2025"
+          - option "2026" [selected]
+          - option "2027"
+      - paragraph [ref=f4e69]: Carregando...

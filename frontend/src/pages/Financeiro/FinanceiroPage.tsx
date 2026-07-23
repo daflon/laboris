@@ -187,7 +187,7 @@ export default function FinanceiroPage() {
                 </td>
                 <td>{entry.description}</td>
                 <td style={{ fontWeight: 600 }}>{formatCurrency(Number(entry.amount))}</td>
-                <td>{entry.due_date ? new Date(entry.due_date + 'T12:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+                <td>{entry.due_date ? new Date(entry.due_date.split('T')[0] + 'T12:00:00').toLocaleDateString('pt-BR') : '—'}</td>
                 <td>
                   <span className={`badge ${entry.status === 'pago' ? 'badge-success' : 'badge-danger'}`}>
                     {entry.status}

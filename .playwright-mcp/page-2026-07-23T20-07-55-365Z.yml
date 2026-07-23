@@ -1,0 +1,45 @@
+- generic [ref=f3e2]:
+  - status [ref=f3e191]: OS criada com sucesso
+  - generic [ref=f3e3]:
+    - complementary [ref=f3e4]:
+      - generic [ref=f3e5]:
+        - heading "OS Laboris" [level=1] [ref=f3e6]
+        - text: Assistência Técnica
+      - navigation [ref=f3e7]:
+        - link "Dashboard" [ref=f3e8] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Ordens de Serviço 19" [ref=f3e121] [cursor=pointer]:
+          - /url: /os
+          - generic [ref=f3e17]: Ordens de Serviço
+          - generic [ref=f3e122]: "19"
+        - link "Clientes" [ref=f3e18] [cursor=pointer]:
+          - /url: /clientes
+        - link "Técnicos" [ref=f3e25] [cursor=pointer]:
+          - /url: /tecnicos
+        - link "Equipamentos" [ref=f3e29] [cursor=pointer]:
+          - /url: /equipamentos
+        - link "Financeiro" [ref=f3e33] [cursor=pointer]:
+          - /url: /financeiro
+      - generic [ref=f3e37]:
+        - button "Painel Master" [ref=f3e38] [cursor=pointer]
+        - link "Configurações" [ref=f3e42] [cursor=pointer]:
+          - /url: /configuracoes
+        - button "Sair" [ref=f3e47] [cursor=pointer]
+    - main [ref=f3e52]:
+      - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=f3e59]
+      - generic [ref=f3e192]:
+        - generic [ref=f3e193]:
+          - heading "Ordens de Serviço" [level=2] [ref=f3e194]
+          - link "Nova OS" [ref=f3e196] [cursor=pointer]:
+            - /url: /os/nova
+        - generic [ref=f3e198]:
+          - textbox "Buscar por nº da OS ou nome do cliente..." [ref=f3e203]
+          - combobox [ref=f3e204]:
+            - option "Todos os status" [selected]
+            - option "Aberta"
+            - option "Aprovada"
+            - option "Aguardando Peça"
+            - option "Concluída"
+            - option "Entregue"
+            - option "Cancelada"
+        - paragraph [ref=f3e205]: Carregando...

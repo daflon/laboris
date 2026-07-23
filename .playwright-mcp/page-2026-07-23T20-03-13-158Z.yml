@@ -1,0 +1,141 @@
+- generic [ref=f3e3]:
+  - complementary [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - heading "OS Laboris" [level=1] [ref=f3e6]
+      - text: Assistência Técnica
+    - navigation [ref=f3e7]:
+      - link "Dashboard" [ref=f3e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Ordens de Serviço 19" [ref=f3e121] [cursor=pointer]:
+        - /url: /os
+        - generic [ref=f3e17]: Ordens de Serviço
+        - generic [ref=f3e122]: "19"
+      - link "Clientes" [ref=f3e18] [cursor=pointer]:
+        - /url: /clientes
+      - link "Técnicos" [ref=f3e25] [cursor=pointer]:
+        - /url: /tecnicos
+      - link "Equipamentos" [ref=f3e29] [cursor=pointer]:
+        - /url: /equipamentos
+      - link "Financeiro" [ref=f3e33] [cursor=pointer]:
+        - /url: /financeiro
+    - generic [ref=f3e37]:
+      - button "Painel Master" [ref=f3e38] [cursor=pointer]
+      - link "Configurações" [ref=f3e42] [cursor=pointer]:
+        - /url: /configuracoes
+      - button "Sair" [ref=f3e47] [cursor=pointer]
+  - main [ref=f3e52]:
+    - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=f3e59]
+    - generic [ref=f3e60]:
+      - heading "Nova Ordem de Serviço" [level=2] [ref=f3e62]
+      - generic [ref=f3e63]:
+        - generic [ref=f3e64]:
+          - heading "Dados da OS" [level=3] [ref=f3e65]
+          - generic [ref=f3e66]:
+            - generic [ref=f3e67]:
+              - generic [ref=f3e68]: Cliente *
+              - generic [ref=f3e69]:
+                - combobox "Cliente *" [ref=f3e70]:
+                  - option "Selecione"
+                  - option "Ana Paula Rodrigues — 945.678.901-23"
+                  - option "Charles Daflon — 056.474.637-11"
+                  - option "Fernanda Almeida — 456.789.012-34"
+                  - option "João da Silva — 529.982.247-25"
+                  - option "Lucas Martins — 389.012.345-67"
+                  - option "Maria Santos — 834.567.890-12"
+                  - option "Patrícia Gomes — 278.901.234-56"
+                  - option "Pedro Costa — 601.234.567-89"
+                  - option "Roberto Ferreira — 712.345.678-90"
+                  - option "Teste Playwright — 123.456.789-09" [selected]
+                - button "Cadastrar novo cliente" [ref=f3e71] [cursor=pointer]
+            - generic [ref=f3e73]:
+              - generic [ref=f3e74]: Equipamento *
+              - generic [ref=f3e75]:
+                - combobox "Equipamento *" [ref=f3e76]:
+                  - option "Selecione" [selected]
+                - button "Cadastrar novo equipamento" [active] [ref=f3e77] [cursor=pointer]
+            - generic [ref=f3e79]:
+              - generic [ref=f3e80]: Técnico Responsável *
+              - combobox "Técnico Responsável *" [ref=f3e81]:
+                - option "Selecione" [selected]
+                - option "Charles Daflon"
+                - option "Felipe"
+                - option "Fernando"
+                - option "Igor"
+            - generic [ref=f3e82]:
+              - generic [ref=f3e83]: Status
+              - combobox "Status" [ref=f3e84]:
+                - option "Aberta" [selected]
+                - option "Aprovada"
+                - option "Aguardando Peça"
+                - option "Concluída"
+                - option "Entregue"
+                - option "Cancelada"
+            - generic [ref=f3e85]:
+              - generic [ref=f3e86]: Data de Entrada
+              - textbox "Data de Entrada" [ref=f3e87]: 2026-07-23
+            - generic [ref=f3e88]:
+              - generic [ref=f3e89]: Data de Conclusão
+              - textbox "Data de Conclusão" [ref=f3e90]
+        - generic [ref=f3e91]:
+          - heading "Situação / Parecer" [level=3] [ref=f3e92]
+          - generic [ref=f3e93]:
+            - generic [ref=f3e94]:
+              - generic [ref=f3e95]: Defeito Relatado (Situação)
+              - textbox "Defeito Relatado (Situação)" [ref=f3e96]:
+                - /placeholder: Descreva o defeito informado pelo cliente...
+            - generic [ref=f3e97]:
+              - generic [ref=f3e98]: Diagnóstico
+              - textbox "Diagnóstico" [ref=f3e99]:
+                - /placeholder: Parecer técnico sobre o problema...
+            - generic [ref=f3e100]:
+              - generic [ref=f3e101]: Observações
+              - textbox "Observações" [ref=f3e102]
+        - generic [ref=f3e103]:
+          - generic [ref=f3e104]:
+            - heading "Itens (Serviços e Peças)" [level=3] [ref=f3e105]
+            - button "Adicionar Item" [ref=f3e106] [cursor=pointer]
+          - paragraph [ref=f3e108]: Nenhum item adicionado.
+        - generic [ref=f3e109]:
+          - heading "Pagamento e Garantia" [level=3] [ref=f3e110]
+          - generic [ref=f3e111]:
+            - generic [ref=f3e112]:
+              - generic [ref=f3e113]: Forma de Pagamento
+              - combobox "Forma de Pagamento" [ref=f3e114]:
+                - option "Selecione" [selected]
+                - option "Dinheiro"
+                - option "PIX"
+                - option "Cartão Crédito"
+                - option "Cartão Débito"
+                - option "Transferência"
+                - option "A combinar"
+            - generic [ref=f3e115]:
+              - generic [ref=f3e116]: Garantia (dias)
+              - spinbutton "Garantia (dias)" [ref=f3e117]: "90"
+        - generic [ref=f3e118]:
+          - button "Cancelar" [ref=f3e119] [cursor=pointer]
+          - button "Criar OS" [ref=f3e120] [cursor=pointer]
+      - generic [ref=f3e124]:
+        - heading "Cadastro Rápido de Equipamento" [level=3] [ref=f3e125]
+        - generic [ref=f3e126]:
+          - generic [ref=f3e127]:
+            - generic [ref=f3e128]:
+              - generic [ref=f3e129]: Tipo *
+              - textbox "Tipo *" [ref=f3e130]:
+                - /placeholder: "Ex: Serra Mármore, Furadeira..."
+            - generic [ref=f3e131]:
+              - generic [ref=f3e132]: Marca *
+              - textbox "Marca *" [ref=f3e133]:
+                - /placeholder: "Ex: Bosch, Makita, DeWalt..."
+            - generic [ref=f3e134]:
+              - generic [ref=f3e135]: Modelo *
+              - textbox "Modelo *" [ref=f3e136]:
+                - /placeholder: "Ex: GDC 150, HP1630..."
+            - generic [ref=f3e137]:
+              - generic [ref=f3e138]: Nº de Série
+              - textbox "Nº de Série" [ref=f3e139]
+            - generic [ref=f3e140]:
+              - generic [ref=f3e141]: Observações
+              - textbox "Observações" [ref=f3e142]
+          - generic [ref=f3e143]:
+            - button "Cancelar" [ref=f3e144] [cursor=pointer]
+            - button "Cadastrar" [ref=f3e145] [cursor=pointer]
