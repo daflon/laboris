@@ -20,15 +20,19 @@ export default function Layout() {
       })
       .catch(() => {});
 
-    // Carregar módulos do tenant
-    api.get('/auth/me')
-      .then((res) => {
-        if (res.data.data.tenant?.modules) {
-          const mods = res.data.data.tenant.modules;
-          setModules(typeof mods === 'string' ? JSON.parse(mods) : mods);
-        }
-      })
-      .catch(() => {});
+    // Carregar módulos do tenant — master impersonando tem tudo
+    if (isMasterImpersonating) {
+      setModules(['os', 'financeiro']);
+    } else {
+      api.get('/auth/me')
+        .then((res) => {
+          if (res.data.data.tenant?.modules) {
+            const mods = res.data.data.tenant.modules;
+            setModules(typeof mods === 'string' ? JSON.parse(mods) : mods);
+          }
+        })
+        .catch(() => {});
+    }
   }, []);
 
   const handleLogout = () => {
