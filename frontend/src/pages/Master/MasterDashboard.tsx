@@ -75,8 +75,8 @@ export default function MasterDashboard() {
       toast.error('Crie uma conta primeiro pra acessar o app');
       return;
     }
-    // Usa o primeiro tenant ativo como "seu" app
-    const myTenant = tenants.find((t) => t.active) || tenants[0];
+    // Busca o tenant 'master' primeiro
+    const myTenant = tenants.find((t) => t.slug === 'master' && t.active) || tenants.find((t) => t.active) || tenants[0];
     try {
       const res = await api.post(`/master/tenants/${myTenant.id}/impersonate`);
       const { token, tenant } = res.data.data;
