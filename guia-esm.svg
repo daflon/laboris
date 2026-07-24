@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 900" width="400" height="900">
+  <defs>
+    <style>
+      .bg { fill: #1e293b; }
+      .card { fill: #ffffff; rx: 12; }
+      .card-dark { fill: #f8fafc; rx: 8; }
+      .title { font-family: Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #ffffff; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 12px; fill: #94a3b8; }
+      .heading { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #1e293b; }
+      .text { font-family: Arial, sans-serif; font-size: 13px; fill: #475569; }
+      .text-sm { font-family: Arial, sans-serif; font-size: 11px; fill: #64748b; }
+      .accent { fill: #3b82f6; }
+      .green { fill: #10b981; }
+      .badge { font-family: Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #ffffff; }
+      .step-num { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #ffffff; }
+      .code { font-family: monospace; font-size: 13px; fill: #1e293b; font-weight: bold; }
+      .divider { stroke: #e2e8f0; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="900" class="bg"/>
+
+  <!-- Header -->
+  <text x="200" y="40" text-anchor="middle" class="title">OS Laboris</text>
+  <text x="200" y="58" text-anchor="middle" class="subtitle">Guia de Acesso — Eletrotécnica São Miguel</text>
+
+  <!-- Card: Acesso -->
+  <rect x="20" y="80" width="360" height="150" class="card"/>
+  <text x="40" y="108" class="heading">🔑 Dados de Acesso</text>
+  <line x1="40" y1="118" x2="360" y2="118" class="divider"/>
+  <text x="40" y="142" class="text">Site:</text>
+  <text x="100" y="142" class="code">os-laboris.onrender.com</text>
+  <text x="40" y="166" class="text">Email:</text>
+  <text x="100" y="166" class="code">esm@oslaboris.com</text>
+  <text x="40" y="190" class="text">Senha:</text>
+  <text x="100" y="190" class="code">1234</text>
+  <text x="40" y="214" class="text">PIN:</text>
+  <text x="100" y="214" class="code">0000</text>
+  <text x="100" y="226" class="text-sm">(usado para excluir registros)</text>
+
+  <!-- Card: Instalar como App -->
+  <rect x="20" y="248" width="360" height="100" class="card"/>
+  <text x="40" y="276" class="heading">📱 Instalar no Celular</text>
+  <line x1="40" y1="286" x2="360" y2="286" class="divider"/>
+  <text x="40" y="308" class="text">1. Acesse o site no Chrome</text>
+  <text x="40" y="326" class="text">2. Menu (⋮) → "Adicionar à tela inicial"</text>
+  <text x="40" y="344" class="text">3. Pronto! Abre como app, sem barra do Chrome</text>
+
+  <!-- Card: Fluxo -->
+  <rect x="20" y="366" width="360" height="340" class="card"/>
+  <text x="40" y="394" class="heading">📋 Fluxo de Trabalho</text>
+  <line x1="40" y1="404" x2="360" y2="404" class="divider"/>
+
+  <!-- Step 1 -->
+  <circle cx="50" cy="430" r="12" class="accent"/>
+  <text x="50" y="435" text-anchor="middle" class="step-num">1</text>
+  <text x="70" y="435" class="text">Abrir OS → + Nova OS</text>
+  <text x="70" y="450" class="text-sm">Selecionar cliente, equipamento e técnico</text>
+
+  <!-- Step 2 -->
+  <circle cx="50" cy="478" r="12" class="accent"/>
+  <text x="50" y="483" text-anchor="middle" class="step-num">2</text>
+  <text x="70" y="483" class="text">Descrever defeito + adicionar itens/valores</text>
+
+  <!-- Step 3 -->
+  <circle cx="50" cy="518" r="12" class="accent"/>
+  <text x="50" y="523" text-anchor="middle" class="step-num">3</text>
+  <text x="70" y="523" class="text">Mudar status conforme andamento:</text>
+  <text x="70" y="540" class="text-sm">Aberta → Aprovada → Aguardando Peça → Concluída → Entregue</text>
+
+  <!-- Step 4 -->
+  <circle cx="50" cy="568" r="12" class="accent"/>
+  <text x="50" y="573" text-anchor="middle" class="step-num">4</text>
+  <text x="70" y="573" class="text">Gerar PDF para impressão</text>
+  <text x="70" y="588" class="text-sm">Botão "Gerar PDF" na tela de detalhes da OS</text>
+
+  <!-- Step 5 -->
+  <circle cx="50" cy="616" r="12" class="green"/>
+  <text x="50" y="621" text-anchor="middle" class="step-num">5</text>
+  <text x="70" y="621" class="text">Enviar WhatsApp para o cliente</text>
+  <text x="70" y="636" class="text-sm">Botão verde "WhatsApp" envia resumo automático</text>
+
+  <!-- Step 6 -->
+  <circle cx="50" cy="664" r="12" class="green"/>
+  <text x="50" y="669" text-anchor="middle" class="step-num">6</text>
+  <text x="70" y="669" class="text">OS concluída → Lançamento financeiro</text>
+  <text x="70" y="684" class="text-sm">Receita gerada automaticamente ao concluir/entregar</text>
+
+  <!-- Card: Dicas -->
+  <rect x="20" y="724" width="360" height="140" class="card"/>
+  <text x="40" y="752" class="heading">💡 Dicas</text>
+  <line x1="40" y1="762" x2="360" y2="762" class="divider"/>
+  <text x="40" y="784" class="text">• Cliente novo? Use o botão "+" na tela de Nova OS</text>
+  <text x="40" y="804" class="text">• Histórico: ícone 🕐 no equipamento</text>
+  <text x="40" y="824" class="text">• Duplicar OS: botão na tela de detalhes</text>
+  <text x="40" y="844" class="text">• Busca: campo no topo acha tudo (OS, cliente, etc)</text>
+
+  <!-- Footer -->
+  <text x="200" y="886" text-anchor="middle" class="subtitle">Suporte: (21) 97430-3932 (WhatsApp)</text>
+</svg>

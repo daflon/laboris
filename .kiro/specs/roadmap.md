@@ -69,17 +69,22 @@ Sistema de Ordem de Serviço para assistência técnica (ferramentas elétricas)
 
 ---
 
-## 🔜 Etapa 6 — SaaS Multi-tenant + Deploy
+## 🔜 Etapa 6 — SaaS Multi-tenant + Deploy (CONCLUÍDA)
 
-- [ ] Migrar banco para PostgreSQL
-- [ ] Tabelas `tenants` + `users` + autenticação JWT
-- [ ] `tenant_id` em todas as tabelas + middleware de isolamento
-- [ ] Tela de Login
-- [ ] Painel Master (Super Admin): criar/gerenciar contas, ativar módulos
-- [ ] Módulo Financeiro (faturamento: receitas, status, resumo mensal)
-- [ ] Sistema de módulos por tenant (ativar/desativar)
-- [ ] Deploy no Railway (backend + PostgreSQL + frontend)
-- [ ] Domínio + HTTPS
+- [x] Migrar banco para PostgreSQL (Neon)
+- [x] Tabelas `tenants` + `users` + autenticação JWT
+- [x] `tenant_id` em todas as tabelas + middleware de isolamento
+- [x] Tela de Login
+- [x] Painel Master (Super Admin): criar/gerenciar contas, ativar módulos
+- [x] Módulo Financeiro (faturamento: receitas, status, resumo mensal)
+- [x] OS concluída/entregue gera lançamento financeiro automático
+- [x] Sistema de módulos por tenant (ativar/desativar)
+- [x] Deploy no Render (backend + frontend unificado)
+- [x] HTTPS via Render
+- [x] UptimeRobot (anti-sleep)
+- [x] Teste de isolamento multi-tenant (9/9 passando)
+- [x] Impersonate (master acessa app de qualquer tenant)
+- [x] Nome da empresa dinâmico na sidebar + rodapé com suporte
 
 ---
 
