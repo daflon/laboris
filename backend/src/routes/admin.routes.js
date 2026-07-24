@@ -13,7 +13,7 @@ router.post('/verify-pin', async (req, res, next) => {
       return res.status(400).json({ success: false, error: { message: 'PIN é obrigatório' } });
     }
 
-    const company = await companySettingsRepository.get();
+    const company = await companySettingsRepository.get(req.tenantId);
 
     // Se não tem PIN cadastrado, aceita '0000' como padrão
     const adminPin = company && company.admin_pin ? company.admin_pin : '0000';
