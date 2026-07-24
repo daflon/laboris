@@ -5,12 +5,10 @@ const createClientSchema = z.object({
   name: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres').max(200),
   document: z
     .string()
-    .min(11, 'Documento deve ter no mínimo 11 dígitos')
     .max(18)
-    .transform((val) => cleanDocument(val))
-    .refine((val) => isValidDocument(val), {
-      message: 'CPF ou CNPJ inválido (dígitos verificadores incorretos)',
-    }),
+    .optional()
+    .or(z.literal(''))
+    .transform((val) => val ? cleanDocument(val) : ''),
   phone: z
     .string()
     .min(10, 'Telefone deve ter no mínimo 10 dígitos')

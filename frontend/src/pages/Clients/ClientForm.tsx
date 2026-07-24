@@ -117,8 +117,8 @@ export default function ClientForm() {
               <input id="name" name="name" value={form.name} onChange={handleChange} required />
             </div>
             <div className="form-group">
-              <label htmlFor="document">CPF/CNPJ *</label>
-              <input id="document" name="document" value={form.document} onChange={handleChange} required placeholder="000.000.000-00" />
+              <label htmlFor="document">CPF/CNPJ</label>
+              <input id="document" name="document" value={form.document} onChange={handleChange} placeholder="000.000.000-00" />
             </div>
             <div className="form-group">
               <label htmlFor="phone">Telefone *</label>

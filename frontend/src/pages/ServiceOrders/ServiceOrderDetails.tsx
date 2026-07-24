@@ -82,8 +82,31 @@ export default function ServiceOrderDetails() {
     window.open(url, '_blank');
   };
 
-  const handlePrint = () => {
-    window.open(`http://localhost:3000/api/v1/pdf/service-orders/${id}/pdf`, '_blank');
+  const handlePrint = async () => {
+    const pdfUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':3000' : ''}/api/v1/pdf/service-orders/${id}/pdf`;
+
+    // Tentar compartilhar via Web Share API (mobile)
+    if (navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      try {
+        const response = await fetch(pdfUrl, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        const blob = await response.blob();
+        const file = new File([blob], `OS-${String(order!.order_number).padStart(4, '0')}.pdf`, { type: 'application/pdf' });
+
+        await navigator.share({
+          title: `OS #${String(order!.order_number).padStart(4, '0')}`,
+          text: `Ordem de Serviço #${String(order!.order_number).padStart(4, '0')} - ${order!.client_name}`,
+          files: [file],
+        });
+        return;
+      } catch {
+        // Fallback: abrir em nova aba
+      }
+    }
+
+    // Desktop ou fallback: abre em nova aba
+    window.open(pdfUrl, '_blank');
   };
 
   const handleDuplicate = async () => {
@@ -110,7 +133,7 @@ export default function ServiceOrderDetails() {
           <FiMessageCircle /> WhatsApp
         </button>
         <button className="btn btn-secondary" onClick={handlePrint}>
-          <FiPrinter /> Gerar PDF
+          <FiPrinter /> PDF
         </button>
         <Link to={`/os/${id}/editar`} className="btn btn-primary">
           <FiEdit2 /> Editar

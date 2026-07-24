@@ -6,8 +6,10 @@ class AppError extends Error {
 
 const clientsService = {
   async create(tenantId, data) {
-    const existing = await clientsRepository.findByDocument(tenantId, data.document);
-    if (existing) throw new AppError('Já existe um cliente com este documento', 409, 'CONFLICT');
+    if (data.document) {
+      const existing = await clientsRepository.findByDocument(tenantId, data.document);
+      if (existing) throw new AppError('Já existe um cliente com este documento', 409, 'CONFLICT');
+    }
     return clientsRepository.create(tenantId, data);
   },
 

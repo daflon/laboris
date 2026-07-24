@@ -90,6 +90,7 @@ Sistema de Ordem de Serviço para assistência técnica (ferramentas elétricas)
 
 ## 📋 Etapa 7 — Melhorias Pós-deploy
 
+- [ ] Compartilhar PDF via celular (Web Share API — enviar OS por WhatsApp/email direto)
 - [ ] Indicador visual de OS antigas (> 30 dias sem movimento)
 - [ ] Alerta de equipamentos com mais de 180 dias sem retirada (PL 2545/22)
 - [ ] UI Polish (dark mode, tokens CSS, tipografia — já prototipado no git)

@@ -61,8 +61,8 @@ export default function QuickClientModal({ isOpen, onClose, onCreated }: QuickCl
               <input id="qc-name" name="name" value={form.name} onChange={handleChange} required />
             </div>
             <div className="form-group">
-              <label htmlFor="qc-document">CPF/CNPJ *</label>
-              <input id="qc-document" name="document" value={form.document} onChange={handleChange} required placeholder="000.000.000-00" />
+              <label htmlFor="qc-document">CPF/CNPJ</label>
+              <input id="qc-document" name="document" value={form.document} onChange={handleChange} placeholder="000.000.000-00" />
             </div>
             <div className="form-group">
               <label htmlFor="qc-phone">Telefone *</label>
