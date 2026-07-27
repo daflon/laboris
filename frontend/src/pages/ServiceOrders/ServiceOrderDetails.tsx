@@ -85,28 +85,39 @@ export default function ServiceOrderDetails() {
   const handlePrint = async () => {
     const pdfUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':3000' : ''}/api/v1/pdf/service-orders/${id}/pdf`;
 
-    // Tentar compartilhar via Web Share API (mobile)
-    if (navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
-      try {
-        const response = await fetch(pdfUrl, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
-        const blob = await response.blob();
-        const file = new File([blob], `OS-${String(order!.order_number).padStart(4, '0')}.pdf`, { type: 'application/pdf' });
+    try {
+      // Buscar PDF com token de autenticação
+      const response = await fetch(pdfUrl, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
 
-        await navigator.share({
-          title: `OS #${String(order!.order_number).padStart(4, '0')}`,
-          text: `Ordem de Serviço #${String(order!.order_number).padStart(4, '0')} - ${order!.client_name}`,
-          files: [file],
-        });
-        return;
-      } catch {
-        // Fallback: abrir em nova aba
+      if (!response.ok) {
+        throw new Error('Erro ao gerar PDF');
       }
-    }
 
-    // Desktop ou fallback: abre em nova aba
-    window.open(pdfUrl, '_blank');
+      const blob = await response.blob();
+      const file = new File([blob], `OS-${String(order!.order_number).padStart(4, '0')}.pdf`, { type: 'application/pdf' });
+
+      // Tentar compartilhar via Web Share API (mobile)
+      if (navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
+        try {
+          await navigator.share({
+            title: `OS #${String(order!.order_number).padStart(4, '0')}`,
+            text: `Ordem de Serviço #${String(order!.order_number).padStart(4, '0')} - ${order!.client_name}`,
+            files: [file],
+          });
+          return;
+        } catch {
+          // Fallback: abrir blob
+        }
+      }
+
+      // Desktop ou fallback: abrir blob em nova aba
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, '_blank');
+    } catch {
+      toast.error('Erro ao gerar PDF');
+    }
   };
 
   const handleDuplicate = async () => {
