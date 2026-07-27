@@ -34,8 +34,18 @@ jobs:
           TIMESTAMP=$(date +%Y-%m-%d_%H-%M)
           FILENAME="backup_${TIMESTAMP}.sql"
           
+          echo "🔍 Testando conexão com o banco..."
+          psql "$DATABASE_URL" -c "SELECT 1;" || { echo "❌ Falha na conexão!"; exit 1; }
+          
           echo "📦 Gerando backup: $FILENAME"
-          pg_dump "$DATABASE_URL" --no-owner --no-acl > ".backups/$FILENAME"
+          pg_dump "$DATABASE_URL" --no-owner --no-acl --verbose > ".backups/$FILENAME" 2>&1
+          
+          # Verificar se o arquivo tem conteúdo
+          if [ ! -s ".backups/$FILENAME" ]; then
+            echo "❌ Backup vazio! Verificando erro..."
+            cat ".backups/$FILENAME"
+            exit 1
+          fi
           
           echo "🗜️ Comprimindo..."
           gzip ".backups/$FILENAME"
