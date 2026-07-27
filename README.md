@@ -3,18 +3,24 @@
 Sistema de gestão de Ordens de Serviço para assistência técnica de ferramentas elétricas.  
 PWA instalável — funciona como app no celular.
 
+**🌐 Demo:** [os-laboris.onrender.com](https://os-laboris.onrender.com)  
+**📖 Docs:** [daflon.github.io/laboris](https://daflon.github.io/laboris/)
+
 ## Stack
 
 - **Backend:** Node.js + Express + Knex
 - **Frontend:** React + TypeScript + Vite
-- **Banco de dados:** SQLite (dev) / PostgreSQL (produção)
+- **Banco de dados:** SQLite (dev) / PostgreSQL (produção - Neon)
+- **Tipografia:** Inter (Google Fonts)
 - **PDF:** PDFKit
 - **PWA:** Service Worker + Web App Manifest
+- **Deploy:** Render (backend + frontend unificado)
 
 ## Funcionalidades
 
 ### Dashboard
 - Cards com contadores por status (clicáveis pra filtrar)
+- Números em destaque (fonte Inter 800)
 - Ranking gamificado de técnicos (🥇🥈🥉)
 - Últimas OS criadas com acesso rápido
 
@@ -23,6 +29,7 @@ PWA instalável — funciona como app no celular.
 - Vinculação: Cliente → Equipamento → Técnico
 - Tabela de itens (Qtd / Parecer Técnico / Valor) com cálculo automático
 - Status: Aberta, Aprovada, Aguardando Peça, Concluída, Entregue, Cancelada
+- Badges de status em formato pill com cores harmoniosas
 - Mudança rápida de status direto na listagem
 - Cadastro rápido de cliente e equipamento (modal na abertura da OS)
 - Botão "Duplicar OS"
@@ -31,7 +38,7 @@ PWA instalável — funciona como app no celular.
 - PIN admin para exclusões + log de auditoria
 
 ### Clientes
-- CRUD com validação de CPF/CNPJ (dígitos verificadores)
+- CRUD com CPF/CNPJ opcional (validação de dígitos quando preenchido)
 - Busca por nome, documento ou telefone
 - Detalhes com equipamentos vinculados
 
@@ -61,6 +68,12 @@ PWA instalável — funciona como app no celular.
 - Navegação mobile com bottom tab bar fixa
 - Instalável como app (ícone na home, tela cheia)
 - Service worker com cache de assets
+
+### Multi-tenant (SaaS)
+- Isolamento completo de dados por empresa
+- Painel Master para super admin
+- Sistema de módulos por tenant
+- Impersonate (master acessa qualquer tenant)
 
 ## Pré-requisitos
 
@@ -156,6 +169,34 @@ node seed.js
 
 ## Versionamento
 
-- `v1.0` — Sistema completo pré-polish
-- Commits incrementais com responsividade e PWA
-- UI Polish disponível no histórico git (pode ser reaplicado)
+- `v1.0` — Sistema completo single-tenant
+- `v2.0` — Multi-tenant SaaS com autenticação JWT
+- `v2.1` — UI Polish (design tokens, tipografia Inter, badges pill)
+
+## Design System
+
+O projeto utiliza CSS com variáveis (design tokens) definidas no `:root`:
+
+```css
+:root {
+  /* Espaçamento */
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+
+  /* Cores */
+  --color-primary: #3b82f6;
+  --color-text: #1e293b;
+  --color-border: #e2e8f0;
+
+  /* Sombras */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.08);
+
+  /* Tipografia */
+  --font-family: 'Inter', sans-serif;
+}
+```
+
+## Licença
+
+Projeto privado — todos os direitos reservados.

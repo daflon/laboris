@@ -90,10 +90,11 @@ Sistema de Ordem de Serviço para assistência técnica (ferramentas elétricas)
 
 ## 📋 Etapa 7 — Melhorias Pós-deploy
 
+- [x] UI Polish (design tokens CSS, tipografia Inter 800, badges pill)
 - [ ] Compartilhar PDF via celular (Web Share API — enviar OS por WhatsApp/email direto)
 - [ ] Indicador visual de OS antigas (> 30 dias sem movimento)
 - [ ] Alerta de equipamentos com mais de 180 dias sem retirada (PL 2545/22)
-- [ ] UI Polish (dark mode, tokens CSS, tipografia — já prototipado no git)
+- [ ] Dark mode
 - [ ] Financeiro expandido: despesas, categorias, fluxo de caixa
 - [ ] Relatório mensal de faturamento por tenant
 - [ ] Relatório de OS por técnico (produtividade)

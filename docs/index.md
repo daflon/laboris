@@ -61,8 +61,10 @@ PWA instalável — funciona como app no celular 📱
 | **Backend** | Node.js + Express + Knex |
 | **Frontend** | React + TypeScript + Vite |
 | **Banco de dados** | SQLite (dev) / PostgreSQL (produção) |
+| **Tipografia** | Inter (Google Fonts) |
 | **PDF** | PDFKit |
 | **PWA** | Service Worker + Web App Manifest |
+| **Deploy** | Render |
 
 ---
 

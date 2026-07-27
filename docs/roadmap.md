@@ -97,10 +97,11 @@ Acompanhe a evolução do sistema.
 
 Em andamento e planejadas:
 
+- [x] UI Polish (design tokens CSS, tipografia Inter, badges pill)
 - [ ] Compartilhar PDF via celular (Web Share API)
 - [ ] Indicador visual de OS antigas (> 30 dias sem movimento)
 - [ ] Alerta de equipamentos com mais de 180 dias sem retirada
-- [ ] UI Polish (dark mode, tokens CSS)
+- [ ] Dark mode
 - [ ] Financeiro expandido: despesas, categorias, fluxo de caixa
 - [ ] Relatório mensal de faturamento por tenant
 - [ ] Relatório de OS por técnico (produtividade)
