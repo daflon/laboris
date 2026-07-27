@@ -4,8 +4,8 @@ description: Sistema de gestão de Ordens de Serviço para assistência técnica
 remote_theme: pages-themes/cayman@v0.2.0
 
 # Site settings
-baseurl: "/OS-Laboris" # Nome do repositório no GitHub
-url: "" # Será preenchido automaticamente pelo GitHub
+baseurl: "/laboris" # Nome do repositório no GitHub
+url: "https://daflon.github.io" # Seu GitHub Pages
 
 # Build settings
 markdown: kramdown
