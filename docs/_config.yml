@@ -1,0 +1,23 @@
+# GitHub Pages configuration for OS Laboris
+title: OS Laboris
+description: Sistema de gestão de Ordens de Serviço para assistência técnica
+remote_theme: pages-themes/cayman@v0.2.0
+
+# Site settings
+baseurl: "/OS-Laboris" # Nome do repositório no GitHub
+url: "" # Será preenchido automaticamente pelo GitHub
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Plugins
+plugins:
+  - jekyll-remote-theme
+
+# Exclude from build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
