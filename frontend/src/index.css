@@ -239,28 +239,112 @@ body {
 
 .data-table th {
   background: var(--color-bg-table-header);
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   text-align: left;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--color-border);
 }
 
 .data-table td {
-  padding: 0.75rem 1rem;
+  padding: 1rem;
   border-top: 1px solid var(--color-border-light);
   font-size: var(--font-size-sm);
+  vertical-align: middle;
+}
+
+.data-table tbody tr {
+  transition: background-color var(--transition-fast);
 }
 
 .data-table tbody tr:hover {
-  background: var(--color-bg);
+  background: var(--color-bg-hover);
+}
+
+.data-table tbody tr:first-child td {
+  border-top: none;
+}
+
+/* Alinhamento de colunas */
+.data-table th.text-right,
+.data-table td.text-right {
+  text-align: right;
+}
+
+.data-table th.text-center,
+.data-table td.text-center {
+  text-align: center;
 }
 
 .actions-cell {
   display: flex;
   gap: 0.25rem;
+}
+
+/* ===========================================
+   STATUS BADGES
+   =========================================== */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-aberta {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-aprovada {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-aguardando_peca {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.status-concluida {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-entregue {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.status-cancelada {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Status select (inline na tabela) */
+.status-select {
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.5rem;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.status-select:hover {
+  border-color: currentColor;
+}
+
+.status-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px currentColor;
 }
 
 /* ===========================================

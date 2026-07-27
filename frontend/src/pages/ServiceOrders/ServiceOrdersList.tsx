@@ -12,8 +12,20 @@ function getStatusLabel(status: string) {
   return STATUSES.find((s) => s.value === status)?.label || status;
 }
 
-function getStatusColor(status: string) {
-  return STATUSES.find((s) => s.value === status)?.color || '#6b7280';
+function getStatusStyle(status: string) {
+  const statusConfig = STATUSES.find((s) => s.value === status);
+  const color = statusConfig?.color || '#6b7280';
+  return {
+    background: `${color}15`,
+    color: color,
+    border: 'none',
+    borderRadius: '9999px',
+    padding: '0.3rem 0.65rem',
+    fontSize: '0.75rem',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'box-shadow 0.15s ease',
+  };
 }
 
 export default function ServiceOrdersList() {
@@ -132,16 +144,7 @@ export default function ServiceOrdersList() {
                           loadOrders(meta.page);
                         } catch { toast.error('Erro ao atualizar status'); }
                       }}
-                      style={{
-                        background: `${getStatusColor(order.status)}15`,
-                        color: getStatusColor(order.status),
-                        border: `1px solid ${getStatusColor(order.status)}40`,
-                        borderRadius: '4px',
-                        padding: '0.2rem 0.4rem',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
+                      style={getStatusStyle(order.status)}
                     >
                       {STATUSES.map((s) => (
                         <option key={s.value} value={s.value}>{s.label}</option>

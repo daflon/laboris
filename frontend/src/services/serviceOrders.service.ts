@@ -52,13 +52,21 @@ export interface ServiceOrderFormData {
 }
 
 export const STATUSES = [
-  { value: 'aberta', label: 'Aberta', color: '#3b82f6' },
-  { value: 'aprovada', label: 'Aprovada', color: '#f59e0b' },
-  { value: 'aguardando_peca', label: 'Aguardando Peça', color: '#8b5cf6' },
-  { value: 'concluida', label: 'Concluída', color: '#10b981' },
-  { value: 'entregue', label: 'Entregue', color: '#6b7280' },
-  { value: 'cancelada', label: 'Cancelada', color: '#ef4444' },
+  { value: 'aberta', label: 'Aberta', color: '#2563eb' },           // blue-600
+  { value: 'aprovada', label: 'Aprovada', color: '#d97706' },       // amber-600
+  { value: 'aguardando_peca', label: 'Aguardando Peça', color: '#7c3aed' }, // violet-600
+  { value: 'concluida', label: 'Concluída', color: '#059669' },     // emerald-600
+  { value: 'entregue', label: 'Entregue', color: '#4f46e5' },       // indigo-600
+  { value: 'cancelada', label: 'Cancelada', color: '#dc2626' },     // red-600
 ];
+
+/**
+ * Retorna as classes CSS para um status de OS
+ * Uso: <span className={getStatusBadgeClass(status)}>{label}</span>
+ */
+export function getStatusBadgeClass(status: string): string {
+  return `status-badge status-${status}`;
+}
 
 export const PAYMENT_METHODS = [
   'Dinheiro',
