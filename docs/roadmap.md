@@ -98,10 +98,17 @@ Acompanhe a evolução do sistema.
 Em andamento e planejadas:
 
 - [x] UI Polish (design tokens CSS, tipografia Inter, badges pill)
+- [x] Upload de logo da empresa (Base64, até 200KB)
+- [x] Logo no PDF e sidebar
+- [x] Backup automático do banco (GitHub Actions 2x/dia)
+- [x] Painel de Status do Sistema (Master): DB, Backup, Deploy, Métricas
+- [ ] Alertas visuais de falha no painel Master (backup atrasado, DB offline)
+- [ ] Tema escuro (dark mode total)
+- [ ] Controle de pagamentos na OS (valor, status, forma de pagamento)
+- [ ] QR Code para consulta de status da OS
 - [ ] Compartilhar PDF via celular (Web Share API)
 - [ ] Indicador visual de OS antigas (> 30 dias sem movimento)
 - [ ] Alerta de equipamentos com mais de 180 dias sem retirada
-- [ ] Dark mode
 - [ ] Financeiro expandido: despesas, categorias, fluxo de caixa
 - [ ] Relatório mensal de faturamento por tenant
 - [ ] Relatório de OS por técnico (produtividade)
@@ -113,9 +120,10 @@ Em andamento e planejadas:
 
 Planejado para quando escalar:
 
+- [x] Backup automático do banco com retenção (GitHub Actions, 30 dias)
+- [ ] Log de Auditoria no painel Master (quem fez o quê)
 - [ ] Monitoramento de uptime
 - [ ] Logs centralizados
-- [ ] Backup automático do banco com retenção
 - [ ] Rate limiting na API
 - [ ] CDN para assets estáticos
 
