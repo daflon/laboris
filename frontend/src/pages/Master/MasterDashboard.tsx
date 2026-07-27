@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiPlus, FiUsers, FiClipboard, FiLayers } from 'react-icons/fi';
+import { FiPlus, FiUsers, FiClipboard, FiLayers, FiDatabase, FiCloud, FiHardDrive, FiRefreshCw } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { authService } from '../../services/auth.service';
@@ -22,13 +22,71 @@ interface Tenant {
   stats: { orders: number; clients: number; last_access: string | null };
 }
 
+interface BackupInfo {
+  name: string;
+  size: number;
+  date: string;
+  url: string;
+}
+
+interface SystemStatus {
+  database: {
+    connected: boolean;
+    latency: number | null;
+    error: string | null;
+  };
+  metrics: {
+    tenants: { total: number; active: number };
+    orders: number;
+    clients: number;
+    equipments: number;
+    technicians: number;
+  };
+  backups: {
+    list: BackupInfo[];
+    error: string | null;
+    lastBackup: BackupInfo | null;
+  };
+  deploy: {
+    healthy: boolean;
+    message: string;
+  };
+  timestamp: string;
+}
+
+// Helpers
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function formatBackupDate(dateStr: string): string {
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
 export default function MasterDashboard() {
   const navigate = useNavigate();
   const [stats, setStats] = useState<MasterStats | null>(null);
   const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [statusLoading, setStatusLoading] = useState(false);
 
-  useEffect(() => {
+  const loadData = () => {
     Promise.all([
       api.get('/master/stats'),
       api.get('/master/tenants'),
@@ -39,6 +97,19 @@ export default function MasterDashboard() {
       })
       .catch(() => toast.error('Erro ao carregar painel'))
       .finally(() => setLoading(false));
+  };
+
+  const loadSystemStatus = () => {
+    setStatusLoading(true);
+    api.get('/master/system-status')
+      .then((res) => setSystemStatus(res.data.data))
+      .catch(() => toast.error('Erro ao carregar status do sistema'))
+      .finally(() => setStatusLoading(false));
+  };
+
+  useEffect(() => {
+    loadData();
+    loadSystemStatus();
   }, []);
 
   const handleToggle = async (id: string) => {
@@ -127,6 +198,177 @@ export default function MasterDashboard() {
           </div>
         </div>
       )}
+
+      {/* System Status Panel */}
+      <div className="detail-card" style={{ marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, margin: 0 }}>📊 Status do Sistema</h3>
+          <button 
+            className="btn btn-secondary" 
+            onClick={loadSystemStatus}
+            disabled={statusLoading}
+            style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+          >
+            <FiRefreshCw className={statusLoading ? 'spin' : ''} style={{ marginRight: '0.3rem' }} />
+            Atualizar
+          </button>
+        </div>
+
+        {systemStatus ? (
+          <>
+            {/* Status Cards Grid */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+              gap: '1rem',
+              marginBottom: '1.5rem'
+            }}>
+              {/* Database Status */}
+              <div style={{
+                padding: '1rem',
+                borderRadius: '8px',
+                background: systemStatus.database.connected ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                border: `1px solid ${systemStatus.database.connected ? '#10b981' : '#ef4444'}`
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <FiDatabase style={{ color: systemStatus.database.connected ? '#10b981' : '#ef4444' }} />
+                  <strong>Banco de Dados</strong>
+                </div>
+                <div style={{ fontSize: '0.9rem', color: '#64748b' }}>
+                  {systemStatus.database.connected ? (
+                    <>
+                      <span style={{ color: '#10b981' }}>● Online</span>
+                      <span style={{ marginLeft: '0.5rem' }}>({systemStatus.database.latency}ms)</span>
+                    </>
+                  ) : (
+                    <span style={{ color: '#ef4444' }}>● Offline</span>
+                  )}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                  Neon PostgreSQL
+                </div>
+              </div>
+
+              {/* Deploy Status */}
+              <div style={{
+                padding: '1rem',
+                borderRadius: '8px',
+                background: systemStatus.deploy.healthy ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                border: `1px solid ${systemStatus.deploy.healthy ? '#10b981' : '#ef4444'}`
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <FiCloud style={{ color: systemStatus.deploy.healthy ? '#10b981' : '#ef4444' }} />
+                  <strong>Deploy</strong>
+                </div>
+                <div style={{ fontSize: '0.9rem', color: '#64748b' }}>
+                  {systemStatus.deploy.healthy ? (
+                    <span style={{ color: '#10b981' }}>● Saudável</span>
+                  ) : (
+                    <span style={{ color: '#ef4444' }}>● Problemas</span>
+                  )}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                  Render.com
+                </div>
+              </div>
+
+              {/* Backup Status */}
+              <div style={{
+                padding: '1rem',
+                borderRadius: '8px',
+                background: systemStatus.backups.lastBackup ? 'rgba(59, 130, 246, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+                border: `1px solid ${systemStatus.backups.lastBackup ? '#3b82f6' : '#f59e0b'}`
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <FiHardDrive style={{ color: systemStatus.backups.lastBackup ? '#3b82f6' : '#f59e0b' }} />
+                  <strong>Backup</strong>
+                </div>
+                <div style={{ fontSize: '0.9rem', color: '#64748b' }}>
+                  {systemStatus.backups.lastBackup ? (
+                    <>
+                      <span style={{ color: '#3b82f6' }}>● {systemStatus.backups.list.length} backups</span>
+                    </>
+                  ) : (
+                    <span style={{ color: '#f59e0b' }}>● Nenhum backup</span>
+                  )}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                  GitHub Actions (2x/dia)
+                </div>
+              </div>
+
+              {/* Metrics Summary */}
+              <div style={{
+                padding: '1rem',
+                borderRadius: '8px',
+                background: 'rgba(139, 92, 246, 0.1)',
+                border: '1px solid #8b5cf6'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <FiLayers style={{ color: '#8b5cf6' }} />
+                  <strong>Métricas Globais</strong>
+                </div>
+                <div style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: 1.6 }}>
+                  <div>{systemStatus.metrics.equipments} equipamentos</div>
+                  <div>{systemStatus.metrics.technicians} técnicos</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Backup History */}
+            {systemStatus.backups.list.length > 0 && (
+              <div>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.75rem', color: '#475569' }}>
+                  📦 Histórico de Backups (últimos 10)
+                </h4>
+                <div style={{ 
+                  maxHeight: '200px', 
+                  overflowY: 'auto',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '6px'
+                }}>
+                  <table className="data-table" style={{ margin: 0 }}>
+                    <thead>
+                      <tr>
+                        <th>Arquivo</th>
+                        <th>Data</th>
+                        <th>Tamanho</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {systemStatus.backups.list.map((backup, idx) => (
+                        <tr key={backup.name}>
+                          <td style={{ fontSize: '0.85rem' }}>
+                            {idx === 0 && <span style={{ color: '#10b981', marginRight: '0.3rem' }}>✓</span>}
+                            {backup.name}
+                          </td>
+                          <td style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                            {backup.date ? formatBackupDate(backup.date) : '-'}
+                          </td>
+                          <td style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                            {formatBytes(backup.size)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {systemStatus.backups.error && (
+                  <p style={{ fontSize: '0.8rem', color: '#f59e0b', marginTop: '0.5rem' }}>
+                    ⚠️ {systemStatus.backups.error}
+                  </p>
+                )}
+              </div>
+            )}
+
+            <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '1rem', textAlign: 'right' }}>
+              Última atualização: {new Date(systemStatus.timestamp).toLocaleString('pt-BR')}
+            </p>
+          </>
+        ) : (
+          <p style={{ color: '#64748b' }}>Carregando status...</p>
+        )}
+      </div>
 
       {/* Tenants list */}
       <div className="detail-card">

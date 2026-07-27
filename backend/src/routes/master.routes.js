@@ -8,6 +8,102 @@ const router = Router();
 // Todas as rotas do master requerem super_admin
 router.use(authenticate, superAdminOnly);
 
+// =============================================
+// Status do Sistema (DB, Backups, Métricas)
+// =============================================
+router.get('/system-status', async (req, res, next) => {
+  try {
+    // 1. Status do banco de dados com latência
+    const dbStatus = { connected: false, latency: null, error: null };
+    const dbStart = Date.now();
+    try {
+      await db.raw('SELECT 1');
+      dbStatus.connected = true;
+      dbStatus.latency = Date.now() - dbStart;
+    } catch (err) {
+      dbStatus.error = err.message;
+    }
+
+    // 2. Métricas globais
+    const [{ count: totalTenants }] = await db('tenants').count('* as count');
+    const [{ count: activeTenants }] = await db('tenants').where({ active: true }).count('* as count');
+    const [{ count: totalOrders }] = await db('service_orders').whereNull('deleted_at').count('* as count');
+    const [{ count: totalClients }] = await db('clients').whereNull('deleted_at').count('* as count');
+    const [{ count: totalEquipments }] = await db('equipment').whereNull('deleted_at').count('* as count');
+    const [{ count: totalTechnicians }] = await db('technicians').whereNull('deleted_at').count('* as count');
+
+    // 3. Buscar histórico de backups via GitHub API
+    let backups = [];
+    let backupError = null;
+    try {
+      const githubResponse = await fetch(
+        'https://api.github.com/repos/daflon/laboris/contents/.backups',
+        {
+          headers: {
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'OS-Laboris-App'
+          }
+        }
+      );
+      
+      if (githubResponse.ok) {
+        const files = await githubResponse.json();
+        backups = files
+          .filter(f => f.name.endsWith('.sql.gz'))
+          .map(f => ({
+            name: f.name,
+            size: f.size,
+            date: extractDateFromBackupName(f.name),
+            url: f.download_url
+          }))
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 10); // Últimos 10 backups
+      } else {
+        backupError = `GitHub API: ${githubResponse.status}`;
+      }
+    } catch (err) {
+      backupError = err.message;
+    }
+
+    // 4. Status do deploy (Render health check básico)
+    let deployStatus = { healthy: true, message: 'API respondendo normalmente' };
+
+    res.json({
+      success: true,
+      data: {
+        database: dbStatus,
+        metrics: {
+          tenants: { total: parseInt(totalTenants), active: parseInt(activeTenants) },
+          orders: parseInt(totalOrders),
+          clients: parseInt(totalClients),
+          equipments: parseInt(totalEquipments),
+          technicians: parseInt(totalTechnicians)
+        },
+        backups: {
+          list: backups,
+          error: backupError,
+          lastBackup: backups[0] || null
+        },
+        deploy: deployStatus,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Helper: extrair data do nome do backup
+function extractDateFromBackupName(filename) {
+  // backup_2026-07-27_19-16.sql.gz → 2026-07-27T19:16:00
+  const match = filename.match(/backup_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2})/);
+  if (match) {
+    const [, date, time] = match;
+    return `${date}T${time.replace('-', ':')}:00`;
+  }
+  return null;
+}
+
 // Stats globais
 router.get('/stats', async (req, res, next) => {
   try {
