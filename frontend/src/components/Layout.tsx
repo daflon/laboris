@@ -11,6 +11,7 @@ export default function Layout() {
   const [openCount, setOpenCount] = useState(0);
   const [modules, setModules] = useState<string[]>(['os']);
   const [companyName, setCompanyName] = useState('');
+  const [companyLogo, setCompanyLogo] = useState('');
   const isMasterImpersonating = !!localStorage.getItem('master_token');
 
   useEffect(() => {
@@ -39,6 +40,7 @@ export default function Layout() {
     api.get('/company')
       .then((res) => {
         if (res.data.data?.name) setCompanyName(res.data.data.name);
+        if (res.data.data?.logo_url) setCompanyLogo(res.data.data.logo_url);
       })
       .catch(() => {});
   }, []);
@@ -77,6 +79,18 @@ export default function Layout() {
     <div className="layout">
       <aside className="sidebar">
         <div className="sidebar-header">
+          {companyLogo && (
+            <img 
+              src={companyLogo} 
+              alt="Logo" 
+              style={{ 
+                maxWidth: '140px', 
+                maxHeight: '50px', 
+                objectFit: 'contain',
+                marginBottom: '0.5rem'
+              }} 
+            />
+          )}
           <h1>{companyName || 'OS Laboris'}</h1>
           <span className="subtitle">Assistência Técnica</span>
         </div>
