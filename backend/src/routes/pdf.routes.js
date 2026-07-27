@@ -208,8 +208,29 @@ function formatDocument(doc) {
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
-  const d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString('pt-BR');
+  
+  // Se já for objeto Date
+  if (dateStr instanceof Date) {
+    return dateStr.toLocaleDateString('pt-BR');
+  }
+  
+  // Se for string ISO (2024-07-27T00:00:00.000Z) ou data simples (2024-07-27)
+  const str = String(dateStr);
+  
+  // Tentar extrair apenas a parte da data (YYYY-MM-DD)
+  const match = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) {
+    const [, year, month, day] = match;
+    return `${day}/${month}/${year}`;
+  }
+  
+  // Fallback: tentar criar Date
+  const d = new Date(str);
+  if (!isNaN(d.getTime())) {
+    return d.toLocaleDateString('pt-BR');
+  }
+  
+  return '';
 }
 
 function buildAddress(company) {
