@@ -57,29 +57,72 @@ function renderOS(doc, order, company, osNumber, entryDate, items, totalValue, f
   const rightCol = 370;
   let y = startY;
 
-  // Cabeçalho empresa
-  doc.fontSize(14).font('Helvetica-Bold');
-  doc.text(company && company.name ? company.name : 'OS Laboris', leftMargin, y, { width: pageWidth, align: 'center' });
-  y += 16;
-
-  doc.fontSize(8).font('Helvetica');
-  if (company) {
-    const phones = [company.phone, company.phone2].filter(Boolean).map(formatPhone).join(' | ');
-    if (phones) {
-      doc.text(phones, leftMargin, y, { width: pageWidth, align: 'center' });
-      y += 10;
-    }
-    const address = buildAddress(company);
-    if (address) {
-      doc.text(address, leftMargin, y, { width: pageWidth, align: 'center' });
-      y += 10;
+  // Logo da empresa (se existir)
+  const hasLogo = company && company.logo_url && company.logo_url.startsWith('data:image');
+  let textStartX = leftMargin;
+  
+  if (hasLogo) {
+    try {
+      // Logo à esquerda
+      doc.image(company.logo_url, leftMargin, y, { 
+        width: 80,
+        height: 50,
+        fit: [80, 50],
+        align: 'center',
+        valign: 'center'
+      });
+      textStartX = leftMargin + 90; // Texto começa após a logo
+    } catch (e) {
+      // Se falhar ao carregar logo, ignora
+      console.error('Erro ao carregar logo:', e.message);
     }
   }
 
-  if (company && company.header_text) {
-    doc.fontSize(7).font('Helvetica-Oblique');
-    doc.text(company.header_text, leftMargin, y, { width: pageWidth, align: 'center' });
-    y += 10;
+  // Cabeçalho empresa (ao lado da logo ou centralizado)
+  if (hasLogo) {
+    // Com logo: texto à direita da logo
+    doc.fontSize(12).font('Helvetica-Bold');
+    doc.text(company.name || 'OS Laboris', textStartX, y + 5, { width: pageWidth - 100 });
+    
+    doc.fontSize(8).font('Helvetica');
+    const phones = [company.phone, company.phone2].filter(Boolean).map(formatPhone).join(' | ');
+    if (phones) {
+      doc.text(phones, textStartX, y + 20, { width: pageWidth - 100 });
+    }
+    const address = buildAddress(company);
+    if (address) {
+      doc.text(address, textStartX, y + 30, { width: pageWidth - 100 });
+    }
+    if (company.header_text) {
+      doc.fontSize(7).font('Helvetica-Oblique');
+      doc.text(company.header_text, textStartX, y + 42, { width: pageWidth - 100 });
+    }
+    y += 55;
+  } else {
+    // Sem logo: texto centralizado (comportamento original)
+    doc.fontSize(14).font('Helvetica-Bold');
+    doc.text(company && company.name ? company.name : 'OS Laboris', leftMargin, y, { width: pageWidth, align: 'center' });
+    y += 16;
+
+    doc.fontSize(8).font('Helvetica');
+    if (company) {
+      const phones = [company.phone, company.phone2].filter(Boolean).map(formatPhone).join(' | ');
+      if (phones) {
+        doc.text(phones, leftMargin, y, { width: pageWidth, align: 'center' });
+        y += 10;
+      }
+      const address = buildAddress(company);
+      if (address) {
+        doc.text(address, leftMargin, y, { width: pageWidth, align: 'center' });
+        y += 10;
+      }
+    }
+
+    if (company && company.header_text) {
+      doc.fontSize(7).font('Helvetica-Oblique');
+      doc.text(company.header_text, leftMargin, y, { width: pageWidth, align: 'center' });
+      y += 10;
+    }
   }
 
   // Linha

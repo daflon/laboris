@@ -164,8 +164,67 @@ export default function CompanySettingsPage() {
           <h3>Personalização das Impressões</h3>
           <div className="form-grid">
             <div className="form-group col-span-2">
-              <label htmlFor="logo_url">URL do Logo</label>
-              <input id="logo_url" name="logo_url" value={form.logo_url} onChange={handleChange} placeholder="https://... (link da imagem do logo)" />
+              <label>Logo da Empresa</label>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                {form.logo_url && (
+                  <div style={{ 
+                    width: '120px', 
+                    height: '80px', 
+                    border: '1px solid #e2e8f0', 
+                    borderRadius: '8px', 
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#f8fafc'
+                  }}>
+                    <img 
+                      src={form.logo_url} 
+                      alt="Logo" 
+                      style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} 
+                    />
+                  </div>
+                )}
+                <div style={{ flex: 1 }}>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      
+                      // Limite de 200KB
+                      if (file.size > 200 * 1024) {
+                        toast.error('Imagem muito grande. Máximo: 200KB');
+                        e.target.value = '';
+                        return;
+                      }
+                      
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        const base64 = event.target?.result as string;
+                        setForm((prev) => ({ ...prev, logo_url: base64 }));
+                        toast.success('Logo carregada!');
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                    style={{ marginBottom: '0.5rem' }}
+                  />
+                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                    PNG, JPG ou WebP. Máximo 200KB. Recomendado: 300x100px
+                  </div>
+                  {form.logo_url && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      style={{ marginTop: '0.5rem', fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
+                      onClick={() => setForm((prev) => ({ ...prev, logo_url: '' }))}
+                    >
+                      Remover logo
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
             <div className="form-group col-span-2">
               <label htmlFor="header_text">Texto do Cabeçalho (aparece abaixo do nome no PDF)</label>
