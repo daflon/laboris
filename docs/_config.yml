@@ -1,7 +1,7 @@
 # GitHub Pages configuration for OS Laboris
 title: OS Laboris
 description: Sistema de gestão de Ordens de Serviço para assistência técnica
-remote_theme: pages-themes/cayman@v0.2.0
+remote_theme: pages-themes/midnight@v0.2.0
 
 # Site settings
 baseurl: "/laboris" # Nome do repositório no GitHub
