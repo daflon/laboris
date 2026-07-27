@@ -7,12 +7,17 @@ const router = Router();
 
 router.get('/service-orders/:id/pdf', async (req, res, next) => {
   try {
-    const order = await serviceOrdersRepository.findById(req.params.id);
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ success: false, error: { message: 'Não autenticado' } });
+    }
+
+    const order = await serviceOrdersRepository.findById(tenantId, req.params.id);
     if (!order) {
       return res.status(404).json({ success: false, error: { message: 'OS não encontrada' } });
     }
 
-    const company = await companySettingsRepository.get();
+    const company = await companySettingsRepository.get(tenantId);
     const doc = new PDFDocument({ size: 'A4', margin: 25 });
 
     res.setHeader('Content-Type', 'application/pdf');
