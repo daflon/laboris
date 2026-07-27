@@ -1,0 +1,65 @@
+name: Database Backup
+
+on:
+  schedule:
+    # 03:00 horário de Brasília (06:00 UTC)
+    - cron: '0 6 * * *'
+    # 15:00 horário de Brasília (18:00 UTC)
+    - cron: '0 18 * * *'
+  workflow_dispatch: # Permite rodar manualmente
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Create backup directory
+        run: mkdir -p .backups
+
+      - name: Generate database backup
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          TIMESTAMP=$(date +%Y-%m-%d_%H-%M)
+          FILENAME="backup_${TIMESTAMP}.sql"
+          
+          echo "📦 Gerando backup: $FILENAME"
+          pg_dump "$DATABASE_URL" --no-owner --no-acl > ".backups/$FILENAME"
+          
+          echo "🗜️ Comprimindo..."
+          gzip ".backups/$FILENAME"
+          
+          echo "📊 Tamanho do backup:"
+          ls -lh .backups/
+
+      - name: Remove old backups (keep last 30)
+        run: |
+          cd .backups
+          ls -t *.sql.gz 2>/dev/null | tail -n +31 | xargs -r rm -f
+          echo "📁 Backups mantidos:"
+          ls -la
+
+      - name: Commit and push backup
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          
+          git add .backups/
+          
+          if git diff --staged --quiet; then
+            echo "✅ Nenhuma mudança no backup"
+          else
+            git commit -m "backup: $(date +%Y-%m-%d_%H-%M) automatic database backup"
+            git push
+            echo "✅ Backup salvo com sucesso!"
+          fi
