@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers, FiPaperclip } from 'react-icons/fi';
+import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { serviceOrdersService, ServiceOrder, STATUSES, formatOrderNumber } from '../../services/serviceOrders.service';
 import PageHeader from '../../components/PageHeader';
@@ -94,81 +94,16 @@ export default function ServiceOrderDetails() {
     window.open(url, '_blank');
   };
 
-  // Enviar PDF pelo WhatsApp (Web Share API)
-  const handleSharePDF = async () => {
-    if (!order.client_phone) {
-      toast.error('Cliente sem telefone cadastrado');
-      return;
-    }
-
-    const pdfUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':3000' : ''}/api/v1/pdf/service-orders/${id}/pdf`;
+  const handlePrint = async (printFullLote = false) => {
+    const pdfEndpoint = printFullLote && order.lote_numero
+      ? `/api/v1/pdf/service-orders/${id}/pdf?lote=true`
+      : `/api/v1/pdf/service-orders/${id}/pdf`;
+    
+    const pdfUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':3000' : ''}${pdfEndpoint}`;
 
     try {
-      toast.loading('Gerando PDF...', { id: 'pdf-share' });
+      toast.loading('Gerando PDF...', { id: 'pdf-gen' });
 
-      const response = await fetch(pdfUrl, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao gerar PDF');
-      }
-
-      const blob = await response.blob();
-      const osNumber = formatOrderNumber(order);
-      const fileName = `OS-${osNumber}.pdf`;
-      const file = new File([blob], fileName, { type: 'application/pdf' });
-
-      toast.dismiss('pdf-share');
-
-      // Verificar se Web Share API com arquivos é suportada
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            title: `OS #${osNumber}`,
-            text: `Ordem de Serviço #${osNumber} - ${order.client_name}`,
-            files: [file],
-          });
-          toast.success('PDF compartilhado!');
-          return;
-        } catch (err: any) {
-          if (err.name === 'AbortError') {
-            // Usuário cancelou, não mostrar erro
-            return;
-          }
-        }
-      }
-
-      // Fallback: Abrir WhatsApp com mensagem + baixar PDF separado
-      const phone = order.client_phone.replace(/\D/g, '');
-      const phoneFormatted = phone.startsWith('55') ? phone : `55${phone}`;
-      
-      // Baixar o PDF
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = fileName;
-      link.click();
-      URL.revokeObjectURL(blobUrl);
-
-      // Abrir WhatsApp com mensagem simples
-      const message = `Olá, *${order.client_name}*! 👋\n\nSegue em anexo o PDF da OS #${osNumber}.\n\n_Qualquer dúvida estou à disposição._`;
-      const url = `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(message)}`;
-      
-      toast.success('PDF baixado! Anexe manualmente no WhatsApp.');
-      setTimeout(() => window.open(url, '_blank'), 500);
-      
-    } catch {
-      toast.dismiss('pdf-share');
-      toast.error('Erro ao gerar PDF');
-    }
-  };
-
-  const handlePrint = async () => {
-    const pdfUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':3000' : ''}/api/v1/pdf/service-orders/${id}/pdf`;
-
-    try {
-      // Buscar PDF com token de autenticação
       const response = await fetch(pdfUrl, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
@@ -179,18 +114,26 @@ export default function ServiceOrderDetails() {
 
       const blob = await response.blob();
       const osNumber = formatOrderNumber(order!);
-      const file = new File([blob], `OS-${osNumber}.pdf`, { type: 'application/pdf' });
+      const fileName = printFullLote 
+        ? `Lote-${String(order!.lote_numero).padStart(4, '0')}.pdf`
+        : `OS-${osNumber}.pdf`;
+      const file = new File([blob], fileName, { type: 'application/pdf' });
 
-      // Tentar compartilhar via Web Share API (mobile)
-      if (navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      toast.dismiss('pdf-gen');
+
+      // No celular: tentar compartilhar via Web Share API
+      if (/Android|iPhone|iPad/i.test(navigator.userAgent) && navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
-            title: `OS #${osNumber}`,
-            text: `Ordem de Serviço #${osNumber} - ${order!.client_name}`,
+            title: printFullLote ? `Lote #${String(order!.lote_numero).padStart(4, '0')}` : `OS #${osNumber}`,
+            text: printFullLote 
+              ? `Lote #${String(order!.lote_numero).padStart(4, '0')} - ${order!.client_name}`
+              : `Ordem de Serviço #${osNumber} - ${order!.client_name}`,
             files: [file],
           });
           return;
-        } catch {
+        } catch (err: any) {
+          if (err.name === 'AbortError') return;
           // Fallback: abrir blob
         }
       }
@@ -199,6 +142,7 @@ export default function ServiceOrderDetails() {
       const blobUrl = URL.createObjectURL(blob);
       window.open(blobUrl, '_blank');
     } catch {
+      toast.dismiss('pdf-gen');
       toast.error('Erro ao gerar PDF');
     }
   };
@@ -236,12 +180,14 @@ export default function ServiceOrderDetails() {
         <button className="btn btn-success" onClick={handleWhatsApp} style={{ background: '#25d366', color: 'white' }}>
           <FiMessageCircle /> WhatsApp
         </button>
-        <button className="btn btn-success" onClick={handleSharePDF} style={{ background: '#128c7e', color: 'white' }}>
-          <FiPaperclip /> Enviar PDF
-        </button>
-        <button className="btn btn-secondary" onClick={handlePrint}>
+        <button className="btn btn-secondary" onClick={() => handlePrint(false)}>
           <FiPrinter /> PDF
         </button>
+        {order.lote_numero && (
+          <button className="btn btn-secondary" onClick={() => handlePrint(true)} style={{ background: '#dbeafe', color: '#1e40af' }}>
+            <FiLayers /> PDF do Lote
+          </button>
+        )}
         <Link to={`/os/${id}/editar`} className="btn btn-primary">
           <FiEdit2 /> Editar
         </Link>

@@ -2,6 +2,7 @@ const { Router } = require('express');
 const PDFDocument = require('pdfkit');
 const serviceOrdersRepository = require('../repositories/serviceOrders.repository');
 const companySettingsRepository = require('../repositories/companySettings.repository');
+const db = require('../database/connection');
 
 const router = Router();
 
@@ -18,36 +19,83 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
     }
 
     const company = await companySettingsRepository.get(tenantId);
+    
+    // Verificar se é para imprimir o lote completo
+    const printFullLote = req.query.lote === 'true' && order.lote_numero;
+    
+    let ordersToRender = [order];
+    
+    if (printFullLote) {
+      // Buscar todas as OS do lote
+      const loteOrders = await db('service_orders')
+        .where({ tenant_id: tenantId, lote_numero: order.lote_numero })
+        .whereNull('deleted_at')
+        .leftJoin('clients', 'clients.id', 'service_orders.client_id')
+        .leftJoin('equipment', 'equipment.id', 'service_orders.equipment_id')
+        .leftJoin('technicians', 'technicians.id', 'service_orders.technician_id')
+        .select(
+          'service_orders.*',
+          'clients.name as client_name',
+          'clients.phone as client_phone',
+          'clients.document as client_document',
+          'equipment.type as equipment_type',
+          'equipment.brand as equipment_brand',
+          'equipment.model as equipment_model',
+          'equipment.serial_number as equipment_serial_number',
+          'technicians.name as technician_name'
+        )
+        .orderBy('service_orders.lote_sufixo', 'asc');
+      
+      // Adicionar itens a cada OS
+      for (const o of loteOrders) {
+        o.items = await db('service_order_items').where({ service_order_id: o.id });
+      }
+      
+      ordersToRender = loteOrders;
+    }
+
     const doc = new PDFDocument({ size: 'A4', margin: 25 });
 
-    // Formata número da OS com sufixo de lote se existir
-    const osNumber = order.lote_sufixo 
-      ? `${String(order.order_number).padStart(4, '0')}-${order.lote_sufixo}`
-      : String(order.order_number).padStart(4, '0');
+    // Nome do arquivo
+    const fileName = printFullLote 
+      ? `Lote-${String(order.lote_numero).padStart(4, '0')}.pdf`
+      : `OS-${order.lote_sufixo ? `${String(order.order_number).padStart(4, '0')}-${order.lote_sufixo}` : String(order.order_number).padStart(4, '0')}.pdf`;
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename=OS-${osNumber}.pdf`);
+    res.setHeader('Content-Disposition', `inline; filename=${fileName}`);
     doc.pipe(res);
 
-    const entryDate = order.entry_date ? formatDate(order.entry_date) : '___/___/______';
-    const items = order.items || [];
-    const totalValue = items.reduce((sum, item) => sum + item.quantity * item.unit_price, 0);
     const footerText = company && company.footer_text
       ? company.footer_text
       : 'Mediante a realização ou não do serviço, a máquina deverá ser retirada no prazo de 180 dias conforme a PL 2545/22. Contados a partir da autorização ou não do serviço.';
 
-    // Renderiza a OS duas vezes (metade superior e metade inferior)
-    renderOS(doc, order, company, osNumber, entryDate, items, totalValue, footerText, 25);
+    // Renderizar cada OS
+    ordersToRender.forEach((orderToRender, index) => {
+      if (index > 0) {
+        doc.addPage();
+      }
 
-    // Linha tracejada de corte no meio
-    const halfPage = doc.page.height / 2;
-    doc.save();
-    doc.moveTo(25, halfPage).lineTo(doc.page.width - 25, halfPage).dash(5, { space: 3 }).stroke('#999');
-    doc.undash();
-    doc.restore();
+      const osNumber = orderToRender.lote_sufixo 
+        ? `${String(orderToRender.order_number).padStart(4, '0')}-${orderToRender.lote_sufixo}`
+        : String(orderToRender.order_number).padStart(4, '0');
+      
+      const entryDate = orderToRender.entry_date ? formatDate(orderToRender.entry_date) : '___/___/______';
+      const items = orderToRender.items || [];
+      const totalValue = items.reduce((sum, item) => sum + parseFloat(item.quantity) * parseFloat(item.unit_price), 0);
 
-    // Segunda via (metade inferior)
-    renderOS(doc, order, company, osNumber, entryDate, items, totalValue, footerText, halfPage + 15);
+      // Renderiza a OS duas vezes (metade superior e metade inferior)
+      renderOS(doc, orderToRender, company, osNumber, entryDate, items, totalValue, footerText, 25);
+
+      // Linha tracejada de corte no meio
+      const halfPage = doc.page.height / 2;
+      doc.save();
+      doc.moveTo(25, halfPage).lineTo(doc.page.width - 25, halfPage).dash(5, { space: 3 }).stroke('#999');
+      doc.undash();
+      doc.restore();
+
+      // Segunda via (metade inferior)
+      renderOS(doc, orderToRender, company, osNumber, entryDate, items, totalValue, footerText, halfPage + 15);
+    });
 
     doc.end();
   } catch (error) {
