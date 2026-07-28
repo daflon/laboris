@@ -28,8 +28,8 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
     if (printFullLote) {
       // Buscar todas as OS do lote
       const loteOrders = await db('service_orders')
-        .where({ tenant_id: tenantId, lote_numero: order.lote_numero })
-        .whereNull('deleted_at')
+        .where({ 'service_orders.tenant_id': tenantId, 'service_orders.lote_numero': order.lote_numero })
+        .whereNull('service_orders.deleted_at')
         .leftJoin('clients', 'clients.id', 'service_orders.client_id')
         .leftJoin('equipment', 'equipment.id', 'service_orders.equipment_id')
         .leftJoin('technicians', 'technicians.id', 'service_orders.technician_id')
