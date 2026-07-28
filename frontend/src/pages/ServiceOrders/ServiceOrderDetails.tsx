@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy } from 'react-icons/fi';
+import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { serviceOrdersService, ServiceOrder, STATUSES } from '../../services/serviceOrders.service';
+import { serviceOrdersService, ServiceOrder, STATUSES, formatOrderNumber } from '../../services/serviceOrders.service';
 import PageHeader from '../../components/PageHeader';
 import { formatDocument, formatPhone } from '../../utils/masks';
 
@@ -124,21 +124,31 @@ export default function ServiceOrderDetails() {
     try {
       const response = await serviceOrdersService.duplicate(id!);
       const newId = response.data.id;
-      toast.success(`OS duplicada! Nova OS #${String(response.data.order_number).padStart(4, '0')}`);
+      toast.success(`OS duplicada! Nova OS #${formatOrderNumber(response.data)}`);
       navigate(`/os/${newId}`);
     } catch {
       toast.error('Erro ao duplicar OS');
     }
   };
 
+  const handleAddToLote = () => {
+    // Navegar para tela de adicionar ao lote
+    navigate(`/os/${id}/adicionar-lote`);
+  };
+
+  const osDisplayNumber = formatOrderNumber(order);
+
   return (
     <div>
-      <PageHeader title={`OS #${String(order.order_number).padStart(4, '0')}`}>
+      <PageHeader title={`OS #${osDisplayNumber}`}>
         <button className="btn btn-secondary" onClick={() => navigate('/os')}>
           <FiArrowLeft /> Voltar
         </button>
         <button className="btn btn-secondary" onClick={handleDuplicate}>
           <FiCopy /> Duplicar
+        </button>
+        <button className="btn btn-secondary" onClick={handleAddToLote} style={{ background: '#dbeafe', color: '#1e40af' }}>
+          <FiPlus /> Adicionar ao Lote
         </button>
         <button className="btn btn-success" onClick={handleWhatsApp} style={{ background: '#25d366', color: 'white' }}>
           <FiMessageCircle /> WhatsApp
@@ -152,6 +162,58 @@ export default function ServiceOrderDetails() {
       </PageHeader>
 
       <div className="detail-card">
+        {/* Lote Info Banner */}
+        {order.lote_numero && (
+          <div style={{ 
+            marginBottom: '1.5rem', 
+            padding: '1rem', 
+            background: '#dbeafe', 
+            borderRadius: '8px',
+            border: '1px solid #93c5fd'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <FiLayers style={{ color: '#1e40af' }} />
+              <strong style={{ color: '#1e40af' }}>Lote #{String(order.lote_numero).padStart(4, '0')}</strong>
+              <span style={{ fontSize: '0.85rem', color: '#3b82f6' }}>
+                ({(order.lote_items?.length || 0) + 1} equipamentos)
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {/* Item atual */}
+              <span style={{
+                padding: '0.3rem 0.6rem',
+                background: '#1e40af',
+                color: 'white',
+                borderRadius: '6px',
+                fontSize: '0.8rem'
+              }}>
+                {order.lote_sufixo}: {order.equipment_brand} {order.equipment_model}
+              </span>
+              {/* Outros itens do lote */}
+              {order.lote_items?.map((item) => (
+                <Link
+                  key={item.id}
+                  to={`/os/${item.id}`}
+                  style={{
+                    padding: '0.3rem 0.6rem',
+                    background: 'white',
+                    color: '#1e40af',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    textDecoration: 'none',
+                    border: '1px solid #93c5fd'
+                  }}
+                >
+                  {item.lote_sufixo}: {item.equipment_brand} {item.equipment_model}
+                  <span style={{ marginLeft: '0.3rem', fontSize: '0.7rem', opacity: 0.7 }}>
+                    ({getStatusLabel(item.status)})
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Status */}
         <div className="form-section">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
@@ -178,7 +240,21 @@ export default function ServiceOrderDetails() {
         <div className="detail-section">
           <h3>Dados da OS</h3>
           <div className="detail-grid">
-            <div><strong>Nº:</strong> #{String(order.order_number).padStart(4, '0')}</div>
+            <div>
+              <strong>Nº:</strong> #{osDisplayNumber}
+              {order.lote_numero && (
+                <span style={{ 
+                  marginLeft: '0.4rem', 
+                  fontSize: '0.7rem', 
+                  background: '#dbeafe', 
+                  color: '#1e40af',
+                  padding: '0.1rem 0.35rem',
+                  borderRadius: '4px'
+                }}>
+                  LOTE
+                </span>
+              )}
+            </div>
             <div><strong>Data Entrada:</strong> {order.entry_date ? new Date(order.entry_date).toLocaleDateString('pt-BR') : '—'}</div>
             <div><strong>Data Conclusão:</strong> {order.completion_date ? new Date(order.completion_date).toLocaleDateString('pt-BR') : '—'}</div>
           </div>

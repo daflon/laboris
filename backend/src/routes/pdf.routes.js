@@ -20,11 +20,15 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
     const company = await companySettingsRepository.get(tenantId);
     const doc = new PDFDocument({ size: 'A4', margin: 25 });
 
+    // Formata número da OS com sufixo de lote se existir
+    const osNumber = order.lote_sufixo 
+      ? `${String(order.order_number).padStart(4, '0')}-${order.lote_sufixo}`
+      : String(order.order_number).padStart(4, '0');
+
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename=OS-${String(order.order_number).padStart(4, '0')}.pdf`);
+    res.setHeader('Content-Disposition', `inline; filename=OS-${osNumber}.pdf`);
     doc.pipe(res);
 
-    const osNumber = String(order.order_number).padStart(4, '0');
     const entryDate = order.entry_date ? formatDate(order.entry_date) : '___/___/______';
     const items = order.items || [];
     const totalValue = items.reduce((sum, item) => sum + item.quantity * item.unit_price, 0);

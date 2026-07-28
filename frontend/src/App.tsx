@@ -18,6 +18,7 @@ import EquipmentHistory from './pages/Equipment/EquipmentHistory';
 import ServiceOrdersList from './pages/ServiceOrders/ServiceOrdersList';
 import ServiceOrderForm from './pages/ServiceOrders/ServiceOrderForm';
 import ServiceOrderDetails from './pages/ServiceOrders/ServiceOrderDetails';
+import AddToLote from './pages/ServiceOrders/AddToLote';
 import CompanySettingsPage from './pages/Settings/CompanySettings';
 import FinanceiroPage from './pages/Financeiro/FinanceiroPage';
 
@@ -64,6 +65,7 @@ export default function App() {
           <Route path="os/nova" element={<ServiceOrderForm />} />
           <Route path="os/:id" element={<ServiceOrderDetails />} />
           <Route path="os/:id/editar" element={<ServiceOrderForm />} />
+          <Route path="os/:id/adicionar-lote" element={<AddToLote />} />
 
           <Route path="clientes" element={<ClientsList />} />
           <Route path="clientes/novo" element={<ClientForm />} />

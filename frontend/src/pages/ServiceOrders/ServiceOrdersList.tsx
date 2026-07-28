@@ -28,6 +28,14 @@ function getStatusStyle(status: string) {
   };
 }
 
+function formatOrderNumber(order: ServiceOrder): string {
+  const num = String(order.order_number).padStart(4, '0');
+  if (order.lote_sufixo) {
+    return `${num}-${order.lote_sufixo}`;
+  }
+  return num;
+}
+
 export default function ServiceOrdersList() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -130,7 +138,21 @@ export default function ServiceOrdersList() {
             <tbody>
               {orders.map((order) => (
                 <tr key={order.id}>
-                  <td><strong>#{String(order.order_number).padStart(4, '0')}</strong></td>
+                  <td>
+                    <strong>#{formatOrderNumber(order)}</strong>
+                    {order.lote_sufixo && (
+                      <span style={{ 
+                        marginLeft: '0.4rem', 
+                        fontSize: '0.65rem', 
+                        background: '#dbeafe', 
+                        color: '#1e40af',
+                        padding: '0.1rem 0.35rem',
+                        borderRadius: '4px'
+                      }}>
+                        LOTE
+                      </span>
+                    )}
+                  </td>
                   <td>{order.client_name}</td>
                   <td>{order.equipment_brand} {order.equipment_model}</td>
                   <td>{order.technician_name}</td>

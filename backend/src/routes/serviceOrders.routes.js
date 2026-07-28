@@ -13,6 +13,7 @@ router.post('/', validateRequest(createServiceOrderSchema), serviceOrdersControl
 router.get('/', serviceOrdersController.findAll);
 router.get('/:id', serviceOrdersController.findById);
 router.post('/:id/duplicate', serviceOrdersController.duplicate);
+router.post('/:id/add-to-lote', serviceOrdersController.addToLote);
 router.put('/:id', validateRequest(updateServiceOrderSchema), serviceOrdersController.update);
 router.patch('/:id/status', validateRequest(updateStatusSchema), serviceOrdersController.updateStatus);
 router.delete('/:id', serviceOrdersController.delete);

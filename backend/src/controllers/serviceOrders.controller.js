@@ -32,20 +32,35 @@ const serviceOrdersController = {
   },
   async duplicate(req, res, next) {
     try {
+      const { addToLote } = req.body || {};
       const original = await serviceOrdersService.findById(req.tenantId, req.params.id);
-      const newOrder = await serviceOrdersService.create(req.tenantId, {
-        client_id: original.client_id,
-        equipment_id: original.equipment_id,
-        technician_id: original.technician_id,
-        status: 'aberta',
-        reported_defect: original.reported_defect || '',
-        diagnosis: '',
-        notes: `Duplicada da OS #${String(original.order_number).padStart(4, '0')}`,
-        payment_method: original.payment_method || '',
-        warranty_days: original.warranty_days || 90,
-        entry_date: new Date().toISOString().split('T')[0],
-        items: (original.items || []).map((item) => ({ quantity: item.quantity, description: item.description, unit_price: item.unit_price })),
-      });
+      
+      let newOrder;
+      if (addToLote) {
+        // Duplicar para o mesmo lote
+        newOrder = await serviceOrdersService.duplicateToLote(req.tenantId, req.params.id, req.body);
+      } else {
+        // Duplicar normal (nova OS)
+        newOrder = await serviceOrdersService.create(req.tenantId, {
+          client_id: original.client_id,
+          equipment_id: original.equipment_id,
+          technician_id: original.technician_id,
+          status: 'aberta',
+          reported_defect: original.reported_defect || '',
+          diagnosis: '',
+          notes: `Duplicada da OS #${String(original.order_number).padStart(4, '0')}`,
+          payment_method: original.payment_method || '',
+          warranty_days: original.warranty_days || 90,
+          entry_date: new Date().toISOString().split('T')[0],
+          items: (original.items || []).map((item) => ({ quantity: item.quantity, description: item.description, unit_price: item.unit_price })),
+        });
+      }
+      res.status(201).json({ success: true, data: newOrder });
+    } catch (error) { next(error); }
+  },
+  async addToLote(req, res, next) {
+    try {
+      const newOrder = await serviceOrdersService.addToLote(req.tenantId, req.params.id, req.body);
       res.status(201).json({ success: true, data: newOrder });
     } catch (error) { next(error); }
   },

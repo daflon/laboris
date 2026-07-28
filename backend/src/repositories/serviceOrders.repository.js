@@ -9,26 +9,51 @@ const serviceOrdersRepository = {
     return (result.max || 0) + 1;
   },
 
+  async getNextLoteSufixo(tenantId, loteNumero) {
+    // Busca o maior sufixo usado neste lote
+    const result = await db(TABLE)
+      .where({ tenant_id: tenantId, lote_numero: loteNumero })
+      .whereNull('deleted_at')
+      .max('lote_sufixo as max')
+      .first();
+    
+    if (!result.max) return 'A';
+    
+    // Próxima letra (A -> B -> C ... Z)
+    const nextCharCode = result.max.charCodeAt(0) + 1;
+    if (nextCharCode > 90) return null; // Limite de 26 itens (A-Z)
+    return String.fromCharCode(nextCharCode);
+  },
+
+  async findLoteByNumero(tenantId, loteNumero) {
+    return db(TABLE)
+      .where({ tenant_id: tenantId, lote_numero: loteNumero })
+      .whereNull('deleted_at')
+      .orderBy('lote_sufixo', 'asc');
+  },
+
   async create(tenantId, data, items = []) {
     const orderNumber = await this.getNextOrderNumber(tenantId);
 
-    const [order] = await db(TABLE)
-      .insert({
-        tenant_id: tenantId,
-        order_number: orderNumber,
-        client_id: data.client_id,
-        equipment_id: data.equipment_id,
-        technician_id: data.technician_id,
-        status: data.status || 'aberta',
-        reported_defect: data.reported_defect || null,
-        diagnosis: data.diagnosis || null,
-        notes: data.notes || null,
-        payment_method: data.payment_method || null,
-        warranty_days: data.warranty_days ?? 90,
-        entry_date: data.entry_date || new Date().toISOString().split('T')[0],
-        completion_date: data.completion_date || null,
-      })
-      .returning('*');
+    const insertData = {
+      tenant_id: tenantId,
+      order_number: orderNumber,
+      client_id: data.client_id,
+      equipment_id: data.equipment_id,
+      technician_id: data.technician_id,
+      status: data.status || 'aberta',
+      reported_defect: data.reported_defect || null,
+      diagnosis: data.diagnosis || null,
+      notes: data.notes || null,
+      payment_method: data.payment_method || null,
+      warranty_days: data.warranty_days ?? 90,
+      entry_date: data.entry_date || new Date().toISOString().split('T')[0],
+      completion_date: data.completion_date || null,
+      lote_numero: data.lote_numero || null,
+      lote_sufixo: data.lote_sufixo || null,
+    };
+
+    const [order] = await db(TABLE).insert(insertData).returning('*');
 
     if (items.length > 0) {
       const itemRecords = items.map((item) => ({
@@ -41,6 +66,68 @@ const serviceOrdersRepository = {
     }
 
     return this.findById(tenantId, order.id);
+  },
+
+  async createInLote(tenantId, data, items = [], loteNumero = null) {
+    // Se não passar loteNumero, cria um novo lote com o próximo order_number
+    if (!loteNumero) {
+      loteNumero = await this.getNextOrderNumber(tenantId);
+    }
+
+    const sufixo = await this.getNextLoteSufixo(tenantId, loteNumero);
+    if (!sufixo) {
+      throw new Error('Limite de 26 itens por lote atingido (A-Z)');
+    }
+
+    // Usa o número do lote como order_number
+    const insertData = {
+      tenant_id: tenantId,
+      order_number: loteNumero,
+      client_id: data.client_id,
+      equipment_id: data.equipment_id,
+      technician_id: data.technician_id,
+      status: data.status || 'aberta',
+      reported_defect: data.reported_defect || null,
+      diagnosis: data.diagnosis || null,
+      notes: data.notes || null,
+      payment_method: data.payment_method || null,
+      warranty_days: data.warranty_days ?? 90,
+      entry_date: data.entry_date || new Date().toISOString().split('T')[0],
+      completion_date: data.completion_date || null,
+      lote_numero: loteNumero,
+      lote_sufixo: sufixo,
+    };
+
+    const [order] = await db(TABLE).insert(insertData).returning('*');
+
+    if (items.length > 0) {
+      const itemRecords = items.map((item) => ({
+        service_order_id: order.id,
+        quantity: item.quantity,
+        description: item.description,
+        unit_price: item.unit_price,
+      }));
+      await db(ITEMS_TABLE).insert(itemRecords);
+    }
+
+    return this.findById(tenantId, order.id);
+  },
+
+  async convertToLote(tenantId, orderId) {
+    // Converte uma OS avulsa em lote (adiciona sufixo -A)
+    const order = await this.findById(tenantId, orderId);
+    if (!order) throw new Error('OS não encontrada');
+    if (order.lote_numero) throw new Error('OS já pertence a um lote');
+
+    await db(TABLE)
+      .where({ id: orderId, tenant_id: tenantId })
+      .update({
+        lote_numero: order.order_number,
+        lote_sufixo: 'A',
+        updated_at: new Date().toISOString(),
+      });
+
+    return this.findById(tenantId, orderId);
   },
 
   async findAll(tenantId, { search, status, limit, offset }) {
@@ -86,6 +173,7 @@ const serviceOrdersRepository = {
         'technicians.name as technician_name'
       )
       .orderBy(`${TABLE}.order_number`, 'desc')
+      .orderBy(`${TABLE}.lote_sufixo`, 'asc')
       .limit(limit)
       .offset(offset);
 
@@ -116,7 +204,27 @@ const serviceOrdersRepository = {
 
     if (!order) return null;
     const items = await db(ITEMS_TABLE).where({ service_order_id: id });
-    return { ...order, items };
+    
+    // Se faz parte de um lote, buscar outras OS do mesmo lote
+    let loteItems = [];
+    if (order.lote_numero) {
+      loteItems = await db(TABLE)
+        .where({ tenant_id: tenantId, lote_numero: order.lote_numero })
+        .whereNull('deleted_at')
+        .whereNot('id', id)
+        .leftJoin('equipment', 'equipment.id', `${TABLE}.equipment_id`)
+        .select(
+          `${TABLE}.id`,
+          `${TABLE}.lote_sufixo`,
+          `${TABLE}.status`,
+          'equipment.type as equipment_type',
+          'equipment.brand as equipment_brand',
+          'equipment.model as equipment_model'
+        )
+        .orderBy('lote_sufixo', 'asc');
+    }
+    
+    return { ...order, items, lote_items: loteItems };
   },
 
   async update(tenantId, id, data, items) {
