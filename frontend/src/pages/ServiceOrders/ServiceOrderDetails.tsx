@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers } from 'react-icons/fi';
+import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers, FiPaperclip } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { serviceOrdersService, ServiceOrder, STATUSES, formatOrderNumber } from '../../services/serviceOrders.service';
 import PageHeader from '../../components/PageHeader';
@@ -52,7 +52,7 @@ export default function ServiceOrderDetails() {
     const phone = order.client_phone.replace(/\D/g, '');
     const phoneFormatted = phone.startsWith('55') ? phone : `55${phone}`;
     const statusLabel = getStatusLabel(order.status);
-    const osNumber = String(order.order_number).padStart(4, '0');
+    const osNumber = formatOrderNumber(order);
 
     let message = `Olá, *${order.client_name}*! 👋\n\n`;
     message += `Segue informação sobre sua OS:\n\n`;
@@ -61,25 +61,107 @@ export default function ServiceOrderDetails() {
     message += `📌 Status: *${statusLabel}*\n`;
 
     if (order.reported_defect) {
-      message += `\n❌ Defeito: ${order.reported_defect}\n`;
+      message += `\n❌ *Defeito Relatado:*\n${order.reported_defect}\n`;
     }
     if (order.diagnosis) {
-      message += `✅ Diagnóstico: ${order.diagnosis}\n`;
-    }
-    if (totalValue > 0) {
-      message += `\n💰 Valor Total: *R$ ${totalValue.toFixed(2)}*\n`;
-    }
-    if (order.payment_method) {
-      message += `💳 Pagamento: ${order.payment_method}\n`;
-    }
-    if (order.warranty_days) {
-      message += `🛡️ Garantia: ${order.warranty_days} dias\n`;
+      message += `\n✅ *Diagnóstico:*\n${order.diagnosis}\n`;
     }
 
-    message += `\n_Mediante a realização ou não do serviço, a máquina deverá ser retirada no prazo de 180 dias (PL 2545/22)._`;
+    // Lista detalhada de itens com valores individuais
+    if (order.items && order.items.length > 0) {
+      message += `\n📝 *Orçamento Detalhado:*\n`;
+      order.items.forEach((item) => {
+        const subtotal = item.quantity * item.unit_price;
+        if (item.quantity > 1) {
+          message += `• ${item.quantity}x ${item.description} - R$ ${Number(item.unit_price).toFixed(2)} (cada) = *R$ ${subtotal.toFixed(2)}*\n`;
+        } else {
+          message += `• ${item.description} - *R$ ${subtotal.toFixed(2)}*\n`;
+        }
+      });
+      message += `\n💰 *VALOR TOTAL: R$ ${totalValue.toFixed(2)}*\n`;
+    }
+
+    if (order.payment_method) {
+      message += `\n💳 Pagamento: ${order.payment_method}`;
+    }
+    if (order.warranty_days) {
+      message += `\n🛡️ Garantia: ${order.warranty_days} dias`;
+    }
+
+    message += `\n\n_Mediante a realização ou não do serviço, a máquina deverá ser retirada no prazo de 180 dias (PL 2545/22)._`;
 
     const url = `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
+  };
+
+  // Enviar PDF pelo WhatsApp (Web Share API)
+  const handleSharePDF = async () => {
+    if (!order.client_phone) {
+      toast.error('Cliente sem telefone cadastrado');
+      return;
+    }
+
+    const pdfUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':3000' : ''}/api/v1/pdf/service-orders/${id}/pdf`;
+
+    try {
+      toast.loading('Gerando PDF...', { id: 'pdf-share' });
+
+      const response = await fetch(pdfUrl, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao gerar PDF');
+      }
+
+      const blob = await response.blob();
+      const osNumber = formatOrderNumber(order);
+      const fileName = `OS-${osNumber}.pdf`;
+      const file = new File([blob], fileName, { type: 'application/pdf' });
+
+      toast.dismiss('pdf-share');
+
+      // Verificar se Web Share API com arquivos é suportada
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            title: `OS #${osNumber}`,
+            text: `Ordem de Serviço #${osNumber} - ${order.client_name}`,
+            files: [file],
+          });
+          toast.success('PDF compartilhado!');
+          return;
+        } catch (err: any) {
+          if (err.name === 'AbortError') {
+            // Usuário cancelou, não mostrar erro
+            return;
+          }
+        }
+      }
+
+      // Fallback: Abrir WhatsApp com mensagem + baixar PDF separado
+      const phone = order.client_phone.replace(/\D/g, '');
+      const phoneFormatted = phone.startsWith('55') ? phone : `55${phone}`;
+      
+      // Baixar o PDF
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      link.click();
+      URL.revokeObjectURL(blobUrl);
+
+      // Abrir WhatsApp com mensagem simples
+      const message = `Olá, *${order.client_name}*! 👋\n\nSegue em anexo o PDF da OS #${osNumber}.\n\n_Qualquer dúvida estou à disposição._`;
+      const url = `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(message)}`;
+      
+      toast.success('PDF baixado! Anexe manualmente no WhatsApp.');
+      setTimeout(() => window.open(url, '_blank'), 500);
+      
+    } catch {
+      toast.dismiss('pdf-share');
+      toast.error('Erro ao gerar PDF');
+    }
   };
 
   const handlePrint = async () => {
@@ -96,14 +178,15 @@ export default function ServiceOrderDetails() {
       }
 
       const blob = await response.blob();
-      const file = new File([blob], `OS-${String(order!.order_number).padStart(4, '0')}.pdf`, { type: 'application/pdf' });
+      const osNumber = formatOrderNumber(order!);
+      const file = new File([blob], `OS-${osNumber}.pdf`, { type: 'application/pdf' });
 
       // Tentar compartilhar via Web Share API (mobile)
       if (navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
         try {
           await navigator.share({
-            title: `OS #${String(order!.order_number).padStart(4, '0')}`,
-            text: `Ordem de Serviço #${String(order!.order_number).padStart(4, '0')} - ${order!.client_name}`,
+            title: `OS #${osNumber}`,
+            text: `Ordem de Serviço #${osNumber} - ${order!.client_name}`,
             files: [file],
           });
           return;
@@ -152,6 +235,9 @@ export default function ServiceOrderDetails() {
         </button>
         <button className="btn btn-success" onClick={handleWhatsApp} style={{ background: '#25d366', color: 'white' }}>
           <FiMessageCircle /> WhatsApp
+        </button>
+        <button className="btn btn-success" onClick={handleSharePDF} style={{ background: '#128c7e', color: 'white' }}>
+          <FiPaperclip /> Enviar PDF
         </button>
         <button className="btn btn-secondary" onClick={handlePrint}>
           <FiPrinter /> PDF
