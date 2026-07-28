@@ -209,19 +209,19 @@ const serviceOrdersRepository = {
     let loteItems = [];
     if (order.lote_numero) {
       loteItems = await db(TABLE)
-        .where({ tenant_id: tenantId, lote_numero: order.lote_numero })
-        .whereNull('deleted_at')
-        .whereNot('id', id)
+        .where({ [`${TABLE}.tenant_id`]: tenantId, [`${TABLE}.lote_numero`]: order.lote_numero })
+        .whereNull(`${TABLE}.deleted_at`)
+        .whereNot(`${TABLE}.id`, id)
         .leftJoin('equipment', 'equipment.id', `${TABLE}.equipment_id`)
         .select(
-          `${TABLE}.id`,
-          `${TABLE}.lote_sufixo`,
-          `${TABLE}.status`,
+          `${TABLE}.id as id`,
+          `${TABLE}.lote_sufixo as lote_sufixo`,
+          `${TABLE}.status as status`,
           'equipment.type as equipment_type',
           'equipment.brand as equipment_brand',
           'equipment.model as equipment_model'
         )
-        .orderBy('lote_sufixo', 'asc');
+        .orderBy(`${TABLE}.lote_sufixo`, 'asc');
     }
     
     return { ...order, items, lote_items: loteItems };
