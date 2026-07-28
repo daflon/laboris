@@ -447,6 +447,8 @@ function renderLoteResumo(res, orders, company, loteNumero) {
 
   // Dados do cliente (pegar do primeiro)
   const firstOrder = orders[0];
+  const rightCol = 320;
+  
   doc.fontSize(9).font('Helvetica-Bold');
   doc.text('CLIENTE: ', leftMargin, y, { continued: true });
   doc.font('Helvetica').text(firstOrder.client_name || '');
@@ -454,13 +456,13 @@ function renderLoteResumo(res, orders, company, loteNumero) {
 
   doc.font('Helvetica-Bold').text('DOCUMENTO: ', leftMargin, y, { continued: true });
   doc.font('Helvetica').text(formatDocument(firstOrder.client_document || ''));
-  doc.font('Helvetica-Bold').text('  TELEFONE: ', { continued: true });
+  doc.font('Helvetica-Bold').text('TELEFONE: ', rightCol, y, { continued: true });
   doc.font('Helvetica').text(formatPhone(firstOrder.client_phone || ''));
   y += 14;
 
   doc.font('Helvetica-Bold').text('DATA: ', leftMargin, y, { continued: true });
   doc.font('Helvetica').text(formatDate(firstOrder.entry_date || new Date()));
-  doc.font('Helvetica-Bold').text('  ITENS DO LOTE: ', { continued: true });
+  doc.font('Helvetica-Bold').text('ITENS DO LOTE: ', rightCol, y, { continued: true });
   doc.font('Helvetica').text(String(orders.length));
   y += 20;
 
