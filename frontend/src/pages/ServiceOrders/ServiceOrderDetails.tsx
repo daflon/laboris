@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { serviceOrdersService, ServiceOrder, STATUSES, formatOrderNumber } from '../../services/serviceOrders.service';
 import PageHeader from '../../components/PageHeader';
 import { formatDocument, formatPhone } from '../../utils/masks';
+import LotePdfModal from '../../components/LotePdfModal';
 
 function getStatusLabel(status: string) {
   return STATUSES.find((s) => s.value === status)?.label || status;
@@ -19,6 +20,7 @@ export default function ServiceOrderDetails() {
   const navigate = useNavigate();
   const [order, setOrder] = useState<ServiceOrder | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showLoteModal, setShowLoteModal] = useState(false);
 
   const loadOrder = () => {
     serviceOrdersService.getById(id!)
@@ -94,10 +96,18 @@ export default function ServiceOrderDetails() {
     window.open(url, '_blank');
   };
 
-  const handlePrint = async (printFullLote = false) => {
-    const pdfEndpoint = printFullLote && order.lote_numero
-      ? `/api/v1/pdf/service-orders/${id}/pdf?lote=true`
-      : `/api/v1/pdf/service-orders/${id}/pdf`;
+  const handlePrint = async (printFullLote = false, loteOptions?: { formato: 'individual' | 'resumo'; selectedIds: string[] }) => {
+    let pdfEndpoint = `/api/v1/pdf/service-orders/${id}/pdf`;
+    
+    if (printFullLote && order.lote_numero && loteOptions) {
+      const params = new URLSearchParams();
+      params.append('lote', 'true');
+      params.append('formato', loteOptions.formato);
+      if (loteOptions.selectedIds.length > 0) {
+        params.append('ids', loteOptions.selectedIds.join(','));
+      }
+      pdfEndpoint = `/api/v1/pdf/service-orders/${id}/pdf?${params.toString()}`;
+    }
     
     const pdfUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':3000' : ''}${pdfEndpoint}`;
 
@@ -114,9 +124,14 @@ export default function ServiceOrderDetails() {
 
       const blob = await response.blob();
       const osNumber = formatOrderNumber(order!);
-      const fileName = printFullLote 
-        ? `Lote-${String(order!.lote_numero).padStart(4, '0')}.pdf`
-        : `OS-${osNumber}.pdf`;
+      let fileName: string;
+      if (printFullLote && loteOptions) {
+        fileName = loteOptions.formato === 'resumo'
+          ? `Lote-${String(order!.lote_numero).padStart(4, '0')}-Resumo.pdf`
+          : `Lote-${String(order!.lote_numero).padStart(4, '0')}.pdf`;
+      } else {
+        fileName = `OS-${osNumber}.pdf`;
+      }
       const file = new File([blob], fileName, { type: 'application/pdf' });
 
       toast.dismiss('pdf-gen');
@@ -145,6 +160,10 @@ export default function ServiceOrderDetails() {
       toast.dismiss('pdf-gen');
       toast.error('Erro ao gerar PDF');
     }
+  };
+
+  const handleLotePrint = (options: { formato: 'individual' | 'resumo'; selectedIds: string[] }) => {
+    handlePrint(true, options);
   };
 
   const handleDuplicate = async () => {
@@ -184,7 +203,7 @@ export default function ServiceOrderDetails() {
           <FiPrinter /> PDF
         </button>
         {order.lote_numero && (
-          <button className="btn btn-secondary" onClick={() => handlePrint(true)} style={{ background: '#dbeafe', color: '#1e40af' }}>
+          <button className="btn btn-secondary" onClick={() => setShowLoteModal(true)} style={{ background: '#dbeafe', color: '#1e40af' }}>
             <FiLayers /> PDF do Lote
           </button>
         )}
@@ -379,6 +398,16 @@ export default function ServiceOrderDetails() {
           <strong>Aviso:</strong> Mediante a realização ou não do serviço, a máquina deverá ser retirada no prazo de 180 dias conforme a PL 2545/22. Contados a partir da autorização ou não do serviço.
         </div>
       </div>
+
+      {/* Modal PDF do Lote */}
+      {order.lote_numero && (
+        <LotePdfModal
+          isOpen={showLoteModal}
+          onClose={() => setShowLoteModal(false)}
+          order={order}
+          onPrint={handleLotePrint}
+        />
+      )}
     </div>
   );
 }

@@ -20,14 +20,17 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
 
     const company = await companySettingsRepository.get(tenantId);
     
-    // Verificar se é para imprimir o lote completo
+    // Parâmetros de lote
     const printFullLote = req.query.lote === 'true' && order.lote_numero;
+    const formato = req.query.formato || 'individual'; // 'individual' ou 'resumo'
+    const statusFilter = req.query.status ? req.query.status.split(',') : null; // ex: 'concluida,entregue'
+    const selectedIds = req.query.ids ? req.query.ids.split(',') : null; // IDs específicos selecionados
     
     let ordersToRender = [order];
     
     if (printFullLote) {
       // Buscar todas as OS do lote
-      const loteOrders = await db('service_orders')
+      let query = db('service_orders')
         .where({ 'service_orders.tenant_id': tenantId, 'service_orders.lote_numero': order.lote_numero })
         .whereNull('service_orders.deleted_at')
         .leftJoin('clients', 'clients.id', 'service_orders.client_id')
@@ -46,12 +49,29 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
         )
         .orderBy('service_orders.lote_sufixo', 'asc');
       
+      // Filtro por status
+      if (statusFilter && statusFilter.length > 0) {
+        query = query.whereIn('service_orders.status', statusFilter);
+      }
+      
+      // Filtro por IDs específicos
+      if (selectedIds && selectedIds.length > 0) {
+        query = query.whereIn('service_orders.id', selectedIds);
+      }
+      
+      const loteOrders = await query;
+      
       // Adicionar itens a cada OS
       for (const o of loteOrders) {
         o.items = await db('service_order_items').where({ service_order_id: o.id });
       }
       
       ordersToRender = loteOrders;
+      
+      // Se formato é resumo, renderizar documento consolidado
+      if (formato === 'resumo' && ordersToRender.length > 0) {
+        return renderLoteResumo(res, ordersToRender, company, order.lote_numero);
+      }
     }
 
     const doc = new PDFDocument({ size: 'A4', margin: 25 });
@@ -342,6 +362,222 @@ function buildAddress(company) {
     parts.push(city);
   }
   return parts.join(' - ');
+}
+
+/**
+ * Renderiza PDF consolidado (resumo) do lote
+ * Uma única página com tabela de todos equipamentos e valor total somado
+ */
+function renderLoteResumo(res, orders, company, loteNumero) {
+  const doc = new PDFDocument({ size: 'A4', margin: 30 });
+  
+  const fileName = `Lote-${String(loteNumero).padStart(4, '0')}-Resumo.pdf`;
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `inline; filename=${fileName}`);
+  doc.pipe(res);
+
+  const leftMargin = 30;
+  const pageWidth = doc.page.width - 60;
+  let y = 30;
+
+  // Logo da empresa (se existir)
+  const hasLogo = company && company.logo_url && company.logo_url.startsWith('data:image');
+  let textStartX = leftMargin;
+  
+  if (hasLogo) {
+    try {
+      doc.image(company.logo_url, leftMargin, y, { 
+        width: 80,
+        height: 50,
+        fit: [80, 50],
+        align: 'center',
+        valign: 'center'
+      });
+      textStartX = leftMargin + 90;
+    } catch (e) {
+      console.error('Erro ao carregar logo:', e.message);
+    }
+  }
+
+  // Cabeçalho empresa
+  if (hasLogo) {
+    doc.fontSize(12).font('Helvetica-Bold');
+    doc.text(company.name || 'OS Laboris', textStartX, y + 5, { width: pageWidth - 100 });
+    
+    doc.fontSize(8).font('Helvetica');
+    const phones = [company.phone, company.phone2].filter(Boolean).map(formatPhone).join(' | ');
+    if (phones) {
+      doc.text(phones, textStartX, y + 20, { width: pageWidth - 100 });
+    }
+    const address = buildAddress(company);
+    if (address) {
+      doc.text(address, textStartX, y + 30, { width: pageWidth - 100 });
+    }
+    y += 55;
+  } else {
+    doc.fontSize(14).font('Helvetica-Bold');
+    doc.text(company && company.name ? company.name : 'OS Laboris', leftMargin, y, { width: pageWidth, align: 'center' });
+    y += 16;
+
+    doc.fontSize(8).font('Helvetica');
+    if (company) {
+      const phones = [company.phone, company.phone2].filter(Boolean).map(formatPhone).join(' | ');
+      if (phones) {
+        doc.text(phones, leftMargin, y, { width: pageWidth, align: 'center' });
+        y += 10;
+      }
+      const address = buildAddress(company);
+      if (address) {
+        doc.text(address, leftMargin, y, { width: pageWidth, align: 'center' });
+        y += 10;
+      }
+    }
+  }
+
+  // Linha separadora
+  y += 5;
+  doc.moveTo(leftMargin, y).lineTo(doc.page.width - 30, y).lineWidth(0.5).stroke('#333');
+  y += 15;
+
+  // Título do documento
+  doc.fontSize(14).font('Helvetica-Bold').fillColor('#1e40af');
+  doc.text(`RESUMO DO LOTE #${String(loteNumero).padStart(4, '0')}`, leftMargin, y, { width: pageWidth, align: 'center' });
+  doc.fillColor('#000');
+  y += 25;
+
+  // Dados do cliente (pegar do primeiro)
+  const firstOrder = orders[0];
+  doc.fontSize(9).font('Helvetica-Bold');
+  doc.text('CLIENTE: ', leftMargin, y, { continued: true });
+  doc.font('Helvetica').text(firstOrder.client_name || '');
+  y += 14;
+
+  doc.font('Helvetica-Bold').text('DOCUMENTO: ', leftMargin, y, { continued: true });
+  doc.font('Helvetica').text(formatDocument(firstOrder.client_document || ''));
+  doc.font('Helvetica-Bold').text('  TELEFONE: ', { continued: true });
+  doc.font('Helvetica').text(formatPhone(firstOrder.client_phone || ''));
+  y += 14;
+
+  doc.font('Helvetica-Bold').text('DATA: ', leftMargin, y, { continued: true });
+  doc.font('Helvetica').text(formatDate(firstOrder.entry_date || new Date()));
+  doc.font('Helvetica-Bold').text('  ITENS DO LOTE: ', { continued: true });
+  doc.font('Helvetica').text(String(orders.length));
+  y += 20;
+
+  // Linha antes da tabela
+  doc.moveTo(leftMargin, y).lineTo(doc.page.width - 30, y).lineWidth(0.5).stroke('#333');
+  y += 5;
+
+  // Tabela de equipamentos
+  const colOS = leftMargin;
+  const colEquip = leftMargin + 55;
+  const colDiag = leftMargin + 200;
+  const colValor = doc.page.width - 80;
+  const tableRight = doc.page.width - 30;
+  const rowHeight = 22;
+
+  // Header da tabela
+  doc.rect(colOS, y, tableRight - colOS, 18).fill('#1e40af').stroke('#1e40af');
+  doc.fillColor('#fff').fontSize(8).font('Helvetica-Bold');
+  doc.text('OS', colOS + 5, y + 5);
+  doc.text('EQUIPAMENTO', colEquip + 5, y + 5);
+  doc.text('DIAGNÓSTICO', colDiag + 5, y + 5);
+  doc.text('VALOR', colValor + 5, y + 5);
+  doc.fillColor('#000');
+  y += 18;
+
+  // Linhas da tabela
+  let grandTotal = 0;
+  doc.font('Helvetica').fontSize(7);
+  
+  orders.forEach((order, index) => {
+    const bgColor = index % 2 === 0 ? '#f8fafc' : '#ffffff';
+    doc.rect(colOS, y, tableRight - colOS, rowHeight).fill(bgColor).stroke('#ddd');
+    
+    const osNumber = order.lote_sufixo 
+      ? `${String(order.order_number).padStart(4, '0')}-${order.lote_sufixo}`
+      : String(order.order_number).padStart(4, '0');
+    
+    const items = order.items || [];
+    const orderTotal = items.reduce((sum, item) => sum + parseFloat(item.quantity) * parseFloat(item.unit_price), 0);
+    grandTotal += orderTotal;
+
+    const equip = `${order.equipment_type} ${order.equipment_brand} ${order.equipment_model}`.substring(0, 35);
+    const diag = (order.diagnosis || order.reported_defect || '—').substring(0, 40);
+
+    doc.fillColor('#000');
+    doc.text(osNumber, colOS + 5, y + 6, { width: 45 });
+    doc.text(equip, colEquip + 5, y + 6, { width: 140 });
+    doc.text(diag, colDiag + 5, y + 6, { width: 150 });
+    doc.font('Helvetica-Bold').text(`R$ ${orderTotal.toFixed(2)}`, colValor + 5, y + 6);
+    doc.font('Helvetica');
+    
+    y += rowHeight;
+  });
+
+  // Linha de total
+  y += 5;
+  doc.moveTo(leftMargin, y).lineTo(doc.page.width - 30, y).lineWidth(1).stroke('#1e40af');
+  y += 10;
+
+  // Total geral
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#1e40af');
+  doc.text('VALOR TOTAL:', colDiag, y);
+  doc.fontSize(14);
+  doc.text(`R$ ${grandTotal.toFixed(2)}`, colValor - 20, y);
+  doc.fillColor('#000');
+  y += 30;
+
+  // Detalhamento por equipamento (itens)
+  if (orders.some(o => o.items && o.items.length > 0)) {
+    doc.fontSize(10).font('Helvetica-Bold');
+    doc.text('DETALHAMENTO POR EQUIPAMENTO:', leftMargin, y);
+    y += 15;
+
+    doc.fontSize(7).font('Helvetica');
+    orders.forEach((order) => {
+      const osNumber = order.lote_sufixo 
+        ? `${String(order.order_number).padStart(4, '0')}-${order.lote_sufixo}`
+        : String(order.order_number).padStart(4, '0');
+      
+      const items = order.items || [];
+      if (items.length === 0) return;
+
+      doc.font('Helvetica-Bold').fontSize(8);
+      doc.text(`OS #${osNumber} - ${order.equipment_brand} ${order.equipment_model}:`, leftMargin, y);
+      y += 10;
+
+      doc.font('Helvetica').fontSize(7);
+      items.forEach((item) => {
+        const subtotal = parseFloat(item.quantity) * parseFloat(item.unit_price);
+        doc.text(`  • ${item.quantity}x ${item.description} - R$ ${subtotal.toFixed(2)}`, leftMargin + 10, y);
+        y += 9;
+      });
+      y += 5;
+    });
+  }
+
+  // Aviso legal
+  y += 10;
+  const footerText = company && company.footer_text
+    ? company.footer_text
+    : 'Mediante a realização ou não do serviço, a máquina deverá ser retirada no prazo de 180 dias conforme a PL 2545/22. Contados a partir da autorização ou não do serviço.';
+  
+  doc.fontSize(6).font('Helvetica-Oblique').fillColor('#666');
+  doc.text(footerText, leftMargin, y, { width: pageWidth, align: 'center' });
+  doc.fillColor('#000');
+  y += 20;
+
+  // Assinaturas
+  y += 15;
+  doc.moveTo(leftMargin, y).lineTo(220, y).lineWidth(0.5).stroke('#333');
+  doc.moveTo(300, y).lineTo(doc.page.width - 30, y).stroke('#333');
+  y += 5;
+  doc.fontSize(7).font('Helvetica');
+  doc.text('Assinatura do Cliente', leftMargin, y, { width: 190, align: 'center' });
+  doc.text('Assinatura do Responsável', 300, y, { width: 240, align: 'center' });
+
+  doc.end();
 }
 
 module.exports = router;
