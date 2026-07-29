@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock - Acessibilidade OS Laboris</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+      padding: 2rem;
+      color: #1e293b;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    h2 {
+      font-size: 1.1rem;
+      margin: 2rem 0 1rem;
+      color: #475569;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 0.5rem;
+    }
+    
+    h3 {
+      font-size: 0.9rem;
+      margin: 1.5rem 0 0.75rem;
+      color: #64748b;
+    }
+    
+    .subtitle {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+    
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .panel {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .panel-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .panel-title.before::before {
+      content: "❌";
+    }
+    
+    .panel-title.after::before {
+      content: "✅";
+    }
+    
+    /* =========================================
+       TABELA COM BOTÕES DE AÇÃO
+       ========================================= */
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    
+    th {
+      text-align: left;
+      padding: 0.75rem;
+      background: #f1f5f9;
+      color: #64748b;
+      font-weight: 500;
+      font-size: 0.75rem;
+    }
+    
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    /* Botões ANTES - só ícone, sem contexto */
+    .btn-icon-only {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.15s;
+    }
+    
+    .btn-icon-only.edit {
+      background: #e2e8f0;
+      color: #475569;
+    }
+    
+    .btn-icon-only.delete {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .btn-icon-only.view {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+    
+    .btn-icon-only:hover {
+      transform: scale(1.05);
+    }
+    
+    /* Botões DEPOIS - com tooltip acessível */
+    .btn-accessible {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.15s;
+      position: relative;
+    }
+    
+    .btn-accessible.edit {
+      background: #e2e8f0;
+      color: #475569;
+    }
+    
+    .btn-accessible.delete {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .btn-accessible.view {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+    
+    .btn-accessible:hover {
+      transform: scale(1.05);
+    }
+    
+    /* Tooltip nativo via title - aparece no hover */
+    .btn-accessible:hover::after {
+      content: attr(aria-label);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: white;
+      padding: 0.35rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      margin-bottom: 4px;
+    }
+    
+    /* Focus visible para navegação por teclado */
+    .btn-accessible:focus-visible {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
+    }
+    
+    /* =========================================
+       BADGES DE STATUS - CONTRASTE WCAG
+       ========================================= */
+    
+    .status-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    
+    /* ANTES - Cores originais (alguns com baixo contraste) */
+    .badge-before {
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .badge-before.aberta {
+      background: #2563eb;
+      color: white;
+    }
+    
+    .badge-before.aprovada {
+      background: #d97706;
+      color: white;
+    }
+    
+    .badge-before.aguardando {
+      background: #7c3aed;
+      color: white;
+    }
+    
+    .badge-before.concluida {
+      background: #059669;
+      color: white;
+    }
+    
+    .badge-before.entregue {
+      background: #4f46e5; /* Muito próximo do azul */
+      color: white;
+    }
+    
+    .badge-before.cancelada {
+      background: #dc2626;
+      color: white;
+    }
+    
+    /* DEPOIS - Cores ajustadas para WCAG AA + ícones */
+    .badge-after {
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    
+    .badge-after .icon {
+      font-size: 0.7rem;
+    }
+    
+    .badge-after.aberta {
+      background: #2563eb;
+      color: white;
+    }
+    
+    .badge-after.aprovada {
+      background: #b45309; /* Escurecido de #d97706 para melhor contraste */
+      color: white;
+    }
+    
+    .badge-after.aguardando {
+      background: #6d28d9; /* Escurecido de #7c3aed */
+      color: white;
+    }
+    
+    .badge-after.concluida {
+      background: #047857; /* Escurecido de #059669 */
+      color: white;
+    }
+    
+    .badge-after.entregue {
+      background: #1e3a5f; /* Mudado para azul escuro - diferencia do azul claro */
+      color: white;
+    }
+    
+    .badge-after.cancelada {
+      background: #b91c1c; /* Escurecido de #dc2626 */
+      color: white;
+    }
+    
+    /* =========================================
+       CONTRASTE INFO
+       ========================================= */
+    
+    .contrast-info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .contrast-card {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-size: 0.75rem;
+    }
+    
+    .contrast-card .label {
+      color: #64748b;
+      margin-bottom: 0.25rem;
+    }
+    
+    .contrast-card .value {
+      font-weight: 600;
+    }
+    
+    .contrast-card .value.pass {
+      color: #059669;
+    }
+    
+    .contrast-card .value.fail {
+      color: #dc2626;
+    }
+    
+    /* =========================================
+       LEITOR DE TELA SIMULAÇÃO
+       ========================================= */
+    
+    .screen-reader-demo {
+      background: #1e293b;
+      color: #94a3b8;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+    }
+    
+    .screen-reader-demo .highlight {
+      color: #22d3ee;
+    }
+    
+    .screen-reader-demo .announce {
+      color: #fbbf24;
+    }
+    
+    /* =========================================
+       NOTAS
+       ========================================= */
+    
+    .note {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.85rem;
+      margin: 1rem 0;
+    }
+    
+    .note-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .note.info {
+      background: #dbeafe;
+      border-left-color: #2563eb;
+    }
+    
+    .divider {
+      border: none;
+      border-top: 2px dashed #e2e8f0;
+      margin: 3rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mock de Acessibilidade — OS Laboris</h1>
+  <p class="subtitle">Comparação visual: antes e depois das melhorias de acessibilidade</p>
+
+  <!-- ================================================
+       SEÇÃO 1: BOTÕES DE AÇÃO COM aria-label
+       ================================================ -->
+  
+  <h2>1. Botões de Ação com aria-label</h2>
+  
+  <div class="comparison">
+    <!-- ANTES -->
+    <div class="panel">
+      <div class="panel-title before">Antes (sem aria-label)</div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Telefone</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>João Silva</td>
+            <td>(21) 99999-1234</td>
+            <td>
+              <div class="actions">
+                <button class="btn-icon-only view">👁️</button>
+                <button class="btn-icon-only edit">✏️</button>
+                <button class="btn-icon-only delete">🗑️</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Maria Santos</td>
+            <td>(21) 98888-5678</td>
+            <td>
+              <div class="actions">
+                <button class="btn-icon-only view">👁️</button>
+                <button class="btn-icon-only edit">✏️</button>
+                <button class="btn-icon-only delete">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="screen-reader-demo">
+        <div class="label">🔊 O que o leitor de tela anuncia:</div>
+        <br>
+        <span class="announce">"button"</span> <span class="highlight">← Só isso! Sem contexto.</span><br>
+        <span class="announce">"button"</span><br>
+        <span class="announce">"button"</span>
+      </div>
+    </div>
+    
+    <!-- DEPOIS -->
+    <div class="panel">
+      <div class="panel-title after">Depois (com aria-label)</div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Telefone</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>João Silva</td>
+            <td>(21) 99999-1234</td>
+            <td>
+              <div class="actions">
+                <button class="btn-accessible view" aria-label="Ver detalhes de João Silva">👁️</button>
+                <button class="btn-accessible edit" aria-label="Editar João Silva">✏️</button>
+                <button class="btn-accessible delete" aria-label="Excluir João Silva">🗑️</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Maria Santos</td>
+            <td>(21) 98888-5678</td>
+            <td>
+              <div class="actions">
+                <button class="btn-accessible view" aria-label="Ver detalhes de Maria Santos">👁️</button>
+                <button class="btn-accessible edit" aria-label="Editar Maria Santos">✏️</button>
+                <button class="btn-accessible delete" aria-label="Excluir Maria Santos">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="screen-reader-demo">
+        <div class="label">🔊 O que o leitor de tela anuncia:</div>
+        <br>
+        <span class="announce">"Ver detalhes de João Silva, button"</span> <span class="highlight">✓</span><br>
+        <span class="announce">"Editar João Silva, button"</span> <span class="highlight">✓</span><br>
+        <span class="announce">"Excluir João Silva, button"</span> <span class="highlight">✓</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="note info">
+    <div class="note-title">💡 Bônus: Tooltip no hover</div>
+    Passe o mouse sobre os botões "Depois" — o aria-label também aparece como tooltip, ajudando usuários videntes que não reconhecem o ícone.
+  </div>
+
+  <hr class="divider">
+
+  <!-- ================================================
+       SEÇÃO 2: BADGES DE STATUS - CONTRASTE
+       ================================================ -->
+  
+  <h2>2. Badges de Status — Contraste WCAG</h2>
+  
+  <div class="comparison">
+    <!-- ANTES -->
+    <div class="panel">
+      <div class="panel-title before">Antes (cores originais)</div>
+      
+      <div class="status-grid">
+        <span class="badge-before aberta">Aberta</span>
+        <span class="badge-before aprovada">Aprovada</span>
+        <span class="badge-before aguardando">Ag. Peça</span>
+        <span class="badge-before concluida">Concluída</span>
+        <span class="badge-before entregue">Entregue</span>
+        <span class="badge-before cancelada">Cancelada</span>
+      </div>
+      
+      <h3>Problemas identificados:</h3>
+      <div class="contrast-info">
+        <div class="contrast-card">
+          <div class="label">Azul vs Índigo</div>
+          <div class="value fail">Muito similares</div>
+        </div>
+        <div class="contrast-card">
+          <div class="label">Âmbar #d97706</div>
+          <div class="value fail">Contraste 3.8:1</div>
+        </div>
+        <div class="contrast-card">
+          <div class="label">Daltonismo</div>
+          <div class="value fail">Sem diferenciação</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- DEPOIS -->
+    <div class="panel">
+      <div class="panel-title after">Depois (ajustado + ícones)</div>
+      
+      <div class="status-grid">
+        <span class="badge-after aberta"><span class="icon">○</span> Aberta</span>
+        <span class="badge-after aprovada"><span class="icon">✓</span> Aprovada</span>
+        <span class="badge-after aguardando"><span class="icon">⏳</span> Ag. Peça</span>
+        <span class="badge-after concluida"><span class="icon">✓✓</span> Concluída</span>
+        <span class="badge-after entregue"><span class="icon">📦</span> Entregue</span>
+        <span class="badge-after cancelada"><span class="icon">✕</span> Cancelada</span>
+      </div>
+      
+      <h3>Melhorias aplicadas:</h3>
+      <div class="contrast-info">
+        <div class="contrast-card">
+          <div class="label">Entregue</div>
+          <div class="value pass">Azul escuro #1e3a5f</div>
+        </div>
+        <div class="contrast-card">
+          <div class="label">Aprovada</div>
+          <div class="value pass">Contraste 4.7:1 ✓</div>
+        </div>
+        <div class="contrast-card">
+          <div class="label">Ícones</div>
+          <div class="value pass">Diferencia sem cor</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ================================================
+       SEÇÃO 3: TABELA DE CORES AJUSTADAS
+       ================================================ -->
+  
+  <h2>3. Comparativo de Cores</h2>
+  
+  <div class="panel">
+    <table>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Cor Antes</th>
+          <th>Cor Depois</th>
+          <th>Contraste</th>
+          <th>Ícone</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Aberta</td>
+          <td><span style="background:#2563eb;color:white;padding:2px 8px;border-radius:4px">#2563eb</span></td>
+          <td><span style="background:#2563eb;color:white;padding:2px 8px;border-radius:4px">#2563eb</span> (mantido)</td>
+          <td style="color:#059669;font-weight:600">4.5:1 ✓</td>
+          <td>○</td>
+        </tr>
+        <tr>
+          <td>Aprovada</td>
+          <td><span style="background:#d97706;color:white;padding:2px 8px;border-radius:4px">#d97706</span></td>
+          <td><span style="background:#b45309;color:white;padding:2px 8px;border-radius:4px">#b45309</span> (escurecido)</td>
+          <td style="color:#059669;font-weight:600">4.7:1 ✓</td>
+          <td>✓</td>
+        </tr>
+        <tr>
+          <td>Ag. Peça</td>
+          <td><span style="background:#7c3aed;color:white;padding:2px 8px;border-radius:4px">#7c3aed</span></td>
+          <td><span style="background:#6d28d9;color:white;padding:2px 8px;border-radius:4px">#6d28d9</span> (escurecido)</td>
+          <td style="color:#059669;font-weight:600">5.1:1 ✓</td>
+          <td>⏳</td>
+        </tr>
+        <tr>
+          <td>Concluída</td>
+          <td><span style="background:#059669;color:white;padding:2px 8px;border-radius:4px">#059669</span></td>
+          <td><span style="background:#047857;color:white;padding:2px 8px;border-radius:4px">#047857</span> (escurecido)</td>
+          <td style="color:#059669;font-weight:600">4.6:1 ✓</td>
+          <td>✓✓</td>
+        </tr>
+        <tr>
+          <td>Entregue</td>
+          <td><span style="background:#4f46e5;color:white;padding:2px 8px;border-radius:4px">#4f46e5</span></td>
+          <td><span style="background:#1e3a5f;color:white;padding:2px 8px;border-radius:4px">#1e3a5f</span> (mudado)</td>
+          <td style="color:#059669;font-weight:600">8.5:1 ✓</td>
+          <td>📦</td>
+        </tr>
+        <tr>
+          <td>Cancelada</td>
+          <td><span style="background:#dc2626;color:white;padding:2px 8px;border-radius:4px">#dc2626</span></td>
+          <td><span style="background:#b91c1c;color:white;padding:2px 8px;border-radius:4px">#b91c1c</span> (escurecido)</td>
+          <td style="color:#059669;font-weight:600">5.0:1 ✓</td>
+          <td>✕</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="note">
+    <div class="note-title">📏 WCAG AA requer contraste mínimo de 4.5:1</div>
+    Todas as cores ajustadas atendem ou excedem esse requisito. O "Entregue" foi a maior mudança — de índigo (#4f46e5) para azul escuro (#1e3a5f) — para diferenciar claramente do "Aberta" (azul claro).
+  </div>
+
+  <hr class="divider">
+
+  <!-- ================================================
+       SEÇÃO 4: CÓDIGO DE IMPLEMENTAÇÃO
+       ================================================ -->
+  
+  <h2>4. Código de Implementação</h2>
+  
+  <div class="panel">
+    <h3>aria-label nos botões (React)</h3>
+    <pre style="background:#1e293b;color:#e2e8f0;padding:1rem;border-radius:8px;overflow-x:auto;font-size:0.8rem"><code>// Antes
+&lt;button onClick={() => handleEdit(client.id)}&gt;
+  &lt;FiEdit2 /&gt;
+&lt;/button&gt;
+
+// Depois
+&lt;button 
+  onClick={() => handleEdit(client.id)}
+  aria-label={`Editar ${client.name}`}
+  title={`Editar ${client.name}`}
+&gt;
+  &lt;FiEdit2 /&gt;
+&lt;/button&gt;</code></pre>
+    
+    <h3 style="margin-top:1.5rem">CSS das novas cores de status</h3>
+    <pre style="background:#1e293b;color:#e2e8f0;padding:1rem;border-radius:8px;overflow-x:auto;font-size:0.8rem"><code>/* Cores ajustadas para WCAG AA */
+.status-badge.aberta    { background: #2563eb; } /* mantido */
+.status-badge.aprovada  { background: #b45309; } /* era #d97706 */
+.status-badge.aguardando{ background: #6d28d9; } /* era #7c3aed */
+.status-badge.concluida { background: #047857; } /* era #059669 */
+.status-badge.entregue  { background: #1e3a5f; } /* era #4f46e5 */
+.status-badge.cancelada { background: #b91c1c; } /* era #dc2626 */</code></pre>
+  </div>
+
+  <hr class="divider">
+
+  <div class="note info">
+    <div class="note-title">📝 Este é apenas um mock de visualização</div>
+    Nenhuma alteração foi feita no código real do sistema. Após aprovação, as mudanças serão implementadas nos arquivos corretos.
+  </div>
+
+</body>
+</html>

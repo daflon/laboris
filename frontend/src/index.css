@@ -285,11 +285,12 @@ body {
 }
 
 /* ===========================================
-   STATUS BADGES
+   STATUS BADGES (WCAG AA Compliant)
    =========================================== */
 .status-badge {
   display: inline-flex;
   align-items: center;
+  gap: 0.3rem;
   padding: 0.25rem 0.75rem;
   border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
@@ -297,34 +298,58 @@ body {
   white-space: nowrap;
 }
 
+/* Ícones de status para acessibilidade (daltonismo) */
+.status-badge::before {
+  font-size: 0.65rem;
+}
+
 .status-aberta {
   background: #dbeafe;
   color: #1e40af;
 }
+.status-aberta::before {
+  content: "○";
+}
 
 .status-aprovada {
   background: #fef3c7;
-  color: #92400e;
+  color: #78350f; /* Escurecido de #92400e para melhor contraste */
+}
+.status-aprovada::before {
+  content: "✓";
 }
 
 .status-aguardando_peca {
   background: #ede9fe;
-  color: #6d28d9;
+  color: #5b21b6; /* Escurecido de #6d28d9 */
+}
+.status-aguardando_peca::before {
+  content: "⏳";
 }
 
 .status-concluida {
   background: #d1fae5;
-  color: #065f46;
+  color: #064e3b; /* Escurecido de #065f46 */
+}
+.status-concluida::before {
+  content: "✓✓";
+  letter-spacing: -2px;
 }
 
 .status-entregue {
-  background: #e0e7ff;
-  color: #3730a3;
+  background: #e0f2fe; /* Mudado para azul mais claro para diferenciar */
+  color: #0c4a6e; /* Azul escuro - diferencia de "aberta" */
+}
+.status-entregue::before {
+  content: "📦";
 }
 
 .status-cancelada {
   background: #fee2e2;
-  color: #991b1b;
+  color: #7f1d1d; /* Escurecido de #991b1b */
+}
+.status-cancelada::before {
+  content: "✕";
 }
 
 /* Status select (inline na tabela) */

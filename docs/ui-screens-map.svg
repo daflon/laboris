@@ -1,0 +1,1119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 2400" width="1800" height="2400">
+  <defs>
+    <style>
+      .screen { fill: #ffffff; stroke: #e2e8f0; stroke-width: 2; rx: 12; }
+      .screen-header { fill: #1e40af; }
+      .screen-title { fill: #ffffff; font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; }
+      .screen-content { fill: #f8fafc; }
+      .sidebar { fill: #0f172a; }
+      .sidebar-item { fill: #334155; }
+      .sidebar-text { fill: #94a3b8; font-family: Inter, sans-serif; font-size: 8px; }
+      .sidebar-active { fill: #2563eb; }
+      .btn-primary { fill: #2563eb; }
+      .btn-secondary { fill: #e2e8f0; }
+      .btn-success { fill: #25d366; }
+      .btn-danger { fill: #dc2626; }
+      .btn-text { fill: #ffffff; font-family: Inter, sans-serif; font-size: 7px; }
+      .btn-text-dark { fill: #334155; font-family: Inter, sans-serif; font-size: 7px; }
+      .label { fill: #64748b; font-family: Inter, sans-serif; font-size: 9px; }
+      .title { fill: #1e293b; font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; }
+      .subtitle { fill: #475569; font-family: Inter, sans-serif; font-size: 10px; font-weight: 600; }
+      .text { fill: #334155; font-family: Inter, sans-serif; font-size: 8px; }
+      .text-muted { fill: #94a3b8; font-family: Inter, sans-serif; font-size: 7px; }
+      .input { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1; }
+      .card { fill: #ffffff; stroke: #e2e8f0; stroke-width: 1; }
+      .table-header { fill: #f1f5f9; }
+      .table-row { fill: #ffffff; stroke: #e2e8f0; stroke-width: 0.5; }
+      .status-aberta { fill: #2563eb; }
+      .status-concluida { fill: #059669; }
+      .status-entregue { fill: #4f46e5; }
+      .modal-overlay { fill: rgba(0,0,0,0.5); }
+      .modal { fill: #ffffff; stroke: #e2e8f0; stroke-width: 2; }
+      .section-title { fill: #1e293b; font-family: Inter, sans-serif; font-size: 18px; font-weight: 700; }
+      .connector { stroke: #94a3b8; stroke-width: 1.5; fill: none; stroke-dasharray: 5,3; }
+      .arrow { fill: #94a3b8; }
+    </style>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1800" height="2400" fill="#f8fafc"/>
+  
+  <!-- Title -->
+  <text x="900" y="50" text-anchor="middle" class="section-title" font-size="24">OS Laboris - Mapa de Telas UI/UX</text>
+  <text x="900" y="75" text-anchor="middle" class="text-muted" font-size="12">Sistema de Gestão de Ordens de Serviço - Multi-tenant SaaS</text>
+
+  <!-- ==================== SEÇÃO 1: LOGIN ==================== -->
+  <text x="150" y="120" class="section-title">1. Autenticação</text>
+  
+  <!-- Tela Login -->
+  <g transform="translate(50, 140)">
+    <rect class="screen" width="280" height="220"/>
+    <rect class="screen-header" x="0" y="0" width="280" height="30" rx="12" ry="0"/>
+    <rect fill="#1e40af" x="0" y="15" width="280" height="15"/>
+    <text x="140" y="20" text-anchor="middle" class="screen-title">Login</text>
+    
+    <!-- Logo area -->
+    <rect x="90" y="50" width="100" height="40" rx="8" fill="#f1f5f9" stroke="#e2e8f0"/>
+    <text x="140" y="75" text-anchor="middle" class="subtitle">LOGO</text>
+    
+    <!-- Form -->
+    <text x="30" y="115" class="label">Email</text>
+    <rect class="input" x="30" y="120" width="220" height="28" rx="6"/>
+    <text x="40" y="138" class="text-muted">usuario@empresa.com</text>
+    
+    <text x="30" y="165" class="label">Senha</text>
+    <rect class="input" x="30" y="170" width="220" height="28" rx="6"/>
+    <text x="40" y="188" class="text-muted">••••••••</text>
+    
+    <rect class="btn-primary" x="30" y="210" width="220" height="32" rx="6"/>
+    <text x="140" y="230" text-anchor="middle" class="btn-text">Entrar</text>
+  </g>
+  
+  <!-- Arrow to Dashboard -->
+  <path class="connector" d="M 340 250 L 400 250"/>
+  <polygon class="arrow" points="400,250 390,245 390,255"/>
+
+  <!-- ==================== SEÇÃO 2: DASHBOARD ==================== -->
+  <text x="500" y="120" class="section-title">2. Dashboard</text>
+  
+  <!-- Tela Dashboard -->
+  <g transform="translate(420, 140)">
+    <rect class="screen" width="380" height="280"/>
+    
+    <!-- Sidebar -->
+    <rect class="sidebar" x="0" y="0" width="60" height="280" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="60" height="268" rx="0" ry="0"/>
+    <rect class="sidebar-active" x="5" y="40" width="50" height="24" rx="4"/>
+    <text x="30" y="55" text-anchor="middle" class="sidebar-text" fill="#fff">🏠</text>
+    <rect class="sidebar-item" x="5" y="70" width="50" height="24" rx="4"/>
+    <text x="30" y="85" text-anchor="middle" class="sidebar-text">📋 OS</text>
+    <rect class="sidebar-item" x="5" y="100" width="50" height="24" rx="4"/>
+    <text x="30" y="115" text-anchor="middle" class="sidebar-text">👥</text>
+    <rect class="sidebar-item" x="5" y="130" width="50" height="24" rx="4"/>
+    <text x="30" y="145" text-anchor="middle" class="sidebar-text">🔧</text>
+    <rect class="sidebar-item" x="5" y="160" width="50" height="24" rx="4"/>
+    <text x="30" y="175" text-anchor="middle" class="sidebar-text">👨‍🔧</text>
+    <rect class="sidebar-item" x="5" y="190" width="50" height="24" rx="4"/>
+    <text x="30" y="205" text-anchor="middle" class="sidebar-text">⚙️</text>
+    
+    <!-- Header -->
+    <rect class="screen-header" x="60" y="0" width="320" height="35" rx="0" ry="0"/>
+    <rect fill="#1e40af" x="60" y="0" width="320" height="35" rx="0"/>
+    <text x="80" y="22" class="screen-title">Dashboard</text>
+    <rect fill="#1e3a8a" x="280" y="8" width="80" height="20" rx="4"/>
+    <text x="320" y="22" text-anchor="middle" class="btn-text" font-size="6">🔍 Buscar...</text>
+    
+    <!-- Cards KPI -->
+    <rect class="card" x="75" y="50" width="90" height="55" rx="8"/>
+    <text x="85" y="70" class="text-muted">Total OS</text>
+    <text x="85" y="92" class="title">127</text>
+    
+    <rect class="card" x="175" y="50" width="90" height="55" rx="8"/>
+    <text x="185" y="70" class="text-muted">Abertas</text>
+    <text x="185" y="92" class="title" fill="#2563eb">23</text>
+    
+    <rect class="card" x="275" y="50" width="90" height="55" rx="8"/>
+    <text x="285" y="70" class="text-muted">Concluídas</text>
+    <text x="285" y="92" class="title" fill="#059669">45</text>
+    
+    <!-- Recent OS -->
+    <text x="75" y="125" class="subtitle">Últimas OS</text>
+    <rect class="table-header" x="75" y="132" width="290" height="20" rx="4"/>
+    <text x="85" y="145" class="text-muted">Nº</text>
+    <text x="120" y="145" class="text-muted">Cliente</text>
+    <text x="220" y="145" class="text-muted">Status</text>
+    
+    <rect class="table-row" x="75" y="152" width="290" height="22"/>
+    <text x="85" y="167" class="text">#0127</text>
+    <text x="120" y="167" class="text">João Silva</text>
+    <rect class="status-aberta" x="220" y="158" width="45" height="12" rx="3"/>
+    <text x="243" y="167" text-anchor="middle" class="btn-text" font-size="6">Aberta</text>
+    
+    <rect class="table-row" x="75" y="174" width="290" height="22"/>
+    <text x="85" y="189" class="text">#0126</text>
+    <text x="120" y="189" class="text">Maria Santos</text>
+    <rect class="status-concluida" x="220" y="180" width="55" height="12" rx="3"/>
+    <text x="248" y="189" text-anchor="middle" class="btn-text" font-size="6">Concluída</text>
+  </g>
+
+  <!-- ==================== SEÇÃO 3: ORDENS DE SERVIÇO ==================== -->
+  <text x="50" y="470" class="section-title">3. Ordens de Serviço</text>
+  
+  <!-- 3.1 Lista de OS -->
+  <g transform="translate(50, 490)">
+    <rect class="screen" width="350" height="300"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="300" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="288"/>
+    <rect class="sidebar-active" x="5" y="50" width="40" height="20" rx="4"/>
+    
+    <rect class="screen-header" x="50" y="0" width="300" height="35"/>
+    <text x="70" y="22" class="screen-title">Ordens de Serviço</text>
+    <rect class="btn-primary" x="240" y="8" width="60" height="20" rx="4"/>
+    <text x="270" y="21" text-anchor="middle" class="btn-text">+ Nova OS</text>
+    
+    <!-- Search and filters -->
+    <rect class="input" x="60" y="45" width="150" height="24" rx="4"/>
+    <text x="70" y="60" class="text-muted">🔍 Buscar...</text>
+    <rect class="btn-secondary" x="220" y="45" width="60" height="24" rx="4"/>
+    <text x="250" y="60" text-anchor="middle" class="btn-text-dark">Filtros</text>
+    
+    <!-- Status tabs -->
+    <rect class="status-aberta" x="60" y="78" width="50" height="18" rx="4"/>
+    <text x="85" y="90" text-anchor="middle" class="btn-text" font-size="6">Abertas</text>
+    <rect fill="#d97706" x="115" y="78" width="55" height="18" rx="4"/>
+    <text x="143" y="90" text-anchor="middle" class="btn-text" font-size="6">Aprovadas</text>
+    <rect class="status-concluida" x="175" y="78" width="60" height="18" rx="4"/>
+    <text x="205" y="90" text-anchor="middle" class="btn-text" font-size="6">Concluídas</text>
+    <rect class="status-entregue" x="240" y="78" width="55" height="18" rx="4"/>
+    <text x="268" y="90" text-anchor="middle" class="btn-text" font-size="6">Entregues</text>
+    
+    <!-- Table -->
+    <rect class="table-header" x="60" y="105" width="280" height="22" rx="4"/>
+    <text x="70" y="119" class="text-muted" font-size="7">Nº</text>
+    <text x="105" y="119" class="text-muted" font-size="7">Cliente</text>
+    <text x="180" y="119" class="text-muted" font-size="7">Equipamento</text>
+    <text x="270" y="119" class="text-muted" font-size="7">Status</text>
+    
+    <!-- Rows with LOTE badge -->
+    <rect class="table-row" x="60" y="127" width="280" height="28"/>
+    <text x="70" y="144" class="text" font-size="8">#0025-A</text>
+    <rect fill="#dbeafe" x="100" y="137" width="25" height="10" rx="2"/>
+    <text x="112" y="145" text-anchor="middle" fill="#1e40af" font-size="5">LOTE</text>
+    <text x="130" y="144" class="text" font-size="8">Rodrigo</text>
+    <text x="180" y="144" class="text" font-size="8">Esmerilhadeira</text>
+    <rect class="status-concluida" x="265" y="135" width="45" height="14" rx="3"/>
+    
+    <rect class="table-row" x="60" y="155" width="280" height="28"/>
+    <text x="70" y="172" class="text" font-size="8">#0024</text>
+    <text x="130" y="172" class="text" font-size="8">Carlos</text>
+    <text x="180" y="172" class="text" font-size="8">Furadeira</text>
+    <rect class="status-aberta" x="265" y="163" width="45" height="14" rx="3"/>
+    
+    <rect class="table-row" x="60" y="183" width="280" height="28"/>
+    <text x="70" y="200" class="text" font-size="8">#0023</text>
+    <text x="130" y="200" class="text" font-size="8">Ana Maria</text>
+    <text x="180" y="200" class="text" font-size="8">Serra Circular</text>
+    <rect class="status-entregue" x="265" y="191" width="45" height="14" rx="3"/>
+    
+    <!-- Pagination -->
+    <text x="60" y="235" class="text-muted">Mostrando 1-10 de 127</text>
+    <rect class="btn-secondary" x="240" y="225" width="25" height="18" rx="4"/>
+    <text x="252" y="237" text-anchor="middle" class="text">‹</text>
+    <rect class="btn-primary" x="270" y="225" width="25" height="18" rx="4"/>
+    <text x="282" y="237" text-anchor="middle" class="btn-text">1</text>
+    <rect class="btn-secondary" x="300" y="225" width="25" height="18" rx="4"/>
+    <text x="312" y="237" text-anchor="middle" class="text">›</text>
+  </g>
+
+  <!-- 3.2 Detalhes da OS -->
+  <g transform="translate(450, 490)">
+    <rect class="screen" width="380" height="340"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="340" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="328"/>
+    
+    <rect class="screen-header" x="50" y="0" width="330" height="35"/>
+    <text x="70" y="22" class="screen-title">OS #0025-A</text>
+    
+    <!-- Action buttons -->
+    <rect class="btn-secondary" x="60" y="42" width="50" height="20" rx="4"/>
+    <text x="85" y="55" text-anchor="middle" class="btn-text-dark" font-size="6">← Voltar</text>
+    <rect class="btn-secondary" x="115" y="42" width="50" height="20" rx="4"/>
+    <text x="140" y="55" text-anchor="middle" class="btn-text-dark" font-size="6">Duplicar</text>
+    <rect fill="#dbeafe" x="170" y="42" width="65" height="20" rx="4"/>
+    <text x="202" y="55" text-anchor="middle" fill="#1e40af" font-size="6">+ Add Lote</text>
+    <rect class="btn-success" x="240" y="42" width="55" height="20" rx="4"/>
+    <text x="267" y="55" text-anchor="middle" class="btn-text" font-size="6">WhatsApp</text>
+    <rect class="btn-secondary" x="300" y="42" width="35" height="20" rx="4"/>
+    <text x="317" y="55" text-anchor="middle" class="btn-text-dark" font-size="6">PDF</text>
+    <rect fill="#dbeafe" x="340" y="42" width="45" height="20" rx="4"/>
+    <text x="362" y="55" text-anchor="middle" fill="#1e40af" font-size="6">PDF Lote</text>
+    
+    <!-- Lote Banner -->
+    <rect fill="#dbeafe" x="60" y="70" width="310" height="45" rx="6" stroke="#93c5fd"/>
+    <text x="75" y="88" class="subtitle" fill="#1e40af" font-size="9">📦 Lote #0025 (3 equipamentos)</text>
+    <rect fill="#1e40af" x="75" y="95" width="55" height="14" rx="3"/>
+    <text x="102" y="105" text-anchor="middle" class="btn-text" font-size="6">A: Esmerilh.</text>
+    <rect fill="#ffffff" x="135" y="95" width="55" height="14" rx="3" stroke="#93c5fd"/>
+    <text x="162" y="105" text-anchor="middle" fill="#1e40af" font-size="6">B: Plaina</text>
+    <rect fill="#ffffff" x="195" y="95" width="55" height="14" rx="3" stroke="#93c5fd"/>
+    <text x="222" y="105" text-anchor="middle" fill="#1e40af" font-size="6">C: Martelo</text>
+    
+    <!-- Status buttons -->
+    <text x="60" y="130" class="label">Status:</text>
+    <rect class="status-aberta" x="100" y="120" width="45" height="16" rx="4"/>
+    <text x="122" y="131" text-anchor="middle" class="btn-text" font-size="6">Aberta</text>
+    <rect fill="#d97706" x="150" y="120" width="50" height="16" rx="4"/>
+    <text x="175" y="131" text-anchor="middle" class="btn-text" font-size="6">Aprovada</text>
+    <rect class="status-concluida" x="205" y="120" width="55" height="16" rx="4"/>
+    <text x="232" y="131" text-anchor="middle" class="btn-text" font-size="6">Concluída</text>
+    <rect class="btn-secondary" x="265" y="120" width="50" height="16" rx="4"/>
+    <text x="290" y="131" text-anchor="middle" class="btn-text-dark" font-size="6">Entregue</text>
+    
+    <!-- Info sections -->
+    <rect class="card" x="60" y="145" width="150" height="50" rx="6"/>
+    <text x="70" y="160" class="subtitle" font-size="8">Cliente</text>
+    <text x="70" y="175" class="text">Rodrigo Reis</text>
+    <text x="70" y="187" class="text-muted">(21) 97361-8236</text>
+    
+    <rect class="card" x="220" y="145" width="150" height="50" rx="6"/>
+    <text x="230" y="160" class="subtitle" font-size="8">Equipamento</text>
+    <text x="230" y="175" class="text">Esmerilhadeira Dewalt</text>
+    <text x="230" y="187" class="text-muted">DW4120</text>
+    
+    <!-- Diagnosis -->
+    <rect class="card" x="60" y="200" width="310" height="45" rx="6"/>
+    <text x="70" y="215" class="subtitle" font-size="8">Diagnóstico</text>
+    <text x="70" y="230" class="text">Carvão travado por sujeira, necessita limpeza</text>
+    
+    <!-- Items table -->
+    <text x="60" y="260" class="subtitle" font-size="9">Itens (Serviços e Peças)</text>
+    <rect class="table-header" x="60" y="265" width="310" height="18" rx="4"/>
+    <text x="70" y="277" class="text-muted" font-size="6">Qtd</text>
+    <text x="100" y="277" class="text-muted" font-size="6">Descrição</text>
+    <text x="280" y="277" class="text-muted" font-size="6">Valor</text>
+    
+    <rect class="table-row" x="60" y="283" width="310" height="18"/>
+    <text x="70" y="295" class="text" font-size="7">1</text>
+    <text x="100" y="295" class="text" font-size="7">Mão de obra</text>
+    <text x="280" y="295" class="text" font-size="7">R$ 50,00</text>
+    
+    <!-- Total -->
+    <rect fill="#f0fdf4" x="220" y="305" width="150" height="25" rx="4"/>
+    <text x="230" y="322" class="subtitle" fill="#059669">VALOR TOTAL: R$ 50,00</text>
+  </g>
+
+  <!-- 3.3 Formulário Nova OS -->
+  <g transform="translate(870, 490)">
+    <rect class="screen" width="350" height="340"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="340" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="328"/>
+    
+    <rect class="screen-header" x="50" y="0" width="300" height="35"/>
+    <text x="70" y="22" class="screen-title">Nova Ordem de Serviço</text>
+    
+    <!-- Form fields -->
+    <text x="60" y="55" class="label">Cliente *</text>
+    <rect class="input" x="60" y="60" width="200" height="26" rx="4"/>
+    <text x="70" y="77" class="text-muted">Selecione o cliente</text>
+    <rect class="btn-primary" x="265" y="60" width="70" height="26" rx="4"/>
+    <text x="300" y="77" text-anchor="middle" class="btn-text" font-size="7">+ Novo</text>
+    
+    <text x="60" y="100" class="label">Equipamento *</text>
+    <rect class="input" x="60" y="105" width="200" height="26" rx="4"/>
+    <text x="70" y="122" class="text-muted">Selecione ou cadastre</text>
+    <rect class="btn-primary" x="265" y="105" width="70" height="26" rx="4"/>
+    <text x="300" y="122" text-anchor="middle" class="btn-text" font-size="7">+ Novo</text>
+    
+    <text x="60" y="145" class="label">Técnico Responsável</text>
+    <rect class="input" x="60" y="150" width="275" height="26" rx="4"/>
+    
+    <text x="60" y="190" class="label">Defeito Relatado</text>
+    <rect class="input" x="60" y="195" width="275" height="45" rx="4"/>
+    <text x="70" y="215" class="text-muted">Descreva o problema...</text>
+    
+    <!-- Items section -->
+    <text x="60" y="255" class="subtitle" font-size="9">Itens (Serviços e Peças)</text>
+    <rect class="card" x="60" y="260" width="275" height="35" rx="4"/>
+    <text x="70" y="275" class="text-muted" font-size="7">Qtd</text>
+    <rect class="input" x="90" y="267" width="30" height="20" rx="3"/>
+    <text x="130" y="275" class="text-muted" font-size="7">Descrição</text>
+    <rect class="input" x="170" y="267" width="100" height="20" rx="3"/>
+    <text x="280" y="275" class="text-muted" font-size="7">Valor</text>
+    <rect class="input" x="305" y="267" width="50" height="20" rx="3"/>
+    
+    <rect class="btn-secondary" x="60" y="300" width="80" height="24" rx="4"/>
+    <text x="100" y="315" text-anchor="middle" class="btn-text-dark" font-size="7">+ Adicionar Item</text>
+    
+    <!-- Submit -->
+    <rect class="btn-primary" x="220" y="300" width="115" height="28" rx="4"/>
+    <text x="277" y="318" text-anchor="middle" class="btn-text">Salvar OS</text>
+  </g>
+  
+  <!-- 3.4 Adicionar ao Lote -->
+  <g transform="translate(1260, 490)">
+    <rect class="screen" width="320" height="280"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="280" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="268"/>
+    
+    <rect class="screen-header" x="50" y="0" width="270" height="35"/>
+    <text x="70" y="22" class="screen-title">Adicionar ao Lote #0025</text>
+    
+    <!-- Info -->
+    <rect fill="#dbeafe" x="60" y="45" width="245" height="35" rx="6"/>
+    <text x="75" y="60" class="text" fill="#1e40af" font-size="8">Cliente: Rodrigo Reis</text>
+    <text x="75" y="73" class="text-muted" font-size="7">Novo equipamento será adicionado ao lote</text>
+    
+    <!-- Form -->
+    <text x="60" y="100" class="label">Equipamento *</text>
+    <rect class="input" x="60" y="105" width="180" height="26" rx="4"/>
+    <rect class="btn-primary" x="245" y="105" width="60" height="26" rx="4"/>
+    <text x="275" y="122" text-anchor="middle" class="btn-text" font-size="7">+ Novo</text>
+    
+    <text x="60" y="145" class="label">Técnico</text>
+    <rect class="input" x="60" y="150" width="245" height="26" rx="4"/>
+    
+    <text x="60" y="190" class="label">Defeito Relatado</text>
+    <rect class="input" x="60" y="195" width="245" height="40" rx="4"/>
+    
+    <!-- Buttons -->
+    <rect class="btn-secondary" x="60" y="245" width="80" height="26" rx="4"/>
+    <text x="100" y="262" text-anchor="middle" class="btn-text-dark">Cancelar</text>
+    <rect class="btn-primary" x="180" y="245" width="125" height="26" rx="4"/>
+    <text x="242" y="262" text-anchor="middle" class="btn-text">Adicionar ao Lote</text>
+  </g>
+
+  <!-- ==================== SEÇÃO 4: CLIENTES ==================== -->
+  <text x="50" y="870" class="section-title">4. Clientes</text>
+  
+  <!-- 4.1 Lista de Clientes -->
+  <g transform="translate(50, 890)">
+    <rect class="screen" width="320" height="260"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="260" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="248"/>
+    <rect class="sidebar-active" x="5" y="80" width="40" height="20" rx="4"/>
+    
+    <rect class="screen-header" x="50" y="0" width="270" height="35"/>
+    <text x="70" y="22" class="screen-title">Clientes</text>
+    <rect class="btn-primary" x="210" y="8" width="70" height="20" rx="4"/>
+    <text x="245" y="21" text-anchor="middle" class="btn-text" font-size="7">+ Novo</text>
+    
+    <!-- Search -->
+    <rect class="input" x="60" y="45" width="200" height="24" rx="4"/>
+    <text x="70" y="60" class="text-muted">🔍 Buscar cliente...</text>
+    
+    <!-- Table -->
+    <rect class="table-header" x="60" y="78" width="250" height="20" rx="4"/>
+    <text x="70" y="91" class="text-muted" font-size="7">Nome</text>
+    <text x="160" y="91" class="text-muted" font-size="7">Telefone</text>
+    <text x="250" y="91" class="text-muted" font-size="7">OS</text>
+    
+    <rect class="table-row" x="60" y="98" width="250" height="26"/>
+    <text x="70" y="115" class="text">João Silva</text>
+    <text x="160" y="115" class="text">(21) 99999-1234</text>
+    <text x="255" y="115" class="text" text-anchor="middle">15</text>
+    
+    <rect class="table-row" x="60" y="124" width="250" height="26"/>
+    <text x="70" y="141" class="text">Maria Santos</text>
+    <text x="160" y="141" class="text">(21) 98888-5678</text>
+    <text x="255" y="141" class="text" text-anchor="middle">8</text>
+    
+    <rect class="table-row" x="60" y="150" width="250" height="26"/>
+    <text x="70" y="167" class="text">Carlos Pereira</text>
+    <text x="160" y="167" class="text">(21) 97777-9012</text>
+    <text x="255" y="167" class="text" text-anchor="middle">23</text>
+    
+    <!-- Pagination -->
+    <text x="60" y="200" class="text-muted">32 clientes</text>
+  </g>
+  
+  <!-- 4.2 Detalhes do Cliente -->
+  <g transform="translate(400, 890)">
+    <rect class="screen" width="320" height="260"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="260" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="248"/>
+    
+    <rect class="screen-header" x="50" y="0" width="270" height="35"/>
+    <text x="70" y="22" class="screen-title">João Silva</text>
+    
+    <!-- Actions -->
+    <rect class="btn-secondary" x="60" y="42" width="50" height="18" rx="4"/>
+    <text x="85" y="54" text-anchor="middle" class="btn-text-dark" font-size="6">← Voltar</text>
+    <rect class="btn-primary" x="200" y="42" width="55" height="18" rx="4"/>
+    <text x="227" y="54" text-anchor="middle" class="btn-text" font-size="6">✏️ Editar</text>
+    <rect class="btn-danger" x="260" y="42" width="50" height="18" rx="4"/>
+    <text x="285" y="54" text-anchor="middle" class="btn-text" font-size="6">🗑️</text>
+    
+    <!-- Info cards -->
+    <rect class="card" x="60" y="68" width="250" height="55" rx="6"/>
+    <text x="70" y="85" class="subtitle" font-size="8">Informações</text>
+    <text x="70" y="100" class="text">CPF: 123.456.789-00</text>
+    <text x="70" y="112" class="text">Tel: (21) 99999-1234</text>
+    <text x="180" y="100" class="text">Email: joao@email.com</text>
+    
+    <!-- OS History -->
+    <text x="60" y="140" class="subtitle" font-size="9">Histórico de OS</text>
+    <rect class="table-header" x="60" y="148" width="250" height="18" rx="4"/>
+    <text x="70" y="160" class="text-muted" font-size="6">Nº</text>
+    <text x="100" y="160" class="text-muted" font-size="6">Equipamento</text>
+    <text x="200" y="160" class="text-muted" font-size="6">Status</text>
+    
+    <rect class="table-row" x="60" y="166" width="250" height="22"/>
+    <text x="70" y="180" class="text" font-size="7">#0120</text>
+    <text x="100" y="180" class="text" font-size="7">Furadeira Bosch</text>
+    <rect class="status-entregue" x="200" y="172" width="50" height="12" rx="3"/>
+    <text x="225" y="181" text-anchor="middle" class="btn-text" font-size="5">Entregue</text>
+    
+    <rect class="table-row" x="60" y="188" width="250" height="22"/>
+    <text x="70" y="202" class="text" font-size="7">#0098</text>
+    <text x="100" y="202" class="text" font-size="7">Serra Makita</text>
+    <rect class="status-entregue" x="200" y="194" width="50" height="12" rx="3"/>
+  </g>
+  
+  <!-- 4.3 Formulário Cliente -->
+  <g transform="translate(750, 890)">
+    <rect class="screen" width="300" height="260"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="260" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="248"/>
+    
+    <rect class="screen-header" x="50" y="0" width="250" height="35"/>
+    <text x="70" y="22" class="screen-title">Novo Cliente</text>
+    
+    <!-- Form -->
+    <text x="60" y="55" class="label">Nome *</text>
+    <rect class="input" x="60" y="60" width="225" height="24" rx="4"/>
+    
+    <text x="60" y="98" class="label">CPF/CNPJ</text>
+    <rect class="input" x="60" y="103" width="225" height="24" rx="4"/>
+    
+    <text x="60" y="141" class="label">Telefone</text>
+    <rect class="input" x="60" y="146" width="120" height="24" rx="4"/>
+    <text x="190" y="141" class="label">Telefone 2</text>
+    <rect class="input" x="190" y="146" width="95" height="24" rx="4"/>
+    
+    <text x="60" y="184" class="label">Email</text>
+    <rect class="input" x="60" y="189" width="225" height="24" rx="4"/>
+    
+    <!-- Buttons -->
+    <rect class="btn-secondary" x="60" y="225" width="80" height="26" rx="4"/>
+    <text x="100" y="242" text-anchor="middle" class="btn-text-dark">Cancelar</text>
+    <rect class="btn-primary" x="180" y="225" width="105" height="26" rx="4"/>
+    <text x="232" y="242" text-anchor="middle" class="btn-text">Salvar</text>
+  </g>
+
+  <!-- ==================== SEÇÃO 5: EQUIPAMENTOS ==================== -->
+  <text x="50" y="1200" class="section-title">5. Equipamentos</text>
+  
+  <!-- 5.1 Lista de Equipamentos -->
+  <g transform="translate(50, 1220)">
+    <rect class="screen" width="320" height="250"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="250" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="238"/>
+    <rect class="sidebar-active" x="5" y="110" width="40" height="20" rx="4"/>
+    
+    <rect class="screen-header" x="50" y="0" width="270" height="35"/>
+    <text x="70" y="22" class="screen-title">Equipamentos</text>
+    <rect class="btn-primary" x="210" y="8" width="70" height="20" rx="4"/>
+    <text x="245" y="21" text-anchor="middle" class="btn-text" font-size="7">+ Novo</text>
+    
+    <!-- Search -->
+    <rect class="input" x="60" y="45" width="200" height="24" rx="4"/>
+    <text x="70" y="60" class="text-muted">🔍 Buscar equipamento...</text>
+    
+    <!-- Table -->
+    <rect class="table-header" x="60" y="78" width="250" height="20" rx="4"/>
+    <text x="70" y="91" class="text-muted" font-size="7">Tipo</text>
+    <text x="130" y="91" class="text-muted" font-size="7">Marca/Modelo</text>
+    <text x="230" y="91" class="text-muted" font-size="7">Cliente</text>
+    
+    <rect class="table-row" x="60" y="98" width="250" height="26"/>
+    <text x="70" y="115" class="text" font-size="8">Furadeira</text>
+    <text x="130" y="115" class="text" font-size="8">Bosch GSB 13</text>
+    <text x="230" y="115" class="text" font-size="8">João Silva</text>
+    
+    <rect class="table-row" x="60" y="124" width="250" height="26"/>
+    <text x="70" y="141" class="text" font-size="8">Esmerilhadeira</text>
+    <text x="130" y="141" class="text" font-size="8">Dewalt DW4120</text>
+    <text x="230" y="141" class="text" font-size="8">Rodrigo</text>
+    
+    <rect class="table-row" x="60" y="150" width="250" height="26"/>
+    <text x="70" y="167" class="text" font-size="8">Serra Circular</text>
+    <text x="130" y="167" class="text" font-size="8">Makita 5007</text>
+    <text x="230" y="167" class="text" font-size="8">Carlos</text>
+  </g>
+  
+  <!-- 5.2 Histórico do Equipamento -->
+  <g transform="translate(400, 1220)">
+    <rect class="screen" width="320" height="250"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="250" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="238"/>
+    
+    <rect class="screen-header" x="50" y="0" width="270" height="35"/>
+    <text x="70" y="22" class="screen-title">Histórico - Furadeira Bosch</text>
+    
+    <rect class="btn-secondary" x="60" y="42" width="50" height="18" rx="4"/>
+    <text x="85" y="54" text-anchor="middle" class="btn-text-dark" font-size="6">← Voltar</text>
+    
+    <!-- Equipment info -->
+    <rect class="card" x="60" y="68" width="250" height="40" rx="6"/>
+    <text x="70" y="83" class="text">Marca: Bosch | Modelo: GSB 13</text>
+    <text x="70" y="98" class="text-muted">Nº Série: ABC123456</text>
+    
+    <!-- History -->
+    <text x="60" y="125" class="subtitle" font-size="9">Histórico de Serviços</text>
+    <rect class="table-header" x="60" y="133" width="250" height="18" rx="4"/>
+    <text x="70" y="145" class="text-muted" font-size="6">Data</text>
+    <text x="120" y="145" class="text-muted" font-size="6">OS</text>
+    <text x="160" y="145" class="text-muted" font-size="6">Serviço</text>
+    <text x="260" y="145" class="text-muted" font-size="6">Valor</text>
+    
+    <rect class="table-row" x="60" y="151" width="250" height="22"/>
+    <text x="70" y="165" class="text" font-size="7">15/07/26</text>
+    <text x="120" y="165" class="text" font-size="7">#0120</text>
+    <text x="160" y="165" class="text" font-size="7">Troca carvão</text>
+    <text x="260" y="165" class="text" font-size="7">R$ 80</text>
+    
+    <rect class="table-row" x="60" y="173" width="250" height="22"/>
+    <text x="70" y="187" class="text" font-size="7">10/03/26</text>
+    <text x="120" y="187" class="text" font-size="7">#0085</text>
+    <text x="160" y="187" class="text" font-size="7">Limpeza geral</text>
+    <text x="260" y="187" class="text" font-size="7">R$ 50</text>
+  </g>
+  
+  <!-- 5.3 Form Equipamento -->
+  <g transform="translate(750, 1220)">
+    <rect class="screen" width="300" height="250"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="250" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="238"/>
+    
+    <rect class="screen-header" x="50" y="0" width="250" height="35"/>
+    <text x="70" y="22" class="screen-title">Novo Equipamento</text>
+    
+    <!-- Form -->
+    <text x="60" y="55" class="label">Tipo *</text>
+    <rect class="input" x="60" y="60" width="225" height="24" rx="4"/>
+    <text x="70" y="76" class="text-muted">Ex: Furadeira, Serra, Esmerilhadeira</text>
+    
+    <text x="60" y="98" class="label">Marca *</text>
+    <rect class="input" x="60" y="103" width="110" height="24" rx="4"/>
+    <text x="180" y="98" class="label">Modelo</text>
+    <rect class="input" x="180" y="103" width="105" height="24" rx="4"/>
+    
+    <text x="60" y="141" class="label">Nº de Série</text>
+    <rect class="input" x="60" y="146" width="225" height="24" rx="4"/>
+    
+    <text x="60" y="184" class="label">Cliente (Dono)</text>
+    <rect class="input" x="60" y="189" width="225" height="24" rx="4"/>
+    
+    <!-- Buttons -->
+    <rect class="btn-secondary" x="60" y="220" width="80" height="24" rx="4"/>
+    <text x="100" y="235" text-anchor="middle" class="btn-text-dark">Cancelar</text>
+    <rect class="btn-primary" x="180" y="220" width="105" height="24" rx="4"/>
+    <text x="232" y="235" text-anchor="middle" class="btn-text">Salvar</text>
+  </g>
+
+  <!-- ==================== SEÇÃO 6: TÉCNICOS ==================== -->
+  <text x="1100" y="870" class="section-title">6. Técnicos</text>
+  
+  <!-- 6.1 Lista de Técnicos -->
+  <g transform="translate(1100, 890)">
+    <rect class="screen" width="300" height="220"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="220" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="208"/>
+    <rect class="sidebar-active" x="5" y="140" width="40" height="20" rx="4"/>
+    
+    <rect class="screen-header" x="50" y="0" width="250" height="35"/>
+    <text x="70" y="22" class="screen-title">Técnicos</text>
+    <rect class="btn-primary" x="190" y="8" width="70" height="20" rx="4"/>
+    <text x="225" y="21" text-anchor="middle" class="btn-text" font-size="7">+ Novo</text>
+    
+    <!-- Table -->
+    <rect class="table-header" x="60" y="45" width="230" height="20" rx="4"/>
+    <text x="70" y="58" class="text-muted" font-size="7">Nome</text>
+    <text x="150" y="58" class="text-muted" font-size="7">Especialidade</text>
+    <text x="240" y="58" class="text-muted" font-size="7">Ações</text>
+    
+    <rect class="table-row" x="60" y="65" width="230" height="28"/>
+    <text x="70" y="83" class="text">Carlos Técnico</text>
+    <text x="150" y="83" class="text">Geral</text>
+    <rect class="btn-secondary" x="235" y="72" width="20" height="16" rx="3"/>
+    <text x="245" y="83" text-anchor="middle" class="text" font-size="8">✏️</text>
+    <rect class="btn-danger" x="260" y="72" width="20" height="16" rx="3"/>
+    <text x="270" y="83" text-anchor="middle" class="btn-text" font-size="8">🗑️</text>
+    
+    <rect class="table-row" x="60" y="93" width="230" height="28"/>
+    <text x="70" y="111" class="text">João Eletricista</text>
+    <text x="150" y="111" class="text">Elétrica</text>
+    <rect class="btn-secondary" x="235" y="100" width="20" height="16" rx="3"/>
+    <rect class="btn-danger" x="260" y="100" width="20" height="16" rx="3"/>
+    
+    <rect class="table-row" x="60" y="121" width="230" height="28"/>
+    <text x="70" y="139" class="text">Pedro Mecânico</text>
+    <text x="150" y="139" class="text">Mecânica</text>
+    <rect class="btn-secondary" x="235" y="128" width="20" height="16" rx="3"/>
+    <rect class="btn-danger" x="260" y="128" width="20" height="16" rx="3"/>
+  </g>
+  
+  <!-- 6.2 Form Técnico -->
+  <g transform="translate(1430, 890)">
+    <rect class="screen" width="280" height="220"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="220" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="208"/>
+    
+    <rect class="screen-header" x="50" y="0" width="230" height="35"/>
+    <text x="70" y="22" class="screen-title">Novo Técnico</text>
+    
+    <!-- Form -->
+    <text x="60" y="55" class="label">Nome *</text>
+    <rect class="input" x="60" y="60" width="205" height="26" rx="4"/>
+    
+    <text x="60" y="100" class="label">Especialidade</text>
+    <rect class="input" x="60" y="105" width="205" height="26" rx="4"/>
+    <text x="70" y="122" class="text-muted">Ex: Elétrica, Mecânica, Geral</text>
+    
+    <text x="60" y="150" class="label">Telefone</text>
+    <rect class="input" x="60" y="155" width="205" height="26" rx="4"/>
+    
+    <!-- Buttons -->
+    <rect class="btn-secondary" x="60" y="190" width="80" height="24" rx="4"/>
+    <text x="100" y="205" text-anchor="middle" class="btn-text-dark">Cancelar</text>
+    <rect class="btn-primary" x="160" y="190" width="105" height="24" rx="4"/>
+    <text x="212" y="205" text-anchor="middle" class="btn-text">Salvar</text>
+  </g>
+
+  <!-- ==================== SEÇÃO 7: CONFIGURAÇÕES ==================== -->
+  <text x="1100" y="1200" class="section-title">7. Configurações da Empresa</text>
+  
+  <g transform="translate(1100, 1220)">
+    <rect class="screen" width="380" height="320"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="320" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="308"/>
+    <rect class="sidebar-active" x="5" y="170" width="40" height="20" rx="4"/>
+    
+    <rect class="screen-header" x="50" y="0" width="330" height="35"/>
+    <text x="70" y="22" class="screen-title">Configurações da Empresa</text>
+    
+    <!-- Logo upload -->
+    <rect fill="#f1f5f9" x="60" y="45" width="100" height="80" rx="8" stroke="#cbd5e1" stroke-dasharray="4"/>
+    <text x="110" y="85" text-anchor="middle" class="text-muted">📷</text>
+    <text x="110" y="100" text-anchor="middle" class="text-muted" font-size="7">Clique para</text>
+    <text x="110" y="112" text-anchor="middle" class="text-muted" font-size="7">upload logo</text>
+    
+    <!-- Company info -->
+    <text x="175" y="55" class="label">Nome da Empresa *</text>
+    <rect class="input" x="175" y="60" width="195" height="24" rx="4"/>
+    <text x="185" y="76" class="text">Eletrotécnica São Miguel</text>
+    
+    <text x="175" y="98" class="label">Telefone</text>
+    <rect class="input" x="175" y="103" width="95" height="24" rx="4"/>
+    <text x="280" y="98" class="label">Telefone 2</text>
+    <rect class="input" x="280" y="103" width="90" height="24" rx="4"/>
+    
+    <!-- Address -->
+    <text x="60" y="145" class="subtitle" font-size="9">Endereço</text>
+    <text x="60" y="165" class="label">Rua</text>
+    <rect class="input" x="60" y="170" width="200" height="22" rx="4"/>
+    <text x="270" y="165" class="label">Nº</text>
+    <rect class="input" x="270" y="170" width="50" height="22" rx="4"/>
+    <text x="330" y="165" class="label">Bairro</text>
+    <rect class="input" x="330" y="170" width="90" height="22" rx="4"/>
+    
+    <text x="60" y="205" class="label">Cidade</text>
+    <rect class="input" x="60" y="210" width="150" height="22" rx="4"/>
+    <text x="220" y="205" class="label">UF</text>
+    <rect class="input" x="220" y="210" width="50" height="22" rx="4"/>
+    
+    <!-- Texts -->
+    <text x="60" y="250" class="label">Texto do Cabeçalho</text>
+    <rect class="input" x="60" y="255" width="310" height="22" rx="4"/>
+    
+    <text x="60" y="290" class="label">Texto do Rodapé (Aviso Legal)</text>
+    <rect class="input" x="60" y="295" width="310" height="22" rx="4"/>
+    
+    <!-- Save -->
+    <rect class="btn-primary" x="280" y="325" width="90" height="28" rx="4"/>
+    <text x="325" y="343" text-anchor="middle" class="btn-text">Salvar</text>
+  </g>
+
+  <!-- ==================== SEÇÃO 8: MODAIS ==================== -->
+  <text x="50" y="1530" class="section-title">8. Modais e Componentes</text>
+  
+  <!-- 8.1 Modal Confirmação -->
+  <g transform="translate(50, 1550)">
+    <rect fill="rgba(0,0,0,0.3)" width="200" height="140" rx="8"/>
+    <rect class="modal" x="20" y="25" width="160" height="90" rx="8"/>
+    <text x="100" y="50" text-anchor="middle" class="subtitle">Confirmar exclusão?</text>
+    <text x="100" y="70" text-anchor="middle" class="text-muted" font-size="7">Esta ação não pode ser desfeita</text>
+    <rect class="btn-secondary" x="35" y="85" width="55" height="20" rx="4"/>
+    <text x="62" y="99" text-anchor="middle" class="btn-text-dark" font-size="7">Cancelar</text>
+    <rect class="btn-danger" x="100" y="85" width="55" height="20" rx="4"/>
+    <text x="127" y="99" text-anchor="middle" class="btn-text" font-size="7">Excluir</text>
+    <text x="100" y="160" text-anchor="middle" class="label">ConfirmModal</text>
+  </g>
+  
+  <!-- 8.2 Modal Quick Client -->
+  <g transform="translate(280, 1550)">
+    <rect fill="rgba(0,0,0,0.3)" width="220" height="180" rx="8"/>
+    <rect class="modal" x="15" y="15" width="190" height="145" rx="8"/>
+    <text x="110" y="35" text-anchor="middle" class="subtitle">Novo Cliente Rápido</text>
+    
+    <text x="25" y="55" class="label" font-size="7">Nome *</text>
+    <rect class="input" x="25" y="58" width="160" height="20" rx="4"/>
+    
+    <text x="25" y="88" class="label" font-size="7">Telefone</text>
+    <rect class="input" x="25" y="91" width="160" height="20" rx="4"/>
+    
+    <rect class="btn-secondary" x="25" y="120" width="60" height="20" rx="4"/>
+    <text x="55" y="134" text-anchor="middle" class="btn-text-dark" font-size="7">Cancelar</text>
+    <rect class="btn-primary" x="125" y="120" width="60" height="20" rx="4"/>
+    <text x="155" y="134" text-anchor="middle" class="btn-text" font-size="7">Salvar</text>
+    <text x="110" y="200" text-anchor="middle" class="label">QuickClientModal</text>
+  </g>
+  
+  <!-- 8.3 Modal Quick Equipment -->
+  <g transform="translate(530, 1550)">
+    <rect fill="rgba(0,0,0,0.3)" width="220" height="200" rx="8"/>
+    <rect class="modal" x="15" y="15" width="190" height="165" rx="8"/>
+    <text x="110" y="35" text-anchor="middle" class="subtitle">Novo Equipamento Rápido</text>
+    
+    <text x="25" y="55" class="label" font-size="7">Tipo *</text>
+    <rect class="input" x="25" y="58" width="160" height="18" rx="4"/>
+    
+    <text x="25" y="83" class="label" font-size="7">Marca *</text>
+    <rect class="input" x="25" y="86" width="75" height="18" rx="4"/>
+    <text x="110" y="83" class="label" font-size="7">Modelo</text>
+    <rect class="input" x="110" y="86" width="75" height="18" rx="4"/>
+    
+    <text x="25" y="113" class="label" font-size="7">Nº Série</text>
+    <rect class="input" x="25" y="116" width="160" height="18" rx="4"/>
+    
+    <rect class="btn-secondary" x="25" y="145" width="60" height="20" rx="4"/>
+    <text x="55" y="159" text-anchor="middle" class="btn-text-dark" font-size="7">Cancelar</text>
+    <rect class="btn-primary" x="125" y="145" width="60" height="20" rx="4"/>
+    <text x="155" y="159" text-anchor="middle" class="btn-text" font-size="7">Salvar</text>
+    <text x="110" y="220" text-anchor="middle" class="label">QuickEquipmentModal</text>
+  </g>
+  
+  <!-- 8.4 Modal PDF Lote -->
+  <g transform="translate(780, 1550)">
+    <rect fill="rgba(0,0,0,0.3)" width="280" height="260" rx="8"/>
+    <rect class="modal" x="15" y="15" width="250" height="225" rx="8"/>
+    <text x="140" y="38" text-anchor="middle" class="subtitle">PDF do Lote #0025</text>
+    
+    <text x="30" y="58" class="label" font-size="8">Formato do PDF:</text>
+    <rect fill="#eff6ff" x="30" y="65" width="100" height="45" rx="6" stroke="#2563eb" stroke-width="2"/>
+    <text x="80" y="85" text-anchor="middle" class="text" font-size="8">📄 Individual</text>
+    <text x="80" y="100" text-anchor="middle" class="text-muted" font-size="6">Uma página por OS</text>
+    
+    <rect class="card" x="140" y="65" width="100" height="45" rx="6"/>
+    <text x="190" y="85" text-anchor="middle" class="text" font-size="8">📋 Resumo</text>
+    <text x="190" y="100" text-anchor="middle" class="text-muted" font-size="6">Tabela com total</text>
+    
+    <text x="30" y="125" class="label" font-size="8">Filtrar por status:</text>
+    <rect class="status-aberta" x="30" y="130" width="50" height="16" rx="4"/>
+    <text x="55" y="141" text-anchor="middle" class="btn-text" font-size="6">Abertas</text>
+    <rect class="status-concluida" x="85" y="130" width="60" height="16" rx="4"/>
+    <text x="115" y="141" text-anchor="middle" class="btn-text" font-size="6">Concluídas</text>
+    <rect class="status-entregue" x="150" y="130" width="55" height="16" rx="4"/>
+    <text x="177" y="141" text-anchor="middle" class="btn-text" font-size="6">Entregues</text>
+    
+    <text x="30" y="165" class="label" font-size="8">Equipamentos (2 selecionados):</text>
+    <rect class="card" x="30" y="170" width="210" height="40" rx="4"/>
+    <rect fill="#f0f9ff" x="35" y="175" width="200" height="14"/>
+    <text x="45" y="185" class="text" font-size="7">☑️ 0025-A - Esmerilhadeira Dewalt</text>
+    <rect fill="#ffffff" x="35" y="191" width="200" height="14"/>
+    <text x="45" y="201" class="text" font-size="7">☑️ 0025-B - Plaina HLT DX36</text>
+    
+    <rect class="btn-secondary" x="30" y="218" width="60" height="18" rx="4"/>
+    <text x="60" y="230" text-anchor="middle" class="btn-text-dark" font-size="7">Cancelar</text>
+    <rect class="btn-primary" x="160" y="218" width="80" height="18" rx="4"/>
+    <text x="200" y="230" text-anchor="middle" class="btn-text" font-size="7">🖨️ Gerar PDF</text>
+    <text x="140" y="280" text-anchor="middle" class="label">LotePdfModal</text>
+  </g>
+  
+  <!-- 8.5 Global Search -->
+  <g transform="translate(1090, 1550)">
+    <rect fill="rgba(0,0,0,0.3)" width="250" height="180" rx="8"/>
+    <rect class="modal" x="15" y="15" width="220" height="145" rx="8"/>
+    
+    <rect class="input" x="25" y="25" width="200" height="28" rx="4"/>
+    <text x="35" y="43" class="text">🔍 Buscar em todo sistema...</text>
+    
+    <text x="30" y="70" class="text-muted" font-size="7">Resultados:</text>
+    
+    <rect fill="#f8fafc" x="25" y="75" width="200" height="25" rx="4"/>
+    <text x="35" y="88" class="text" font-size="7">👥 João Silva</text>
+    <text x="35" y="97" class="text-muted" font-size="6">Cliente</text>
+    
+    <rect fill="#ffffff" x="25" y="100" width="200" height="25" rx="4"/>
+    <text x="35" y="113" class="text" font-size="7">📋 OS #0120 - Furadeira Bosch</text>
+    <text x="35" y="122" class="text-muted" font-size="6">Ordem de Serviço</text>
+    
+    <rect fill="#ffffff" x="25" y="125" width="200" height="25" rx="4"/>
+    <text x="35" y="138" class="text" font-size="7">🔧 Serra Makita 5007</text>
+    <text x="35" y="147" class="text-muted" font-size="6">Equipamento</text>
+    
+    <text x="140" y="200" text-anchor="middle" class="label">GlobalSearch (Ctrl+K)</text>
+  </g>
+  
+  <!-- 8.6 PIN Modal -->
+  <g transform="translate(1370, 1550)">
+    <rect fill="rgba(0,0,0,0.3)" width="200" height="160" rx="8"/>
+    <rect class="modal" x="20" y="20" width="160" height="120" rx="8"/>
+    <text x="100" y="45" text-anchor="middle" class="subtitle">Digite o PIN</text>
+    
+    <rect class="input" x="35" y="55" width="130" height="30" rx="4"/>
+    <text x="100" y="75" text-anchor="middle" class="title">● ● ● ●</text>
+    
+    <rect class="btn-secondary" x="35" y="95" width="55" height="22" rx="4"/>
+    <text x="62" y="110" text-anchor="middle" class="btn-text-dark" font-size="7">Cancelar</text>
+    <rect class="btn-primary" x="100" y="95" width="65" height="22" rx="4"/>
+    <text x="132" y="110" text-anchor="middle" class="btn-text" font-size="7">Confirmar</text>
+    <text x="100" y="200" text-anchor="middle" class="label">PinModal</text>
+  </g>
+
+  <!-- ==================== SEÇÃO 9: MASTER ADMIN ==================== -->
+  <text x="50" y="1830" class="section-title">9. Painel Master Admin (Super Admin)</text>
+  
+  <!-- 9.1 Master Dashboard -->
+  <g transform="translate(50, 1850)">
+    <rect class="screen" width="420" height="340"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="340" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="328"/>
+    <rect fill="#7c3aed" x="5" y="30" width="40" height="20" rx="4"/>
+    <text x="25" y="43" text-anchor="middle" class="sidebar-text" fill="#fff" font-size="6">MASTER</text>
+    
+    <rect fill="#7c3aed" x="50" y="0" width="370" height="35"/>
+    <text x="70" y="22" class="screen-title">Painel Master</text>
+    <rect fill="#6d28d9" x="320" y="8" width="70" height="20" rx="4"/>
+    <text x="355" y="21" text-anchor="middle" class="btn-text" font-size="7">+ Tenant</text>
+    
+    <!-- System Status -->
+    <text x="60" y="55" class="subtitle" font-size="10">Status do Sistema</text>
+    
+    <rect class="card" x="60" y="62" width="105" height="55" rx="6"/>
+    <text x="70" y="78" class="text-muted" font-size="7">🗄️ Banco (Neon)</text>
+    <rect fill="#dcfce7" x="70" y="85" width="50" height="14" rx="3"/>
+    <text x="95" y="95" text-anchor="middle" fill="#059669" font-size="7">Online</text>
+    <text x="70" y="112" class="text" font-size="7">Latência: 45ms</text>
+    
+    <rect class="card" x="175" y="62" width="105" height="55" rx="6"/>
+    <text x="185" y="78" class="text-muted" font-size="7">💾 Backup (GitHub)</text>
+    <rect fill="#dcfce7" x="185" y="85" width="50" height="14" rx="3"/>
+    <text x="210" y="95" text-anchor="middle" fill="#059669" font-size="7">OK</text>
+    <text x="185" y="112" class="text" font-size="7">Último: 08:48</text>
+    
+    <rect class="card" x="290" y="62" width="105" height="55" rx="6"/>
+    <text x="300" y="78" class="text-muted" font-size="7">🚀 Deploy (Render)</text>
+    <rect fill="#dcfce7" x="300" y="85" width="50" height="14" rx="3"/>
+    <text x="325" y="95" text-anchor="middle" fill="#059669" font-size="7">Live</text>
+    <text x="300" y="112" class="text" font-size="7">uptime: 99.9%</text>
+    
+    <!-- Metrics -->
+    <text x="60" y="135" class="subtitle" font-size="10">Métricas Globais</text>
+    <rect class="card" x="60" y="142" width="80" height="45" rx="6"/>
+    <text x="70" y="158" class="text-muted" font-size="7">Tenants</text>
+    <text x="70" y="178" class="title" fill="#7c3aed">12</text>
+    
+    <rect class="card" x="150" y="142" width="80" height="45" rx="6"/>
+    <text x="160" y="158" class="text-muted" font-size="7">Usuários</text>
+    <text x="160" y="178" class="title" fill="#2563eb">45</text>
+    
+    <rect class="card" x="240" y="142" width="80" height="45" rx="6"/>
+    <text x="250" y="158" class="text-muted" font-size="7">OS Totais</text>
+    <text x="250" y="178" class="title" fill="#059669">1.2k</text>
+    
+    <!-- Tenants list -->
+    <text x="60" y="205" class="subtitle" font-size="10">Tenants Ativos</text>
+    <rect class="table-header" x="60" y="212" width="335" height="20" rx="4"/>
+    <text x="70" y="225" class="text-muted" font-size="7">Empresa</text>
+    <text x="180" y="225" class="text-muted" font-size="7">Plano</text>
+    <text x="240" y="225" class="text-muted" font-size="7">OS</text>
+    <text x="290" y="225" class="text-muted" font-size="7">Status</text>
+    <text x="360" y="225" class="text-muted" font-size="7">Ações</text>
+    
+    <rect class="table-row" x="60" y="232" width="335" height="26"/>
+    <text x="70" y="249" class="text" font-size="7">Eletrotécnica São Miguel</text>
+    <text x="180" y="249" class="text" font-size="7">Pro</text>
+    <text x="240" y="249" class="text" font-size="7">127</text>
+    <rect fill="#dcfce7" x="280" y="240" width="35" height="14" rx="3"/>
+    <text x="297" y="250" text-anchor="middle" fill="#059669" font-size="6">Ativo</text>
+    <rect class="btn-secondary" x="335" y="240" width="20" height="14" rx="3"/>
+    <text x="345" y="250" text-anchor="middle" class="text" font-size="7">✏️</text>
+    <rect class="btn-danger" x="360" y="240" width="20" height="14" rx="3"/>
+    
+    <rect class="table-row" x="60" y="258" width="335" height="26"/>
+    <text x="70" y="275" class="text" font-size="7">Oficina do Carlos</text>
+    <text x="180" y="275" class="text" font-size="7">Basic</text>
+    <text x="240" y="275" class="text" font-size="7">45</text>
+    <rect fill="#dcfce7" x="280" y="266" width="35" height="14" rx="3"/>
+    <text x="297" y="276" text-anchor="middle" fill="#059669" font-size="6">Ativo</text>
+    
+    <rect class="table-row" x="60" y="284" width="335" height="26"/>
+    <text x="70" y="301" class="text" font-size="7">Ferramentas Express</text>
+    <text x="180" y="301" class="text" font-size="7">Trial</text>
+    <text x="240" y="301" class="text" font-size="7">12</text>
+    <rect fill="#fef3c7" x="280" y="292" width="35" height="14" rx="3"/>
+    <text x="297" y="302" text-anchor="middle" fill="#d97706" font-size="6">Trial</text>
+  </g>
+  
+  <!-- 9.2 Create Tenant -->
+  <g transform="translate(500, 1850)">
+    <rect class="screen" width="320" height="300"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="300" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="288"/>
+    <rect fill="#7c3aed" x="5" y="30" width="40" height="20" rx="4"/>
+    
+    <rect fill="#7c3aed" x="50" y="0" width="270" height="35"/>
+    <text x="70" y="22" class="screen-title">Novo Tenant</text>
+    
+    <!-- Form -->
+    <text x="60" y="55" class="label">Nome da Empresa *</text>
+    <rect class="input" x="60" y="60" width="245" height="26" rx="4"/>
+    
+    <text x="60" y="100" class="label">Slug (URL) *</text>
+    <rect class="input" x="60" y="105" width="245" height="26" rx="4"/>
+    <text x="70" y="122" class="text-muted">empresa-exemplo</text>
+    
+    <text x="60" y="145" class="label">Email Admin *</text>
+    <rect class="input" x="60" y="150" width="245" height="26" rx="4"/>
+    
+    <text x="60" y="190" class="label">Senha Inicial</text>
+    <rect class="input" x="60" y="195" width="245" height="26" rx="4"/>
+    
+    <text x="60" y="235" class="label">Plano</text>
+    <rect class="input" x="60" y="240" width="120" height="26" rx="4"/>
+    <text x="70" y="257" class="text">Basic ▼</text>
+    
+    <text x="190" y="235" class="label">Status</text>
+    <rect class="input" x="190" y="240" width="115" height="26" rx="4"/>
+    <text x="200" y="257" class="text">Ativo ▼</text>
+    
+    <!-- Buttons -->
+    <rect class="btn-secondary" x="60" y="275" width="80" height="26" rx="4"/>
+    <text x="100" y="292" text-anchor="middle" class="btn-text-dark">Cancelar</text>
+    <rect fill="#7c3aed" x="180" y="275" width="125" height="26" rx="4"/>
+    <text x="242" y="292" text-anchor="middle" class="btn-text">Criar Tenant</text>
+  </g>
+  
+  <!-- 9.3 Edit Tenant -->
+  <g transform="translate(850, 1850)">
+    <rect class="screen" width="320" height="300"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="300" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="288"/>
+    <rect fill="#7c3aed" x="5" y="30" width="40" height="20" rx="4"/>
+    
+    <rect fill="#7c3aed" x="50" y="0" width="270" height="35"/>
+    <text x="70" y="22" class="screen-title">Editar: Eletrotécnica SM</text>
+    
+    <!-- Tabs -->
+    <rect fill="#ede9fe" x="60" y="45" width="60" height="22" rx="4"/>
+    <text x="90" y="60" text-anchor="middle" fill="#7c3aed" font-size="8">Dados</text>
+    <rect class="btn-secondary" x="125" y="45" width="60" height="22" rx="4"/>
+    <text x="155" y="60" text-anchor="middle" class="text" font-size="8">Usuários</text>
+    <rect class="btn-secondary" x="190" y="45" width="60" height="22" rx="4"/>
+    <text x="220" y="60" text-anchor="middle" class="text" font-size="8">Métricas</text>
+    
+    <!-- Form -->
+    <text x="60" y="85" class="label">Nome da Empresa</text>
+    <rect class="input" x="60" y="90" width="245" height="24" rx="4"/>
+    <text x="70" y="106" class="text">Eletrotécnica São Miguel</text>
+    
+    <text x="60" y="128" class="label">Plano</text>
+    <rect class="input" x="60" y="133" width="120" height="24" rx="4"/>
+    <text x="70" y="149" class="text">Pro ▼</text>
+    
+    <text x="190" y="128" class="label">Status</text>
+    <rect class="input" x="190" y="133" width="115" height="24" rx="4"/>
+    <text x="200" y="149" class="text">Ativo ▼</text>
+    
+    <!-- Stats -->
+    <rect fill="#f8fafc" x="60" y="170" width="245" height="60" rx="6"/>
+    <text x="70" y="188" class="subtitle" font-size="8">Estatísticas</text>
+    <text x="70" y="205" class="text" font-size="7">OS: 127 | Clientes: 45 | Equipamentos: 89</text>
+    <text x="70" y="220" class="text" font-size="7">Criado em: 15/06/2026</text>
+    
+    <!-- Danger zone -->
+    <rect fill="#fef2f2" x="60" y="240" width="245" height="35" rx="6" stroke="#fecaca"/>
+    <text x="70" y="255" class="text" fill="#dc2626" font-size="7">⚠️ Zona de Perigo</text>
+    <rect class="btn-danger" x="200" y="248" width="90" height="20" rx="4"/>
+    <text x="245" y="262" text-anchor="middle" class="btn-text" font-size="7">Desativar</text>
+  </g>
+
+  <!-- ==================== SEÇÃO 10: FINANCEIRO ==================== -->
+  <text x="1200" y="1830" class="section-title">10. Financeiro</text>
+  
+  <g transform="translate(1200, 1850)">
+    <rect class="screen" width="380" height="280"/>
+    <rect class="sidebar" x="0" y="0" width="50" height="280" rx="12" ry="0"/>
+    <rect fill="#0f172a" x="0" y="12" width="50" height="268"/>
+    <rect class="sidebar-active" x="5" y="200" width="40" height="20" rx="4"/>
+    
+    <rect class="screen-header" x="50" y="0" width="330" height="35"/>
+    <text x="70" y="22" class="screen-title">Financeiro</text>
+    
+    <!-- Period filter -->
+    <rect class="input" x="60" y="45" width="100" height="24" rx="4"/>
+    <text x="70" y="60" class="text">Julho 2026 ▼</text>
+    
+    <!-- KPI Cards -->
+    <rect class="card" x="60" y="78" width="95" height="55" rx="6"/>
+    <text x="70" y="95" class="text-muted" font-size="7">Faturamento</text>
+    <text x="70" y="120" class="title" fill="#059669" font-size="14">R$ 12.5k</text>
+    
+    <rect class="card" x="165" y="78" width="95" height="55" rx="6"/>
+    <text x="175" y="95" class="text-muted" font-size="7">OS Concluídas</text>
+    <text x="175" y="120" class="title" fill="#2563eb" font-size="14">45</text>
+    
+    <rect class="card" x="270" y="78" width="95" height="55" rx="6"/>
+    <text x="280" y="95" class="text-muted" font-size="7">Ticket Médio</text>
+    <text x="280" y="120" class="title" fill="#7c3aed" font-size="14">R$ 278</text>
+    
+    <!-- Chart placeholder -->
+    <rect fill="#f8fafc" x="60" y="145" width="305" height="80" rx="6" stroke="#e2e8f0"/>
+    <text x="212" y="185" text-anchor="middle" class="text-muted">📊 Gráfico de Faturamento Mensal</text>
+    <text x="212" y="200" text-anchor="middle" class="text-muted" font-size="7">(Em desenvolvimento)</text>
+    
+    <!-- Recent transactions -->
+    <text x="60" y="245" class="subtitle" font-size="9">Últimas Transações</text>
+    <rect class="table-header" x="60" y="252" width="305" height="18" rx="4"/>
+    <text x="70" y="264" class="text-muted" font-size="6">Data</text>
+    <text x="120" y="264" class="text-muted" font-size="6">OS</text>
+    <text x="170" y="264" class="text-muted" font-size="6">Cliente</text>
+    <text x="280" y="264" class="text-muted" font-size="6">Valor</text>
+  </g>
+  
+  <!-- ==================== LEGENDA ==================== -->
+  <text x="50" y="2200" class="section-title">Legenda</text>
+  
+  <g transform="translate(50, 2220)">
+    <!-- Status colors -->
+    <rect class="status-aberta" x="0" y="0" width="60" height="20" rx="4"/>
+    <text x="30" y="14" text-anchor="middle" class="btn-text" font-size="8">Aberta</text>
+    
+    <rect fill="#d97706" x="70" y="0" width="60" height="20" rx="4"/>
+    <text x="100" y="14" text-anchor="middle" class="btn-text" font-size="8">Aprovada</text>
+    
+    <rect fill="#7c3aed" x="140" y="0" width="80" height="20" rx="4"/>
+    <text x="180" y="14" text-anchor="middle" class="btn-text" font-size="8">Ag. Peça</text>
+    
+    <rect class="status-concluida" x="230" y="0" width="70" height="20" rx="4"/>
+    <text x="265" y="14" text-anchor="middle" class="btn-text" font-size="8">Concluída</text>
+    
+    <rect class="status-entregue" x="310" y="0" width="60" height="20" rx="4"/>
+    <text x="340" y="14" text-anchor="middle" class="btn-text" font-size="8">Entregue</text>
+    
+    <rect class="btn-danger" x="380" y="0" width="70" height="20" rx="4"/>
+    <text x="415" y="14" text-anchor="middle" class="btn-text" font-size="8">Cancelada</text>
+    
+    <!-- UI Elements -->
+    <text x="0" y="50" class="label">Elementos UI:</text>
+    
+    <rect class="btn-primary" x="100" y="38" width="70" height="20" rx="4"/>
+    <text x="135" y="52" text-anchor="middle" class="btn-text" font-size="8">Primário</text>
+    
+    <rect class="btn-secondary" x="180" y="38" width="70" height="20" rx="4"/>
+    <text x="215" y="52" text-anchor="middle" class="btn-text-dark" font-size="8">Secundário</text>
+    
+    <rect class="btn-success" x="260" y="38" width="70" height="20" rx="4"/>
+    <text x="295" y="52" text-anchor="middle" class="btn-text" font-size="8">Sucesso</text>
+    
+    <rect class="btn-danger" x="340" y="38" width="70" height="20" rx="4"/>
+    <text x="375" y="52" text-anchor="middle" class="btn-text" font-size="8">Perigo</text>
+    
+    <rect class="input" x="420" y="38" width="100" height="20" rx="4"/>
+    <text x="470" y="52" text-anchor="middle" class="text-muted" font-size="8">Input field</text>
+    
+    <!-- Lote -->
+    <rect fill="#dbeafe" x="530" y="38" width="50" height="20" rx="4"/>
+    <text x="555" y="52" text-anchor="middle" fill="#1e40af" font-size="8">LOTE</text>
+    
+    <text x="590" y="52" class="text-muted" font-size="8">= OS agrupadas</text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="900" y="2350" text-anchor="middle" class="text-muted" font-size="10">OS Laboris - Sistema de Gestão de Ordens de Serviço</text>
+  <text x="900" y="2370" text-anchor="middle" class="text-muted" font-size="9">Multi-tenant SaaS • React + Node.js • PostgreSQL</text>
+  <text x="900" y="2390" text-anchor="middle" class="text-muted" font-size="8">Documento gerado para estudo de UI/UX • Julho 2026</text>
+  
+</svg>

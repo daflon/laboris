@@ -2,10 +2,11 @@ const { Router } = require('express');
 const crypto = require('crypto');
 const db = require('../database/connection');
 const companySettingsRepository = require('../repositories/companySettings.repository');
+const { validatePinWithRateLimit, getClientIp } = require('../middlewares/pinRateLimit.middleware');
 
 const router = Router();
 
-// Verificar PIN
+// Verificar PIN (com rate limiting)
 router.post('/verify-pin', async (req, res, next) => {
   try {
     const { pin } = req.body;
@@ -17,9 +18,56 @@ router.post('/verify-pin', async (req, res, next) => {
 
     // Se não tem PIN cadastrado, aceita '0000' como padrão
     const adminPin = company && company.admin_pin ? company.admin_pin : '0000';
+    
+    // Obter IP do cliente
+    const clientIp = getClientIp(req);
+    
+    // Validar com rate limiting
+    // Nota: PIN ainda está em texto plano no banco, comparação direta
+    // Para produção ideal, deveria ser hash com bcrypt
+    const isValid = pin === adminPin;
+    
+    // Registrar tentativa
+    try {
+      await db('pin_attempts').insert({
+        tenant_id: req.tenantId,
+        ip_address: clientIp,
+        success: isValid,
+        attempted_at: new Date()
+      });
+    } catch (e) {
+      // Tabela pode não existir ainda, ignorar erro
+      console.warn('Erro ao registrar tentativa de PIN:', e.message);
+    }
+    
+    // Verificar se está bloqueado
+    try {
+      const cooldownTime = new Date(Date.now() - 5 * 60 * 1000); // 5 minutos
+      const failedAttempts = await db('pin_attempts')
+        .where('tenant_id', req.tenantId)
+        .where('ip_address', clientIp)
+        .where('attempted_at', '>=', cooldownTime)
+        .where('success', false)
+        .count('id as count')
+        .first();
+      
+      if (parseInt(failedAttempts.count) >= 5) {
+        // Mensagem genérica - não revela se é bloqueio ou PIN errado
+        return res.status(403).json({ 
+          success: false, 
+          error: { message: 'Não foi possível validar. Tente novamente mais tarde.' } 
+        });
+      }
+    } catch (e) {
+      // Tabela pode não existir ainda, ignorar erro
+    }
 
-    if (pin !== adminPin) {
-      return res.status(403).json({ success: false, error: { message: 'PIN incorreto' } });
+    if (!isValid) {
+      // Mensagem genérica - igual à de bloqueio
+      return res.status(403).json({ 
+        success: false, 
+        error: { message: 'Não foi possível validar. Tente novamente mais tarde.' } 
+      });
     }
 
     res.json({ success: true, data: { verified: true } });

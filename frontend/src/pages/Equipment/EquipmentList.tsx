@@ -96,13 +96,28 @@ export default function EquipmentList() {
                   <td>{eq.client_name || '—'}</td>
                   <td>{eq.serial_number || '—'}</td>
                   <td className="actions-cell">
-                    <button className="btn-icon" title="Histórico de reparos" onClick={() => navigate(`/equipamentos/${eq.id}/historico`)}>
+                    <button 
+                      className="btn-icon" 
+                      title={`Histórico de ${eq.brand} ${eq.model}`}
+                      aria-label={`Ver histórico de reparos de ${eq.brand} ${eq.model}`}
+                      onClick={() => navigate(`/equipamentos/${eq.id}/historico`)}
+                    >
                       <FiClock />
                     </button>
-                    <button className="btn-icon" title="Editar" onClick={() => navigate(`/equipamentos/${eq.id}/editar`)}>
+                    <button 
+                      className="btn-icon" 
+                      title={`Editar ${eq.brand} ${eq.model}`}
+                      aria-label={`Editar ${eq.brand} ${eq.model}`}
+                      onClick={() => navigate(`/equipamentos/${eq.id}/editar`)}
+                    >
                       <FiEdit2 />
                     </button>
-                    <button className="btn-icon btn-icon-danger" title="Excluir" onClick={() => setDeleteId(eq.id)}>
+                    <button 
+                      className="btn-icon btn-icon-danger" 
+                      title={`Excluir ${eq.brand} ${eq.model}`}
+                      aria-label={`Excluir ${eq.brand} ${eq.model}`}
+                      onClick={() => setDeleteId(eq.id)}
+                    >
                       <FiTrash2 />
                     </button>
                   </td>

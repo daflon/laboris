@@ -294,14 +294,75 @@ router.post('/tenants/:id/impersonate', async (req, res, next) => {
   try {
     const tenant = await db('tenants').where({ id: req.params.id }).first();
     if (!tenant) return res.status(404).json({ success: false, error: { message: 'Tenant não encontrado' } });
+    
+    // Obter IP do cliente
+    const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() 
+      || req.headers['x-real-ip'] 
+      || req.connection?.remoteAddress 
+      || req.ip 
+      || 'unknown';
+    
+    // Criar log de impersonate
+    const [impersonateLog] = await db('impersonate_logs')
+      .insert({
+        admin_id: req.user.userId,
+        tenant_id: tenant.id,
+        ip_address: clientIp,
+        started_at: new Date(),
+        actions_summary: ''
+      })
+      .returning('*');
+    
     const { generateToken } = require('../middlewares/auth');
     const token = generateToken({
       userId: req.user.userId,
       tenantId: tenant.id,
       role: 'tenant_user',
       email: req.user.email,
+      impersonateLogId: impersonateLog.id, // Incluir no token para rastrear ações
+      isImpersonating: true
     });
-    res.json({ success: true, data: { token, tenant } });
+    
+    res.json({ 
+      success: true, 
+      data: { 
+        token, 
+        tenant,
+        impersonateLogId: impersonateLog.id 
+      } 
+    });
+  } catch (error) { next(error); }
+});
+
+// Encerrar sessão de impersonate
+router.post('/impersonate/:logId/end', async (req, res, next) => {
+  try {
+    const { logId } = req.params;
+    
+    await db('impersonate_logs')
+      .where({ id: logId })
+      .update({ ended_at: new Date() });
+    
+    res.json({ success: true, data: { message: 'Sessão de impersonate encerrada' } });
+  } catch (error) { next(error); }
+});
+
+// Listar logs de impersonate
+router.get('/impersonate-logs', async (req, res, next) => {
+  try {
+    const logs = await db('impersonate_logs')
+      .leftJoin('users', 'users.id', 'impersonate_logs.admin_id')
+      .leftJoin('tenants', 'tenants.id', 'impersonate_logs.tenant_id')
+      .select(
+        'impersonate_logs.*',
+        'users.name as admin_name',
+        'users.email as admin_email',
+        'tenants.name as tenant_name'
+      )
+      .orderBy('impersonate_logs.started_at', 'desc')
+      .limit(100);
+    
+    res.json({ success: true, data: logs });
   } catch (error) { next(error); }
 });
 

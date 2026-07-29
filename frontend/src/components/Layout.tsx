@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign } from 'react-icons/fi';
+import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign, FiAlertTriangle } from 'react-icons/fi';
 import api from '../services/api';
 import { authService } from '../services/auth.service';
 import GlobalSearch from './GlobalSearch';
@@ -12,6 +12,7 @@ export default function Layout() {
   const [modules, setModules] = useState<string[]>(['os']);
   const [companyName, setCompanyName] = useState('');
   const [companyLogo, setCompanyLogo] = useState('');
+  const [impersonatingTenant, setImpersonatingTenant] = useState<string | null>(null);
   const isMasterImpersonating = !!localStorage.getItem('master_token');
 
   useEffect(() => {
@@ -39,11 +40,17 @@ export default function Layout() {
     // Pegar nome da empresa das configurações
     api.get('/company')
       .then((res) => {
-        if (res.data.data?.name) setCompanyName(res.data.data.name);
+        if (res.data.data?.name) {
+          setCompanyName(res.data.data.name);
+          // Se está impersonando, guardar o nome do tenant
+          if (isMasterImpersonating) {
+            setImpersonatingTenant(res.data.data.name);
+          }
+        }
         if (res.data.data?.logo_url) setCompanyLogo(res.data.data.logo_url);
       })
       .catch(() => {});
-  }, []);
+  }, [isMasterImpersonating]);
 
   const handleLogout = () => {
     authService.removeToken();
@@ -141,6 +148,51 @@ export default function Layout() {
       </aside>
 
       <main className="main-content">
+        {/* Barra de aviso de Impersonate */}
+        {isMasterImpersonating && impersonatingTenant && (
+          <div 
+            className="impersonate-banner"
+            role="alert"
+            aria-live="polite"
+            style={{
+              background: 'linear-gradient(90deg, #f59e0b, #d97706)',
+              color: 'white',
+              padding: '0.6rem 1rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              fontSize: '0.85rem',
+              fontWeight: 500,
+              position: 'sticky',
+              top: 0,
+              zIndex: 100,
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+          >
+            <FiAlertTriangle size={18} />
+            <span>
+              Você está acessando como <strong>"{impersonatingTenant}"</strong>
+            </span>
+            <button
+              onClick={handleBackToMaster}
+              style={{
+                background: 'rgba(255,255,255,0.2)',
+                border: '1px solid rgba(255,255,255,0.4)',
+                color: 'white',
+                padding: '0.3rem 0.75rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                marginLeft: '0.5rem'
+              }}
+            >
+              Sair do modo impersonate
+            </button>
+          </div>
+        )}
+        
         <div className="top-bar">
           <GlobalSearch />
         </div>

@@ -98,13 +98,28 @@ export default function ClientsList() {
                     {client.address_state ? `/${client.address_state}` : ''}
                   </td>
                   <td className="actions-cell">
-                    <button className="btn-icon" title="Ver detalhes" onClick={() => navigate(`/clientes/${client.id}`)}>
+                    <button 
+                      className="btn-icon" 
+                      title={`Ver detalhes de ${client.name}`}
+                      aria-label={`Ver detalhes de ${client.name}`}
+                      onClick={() => navigate(`/clientes/${client.id}`)}
+                    >
                       <FiEye />
                     </button>
-                    <button className="btn-icon" title="Editar" onClick={() => navigate(`/clientes/${client.id}/editar`)}>
+                    <button 
+                      className="btn-icon" 
+                      title={`Editar ${client.name}`}
+                      aria-label={`Editar ${client.name}`}
+                      onClick={() => navigate(`/clientes/${client.id}/editar`)}
+                    >
                       <FiEdit2 />
                     </button>
-                    <button className="btn-icon btn-icon-danger" title="Excluir" onClick={() => setDeleteId(client.id)}>
+                    <button 
+                      className="btn-icon btn-icon-danger" 
+                      title={`Excluir ${client.name}`}
+                      aria-label={`Excluir ${client.name}`}
+                      onClick={() => setDeleteId(client.id)}
+                    >
                       <FiTrash2 />
                     </button>
                   </td>

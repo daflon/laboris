@@ -175,13 +175,28 @@ export default function ServiceOrdersList() {
                   </td>
                   <td>{order.entry_date ? new Date(order.entry_date).toLocaleDateString('pt-BR') : '—'}</td>
                   <td className="actions-cell">
-                    <button className="btn-icon" title="Ver detalhes" onClick={() => navigate(`/os/${order.id}`)}>
+                    <button 
+                      className="btn-icon" 
+                      title={`Ver detalhes da OS #${formatOrderNumber(order)}`}
+                      aria-label={`Ver detalhes da OS #${formatOrderNumber(order)} - ${order.client_name}`}
+                      onClick={() => navigate(`/os/${order.id}`)}
+                    >
                       <FiEye />
                     </button>
-                    <button className="btn-icon" title="Editar" onClick={() => navigate(`/os/${order.id}/editar`)}>
+                    <button 
+                      className="btn-icon" 
+                      title={`Editar OS #${formatOrderNumber(order)}`}
+                      aria-label={`Editar OS #${formatOrderNumber(order)}`}
+                      onClick={() => navigate(`/os/${order.id}/editar`)}
+                    >
                       <FiEdit2 />
                     </button>
-                    <button className="btn-icon btn-icon-danger" title="Excluir" onClick={() => setDeleteId(order.id)}>
+                    <button 
+                      className="btn-icon btn-icon-danger" 
+                      title={`Excluir OS #${formatOrderNumber(order)}`}
+                      aria-label={`Excluir OS #${formatOrderNumber(order)}`}
+                      onClick={() => setDeleteId(order.id)}
+                    >
                       <FiTrash2 />
                     </button>
                   </td>

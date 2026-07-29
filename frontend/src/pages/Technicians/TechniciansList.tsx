@@ -126,15 +126,26 @@ export default function TechniciansList() {
                   <td className="actions-cell">
                     <button
                       className="btn-icon"
-                      title={tech.active ? 'Inativar' : 'Ativar'}
+                      title={tech.active ? `Inativar ${tech.name}` : `Ativar ${tech.name}`}
+                      aria-label={tech.active ? `Inativar ${tech.name}` : `Ativar ${tech.name}`}
                       onClick={() => handleToggleStatus(tech.id)}
                     >
                       {tech.active ? <FiToggleRight /> : <FiToggleLeft />}
                     </button>
-                    <button className="btn-icon" title="Editar" onClick={() => navigate(`/tecnicos/${tech.id}/editar`)}>
+                    <button 
+                      className="btn-icon" 
+                      title={`Editar ${tech.name}`}
+                      aria-label={`Editar ${tech.name}`}
+                      onClick={() => navigate(`/tecnicos/${tech.id}/editar`)}
+                    >
                       <FiEdit2 />
                     </button>
-                    <button className="btn-icon btn-icon-danger" title="Excluir" onClick={() => setDeleteId(tech.id)}>
+                    <button 
+                      className="btn-icon btn-icon-danger" 
+                      title={`Excluir ${tech.name}`}
+                      aria-label={`Excluir ${tech.name}`}
+                      onClick={() => setDeleteId(tech.id)}
+                    >
                       <FiTrash2 />
                     </button>
                   </td>
