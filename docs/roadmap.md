@@ -105,7 +105,7 @@ Em andamento e planejadas:
 - [x] Lote de OS (agrupar múltiplos equipamentos do mesmo cliente)
 - [x] PDF do Lote com opção Individual ou Resumo consolidado
 - [x] Modal de seleção para PDF do Lote (filtro por status, seleção de OS)
-- [ ] Alertas visuais de falha no painel Master (backup atrasado, DB offline)
+- [x] Alertas visuais de falha no painel Master (backup atrasado, DB offline)
 - [ ] Tema escuro (dark mode total)
 - [ ] Controle de pagamentos na OS (valor, status, forma de pagamento)
 - [ ] QR Code para consulta de status da OS
@@ -132,10 +132,10 @@ Melhorias de segurança e conformidade WCAG:
 - [x] Paleta Cyan exclusiva para Painel Master (diferencia do tenant)
 - [x] localStorage draft em formulários (previne perda de dados)
 - [x] Esconder PDF Individual quando OS está em lote (simplifica UX)
-- [ ] Log de Auditoria completo no painel Master (quem fez o quê)
-- [ ] Monitoramento de uptime (integração com UptimeRobot API)
-- [ ] Logs centralizados (Sentry ou similar)
-- [ ] Rate limiting global na API (proteção contra DDoS)
+- [x] Log de Auditoria completo no painel Master (quem fez o quê)
+- [x] Monitoramento de uptime (integração com UptimeRobot API)
+- [x] Logs centralizados (UptimeRobot + Audit Log interno)
+- [x] Rate limiting global na API (proteção contra DDoS)
 - [ ] CDN para assets estáticos
 
 ---

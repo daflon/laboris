@@ -36,6 +36,21 @@ function formatOrderNumber(order: ServiceOrder): string {
   return num;
 }
 
+// Verifica se OS está parada há mais de 30 dias (status não é entregue/cancelada)
+function isOldOrder(order: ServiceOrder): boolean {
+  if (['entregue', 'cancelada'].includes(order.status)) return false;
+  if (!order.entry_date) return false;
+  const entryDate = new Date(order.entry_date);
+  const daysSince = Math.floor((Date.now() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
+  return daysSince > 30;
+}
+
+function getDaysOld(order: ServiceOrder): number {
+  if (!order.entry_date) return 0;
+  const entryDate = new Date(order.entry_date);
+  return Math.floor((Date.now() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
+}
+
 export default function ServiceOrdersList() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -150,6 +165,18 @@ export default function ServiceOrdersList() {
                         borderRadius: '4px'
                       }}>
                         LOTE
+                      </span>
+                    )}
+                    {isOldOrder(order) && (
+                      <span 
+                        title={`OS parada há ${getDaysOld(order)} dias`}
+                        style={{ 
+                          marginLeft: '0.4rem', 
+                          fontSize: '0.7rem',
+                          cursor: 'help'
+                        }}
+                      >
+                        ⏰
                       </span>
                     )}
                   </td>

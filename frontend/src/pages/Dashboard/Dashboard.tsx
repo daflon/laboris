@@ -20,6 +20,10 @@ interface DashboardData {
   }>;
   total_clients: number;
   tech_ranking: Array<{ name: string; count: number }>;
+  alerts?: {
+    old_orders: number;
+    abandoned_equipment: number;
+  };
 }
 
 function getStatusLabel(status: string) {
@@ -50,6 +54,59 @@ export default function Dashboard() {
   return (
     <div>
       <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1.5rem' }}>Dashboard</h2>
+
+      {/* Alertas discretos (só aparece se tiver) */}
+      {data.alerts && (data.alerts.old_orders > 0 || data.alerts.abandoned_equipment > 0) && (
+        <div style={{ 
+          display: 'flex', 
+          gap: '1rem', 
+          marginBottom: '1rem',
+          flexWrap: 'wrap'
+        }}>
+          {data.alerts.old_orders > 0 && (
+            <div 
+              onClick={() => navigate('/os')}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.4rem',
+                padding: '0.4rem 0.75rem',
+                background: '#fef3c7',
+                border: '1px solid #fcd34d',
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                color: '#92400e',
+                cursor: 'pointer'
+              }}
+              title="Clique para ver lista de OS"
+            >
+              <span>⏰</span>
+              <span><strong>{data.alerts.old_orders}</strong> OS {data.alerts.old_orders === 1 ? 'parada' : 'paradas'} há mais de 30 dias</span>
+            </div>
+          )}
+          {data.alerts.abandoned_equipment > 0 && (
+            <div 
+              onClick={() => navigate('/os')}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.4rem',
+                padding: '0.4rem 0.75rem',
+                background: '#fee2e2',
+                border: '1px solid #fca5a5',
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                color: '#991b1b',
+                cursor: 'pointer'
+              }}
+              title="Equipamentos que podem ser descartados (Lei 180 dias)"
+            >
+              <span>⚠️</span>
+              <span><strong>{data.alerts.abandoned_equipment}</strong> {data.alerts.abandoned_equipment === 1 ? 'equipamento' : 'equipamentos'} há mais de 180 dias</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Cards */}
       <div className="dashboard-cards">

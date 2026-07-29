@@ -50,6 +50,26 @@ router.get('/stats', async (req, res, next) => {
       .groupBy('technicians.name')
       .orderBy('count', 'desc');
 
+    // OS antigas (> 30 dias em status não finalizado)
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const oldOrders = await db('service_orders')
+      .where({ tenant_id: tenantId })
+      .whereNull('deleted_at')
+      .whereNotIn('status', ['entregue', 'cancelada'])
+      .where('entry_date', '<', thirtyDaysAgo)
+      .count('* as count')
+      .first();
+
+    // Equipamentos > 180 dias sem retirada (OS não entregue)
+    const oneEightyDaysAgo = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const abandonedEquipment = await db('service_orders')
+      .where('service_orders.tenant_id', tenantId)
+      .whereNull('service_orders.deleted_at')
+      .whereNotIn('service_orders.status', ['entregue', 'cancelada'])
+      .where('service_orders.entry_date', '<', oneEightyDaysAgo)
+      .count('* as count')
+      .first();
+
     res.json({
       success: true,
       data: {
@@ -58,6 +78,10 @@ router.get('/stats', async (req, res, next) => {
         recent_orders: recentOrders,
         total_clients: parseInt(totalClients.count),
         tech_ranking: techRanking.map((t) => ({ name: t.technician_name, count: parseInt(t.count) })),
+        alerts: {
+          old_orders: parseInt(oldOrders.count),
+          abandoned_equipment: parseInt(abandonedEquipment.count)
+        }
       },
     });
   } catch (error) { next(error); }
