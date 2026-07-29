@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const { authenticate } = require('../middlewares/auth');
+const { apiLimiter } = require('../middlewares/rateLimiter.middleware');
 
 // Rotas públicas
 const authRoutes = require('./auth.routes');
@@ -23,6 +24,9 @@ const equipmentController = require('../controllers/equipment.controller');
 const serviceOrdersController = require('../controllers/serviceOrders.controller');
 
 const router = Router();
+
+// Rate limiting global para API (exceto super_admin)
+router.use(apiLimiter);
 
 // === ROTAS PÚBLICAS ===
 router.use('/auth', authRoutes);

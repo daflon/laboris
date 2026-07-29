@@ -2,11 +2,12 @@ const { Router } = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('../database/connection');
 const { authenticate, generateToken } = require('../middlewares/auth');
+const { loginLimiter, sensitiveLimiter } = require('../middlewares/rateLimiter.middleware');
 
 const router = Router();
 
-// Login
-router.post('/login', async (req, res, next) => {
+// Login (com rate limiting restritivo)
+router.post('/login', loginLimiter, async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -104,8 +105,8 @@ router.get('/me', authenticate, async (req, res, next) => {
   }
 });
 
-// Alterar senha
-router.put('/change-password', authenticate, async (req, res, next) => {
+// Alterar senha (com rate limiting para operações sensíveis)
+router.put('/change-password', authenticate, sensitiveLimiter, async (req, res, next) => {
   try {
     const { current_password, new_password } = req.body;
 

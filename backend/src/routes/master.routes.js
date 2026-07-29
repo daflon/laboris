@@ -366,4 +366,194 @@ router.get('/impersonate-logs', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
+// =============================================
+// Log de Auditoria Global (todos os tenants)
+// =============================================
+router.get('/audit-logs', async (req, res, next) => {
+  try {
+    const { tenant_id, action, start_date, end_date, page = 1, limit = 50 } = req.query;
+    
+    let query = db('audit_logs')
+      .leftJoin('tenants', 'tenants.id', 'audit_logs.tenant_id')
+      .select(
+        'audit_logs.*',
+        'tenants.name as tenant_name',
+        'tenants.slug as tenant_slug'
+      )
+      .orderBy('audit_logs.created_at', 'desc');
+    
+    // Filtros
+    if (tenant_id) {
+      query = query.where('audit_logs.tenant_id', tenant_id);
+    }
+    if (action) {
+      query = query.where('audit_logs.action', action);
+    }
+    if (start_date) {
+      query = query.where('audit_logs.created_at', '>=', start_date);
+    }
+    if (end_date) {
+      query = query.where('audit_logs.created_at', '<=', end_date);
+    }
+    
+    // Paginação
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const logs = await query.limit(parseInt(limit)).offset(offset);
+    
+    // Total para paginação
+    let countQuery = db('audit_logs').count('* as count');
+    if (tenant_id) countQuery = countQuery.where('tenant_id', tenant_id);
+    if (action) countQuery = countQuery.where('action', action);
+    if (start_date) countQuery = countQuery.where('created_at', '>=', start_date);
+    if (end_date) countQuery = countQuery.where('created_at', '<=', end_date);
+    
+    const [{ count: total }] = await countQuery;
+    
+    // Estatísticas rápidas
+    const actionStats = await db('audit_logs')
+      .select('action')
+      .count('* as count')
+      .groupBy('action')
+      .orderBy('count', 'desc');
+    
+    res.json({
+      success: true,
+      data: {
+        logs,
+        stats: {
+          total: parseInt(total),
+          by_action: actionStats.reduce((acc, { action, count }) => {
+            acc[action] = parseInt(count);
+            return acc;
+          }, {})
+        },
+        meta: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages: Math.ceil(parseInt(total) / parseInt(limit))
+        }
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// =============================================
+// Status do UptimeRobot
+// =============================================
+router.get('/uptime-status', async (req, res, next) => {
+  try {
+    const apiKey = process.env.UPTIMEROBOT_API_KEY;
+    
+    if (!apiKey) {
+      return res.json({
+        success: true,
+        data: {
+          configured: false,
+          message: 'UptimeRobot não configurado. Adicione UPTIMEROBOT_API_KEY nas variáveis de ambiente.'
+        }
+      });
+    }
+    
+    // Chamar API do UptimeRobot
+    const response = await fetch('https://api.uptimerobot.com/v2/getMonitors', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        api_key: apiKey,
+        format: 'json',
+        logs: 1,
+        logs_limit: 5,
+        response_times: 1,
+        response_times_limit: 10,
+        all_time_uptime_ratio: 1,
+        custom_uptime_ratios: '7-30-90'
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.stat !== 'ok') {
+      return res.json({
+        success: true,
+        data: {
+          configured: true,
+          error: data.error?.message || 'Erro ao consultar UptimeRobot',
+          monitors: []
+        }
+      });
+    }
+    
+    // Processar monitores
+    const monitors = (data.monitors || []).map(monitor => ({
+      id: monitor.id,
+      name: monitor.friendly_name,
+      url: monitor.url,
+      status: getUptimeStatus(monitor.status),
+      statusCode: monitor.status,
+      uptime: {
+        allTime: parseFloat(monitor.all_time_uptime_ratio || 0).toFixed(2),
+        last7Days: monitor.custom_uptime_ratio ? parseFloat(monitor.custom_uptime_ratio.split('-')[0]).toFixed(2) : null,
+        last30Days: monitor.custom_uptime_ratio ? parseFloat(monitor.custom_uptime_ratio.split('-')[1]).toFixed(2) : null,
+        last90Days: monitor.custom_uptime_ratio ? parseFloat(monitor.custom_uptime_ratio.split('-')[2]).toFixed(2) : null
+      },
+      responseTime: {
+        average: monitor.average_response_time || null,
+        recent: (monitor.response_times || []).map(rt => ({
+          value: rt.value,
+          datetime: new Date(rt.datetime * 1000).toISOString()
+        }))
+      },
+      logs: (monitor.logs || []).slice(0, 5).map(log => ({
+        type: getLogType(log.type),
+        datetime: new Date(log.datetime * 1000).toISOString(),
+        duration: log.duration ? `${Math.round(log.duration / 60)} min` : null,
+        reason: log.reason?.detail || null
+      }))
+    }));
+    
+    res.json({
+      success: true,
+      data: {
+        configured: true,
+        monitors,
+        summary: {
+          total: monitors.length,
+          online: monitors.filter(m => m.statusCode === 2).length,
+          offline: monitors.filter(m => m.statusCode === 9).length,
+          paused: monitors.filter(m => m.statusCode === 0).length
+        }
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Helper: status do UptimeRobot
+function getUptimeStatus(status) {
+  const statuses = {
+    0: 'paused',
+    1: 'not_checked',
+    2: 'online',
+    8: 'seems_down',
+    9: 'offline'
+  };
+  return statuses[status] || 'unknown';
+}
+
+// Helper: tipo de log do UptimeRobot
+function getLogType(type) {
+  const types = {
+    1: 'down',
+    2: 'up',
+    98: 'started',
+    99: 'paused'
+  };
+  return types[type] || 'unknown';
+}
+
 module.exports = router;

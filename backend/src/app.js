@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const path = require('path');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
+const { publicLimiter } = require('./middlewares/rateLimiter.middleware');
 
 const app = express();
 
@@ -13,11 +14,11 @@ app.use(cors());
 app.use(express.json({ limit: '500kb' })); // Aumentado para suportar logo em Base64
 app.use(express.urlencoded({ limit: '500kb', extended: true }));
 
-// Rotas da API
+// Rotas da API (rate limiting aplicado nas rotas individuais)
 app.use('/api/v1', routes);
 
-// Health check
-app.get('/health', (req, res) => {
+// Health check (com rate limiting básico)
+app.get('/health', publicLimiter, (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 

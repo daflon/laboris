@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiPlus, FiUsers, FiClipboard, FiLayers, FiDatabase, FiCloud, FiHardDrive, FiRefreshCw, FiAlertTriangle, FiX } from 'react-icons/fi';
+import { FiPlus, FiUsers, FiClipboard, FiLayers, FiDatabase, FiCloud, FiHardDrive, FiRefreshCw, FiAlertTriangle, FiX, FiActivity, FiFileText, FiFilter } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { authService } from '../../services/auth.service';
@@ -61,6 +61,53 @@ interface SystemStatus {
   timestamp: string;
 }
 
+interface AuditLog {
+  id: string;
+  tenant_id: string;
+  tenant_name: string;
+  tenant_slug: string;
+  action: string;
+  entity_type: string;
+  entity_id: string;
+  description: string;
+  performed_by: string;
+  details: string;
+  created_at: string;
+}
+
+interface UptimeMonitor {
+  id: number;
+  name: string;
+  url: string;
+  status: string;
+  statusCode: number;
+  uptime: {
+    allTime: string;
+    last7Days: string | null;
+    last30Days: string | null;
+  };
+  responseTime: {
+    average: number | null;
+  };
+  logs: Array<{
+    type: string;
+    datetime: string;
+    duration: string | null;
+  }>;
+}
+
+interface UptimeStatus {
+  configured: boolean;
+  monitors?: UptimeMonitor[];
+  summary?: {
+    total: number;
+    online: number;
+    offline: number;
+  };
+  error?: string;
+  message?: string;
+}
+
 // Helpers
 function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
@@ -93,6 +140,18 @@ export default function MasterDashboard() {
   const [loading, setLoading] = useState(true);
   const [statusLoading, setStatusLoading] = useState(false);
   const [dismissedAlerts, setDismissedAlerts] = useState<string[]>([]);
+  
+  // Audit Log
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditFilter, setAuditFilter] = useState({ tenant_id: '', action: '' });
+  
+  // Uptime
+  const [uptimeStatus, setUptimeStatus] = useState<UptimeStatus | null>(null);
+  const [uptimeLoading, setUptimeLoading] = useState(false);
+  
+  // Tabs
+  const [activeTab, setActiveTab] = useState<'tenants' | 'audit' | 'uptime'>('tenants');
 
   // Gera alertas baseados no status do sistema
   const getSystemAlerts = (): SystemAlert[] => {
@@ -194,9 +253,32 @@ export default function MasterDashboard() {
       .finally(() => setStatusLoading(false));
   };
 
+  const loadAuditLogs = () => {
+    setAuditLoading(true);
+    const params = new URLSearchParams();
+    if (auditFilter.tenant_id) params.append('tenant_id', auditFilter.tenant_id);
+    if (auditFilter.action) params.append('action', auditFilter.action);
+    params.append('limit', '30');
+    
+    api.get(`/master/audit-logs?${params.toString()}`)
+      .then((res) => setAuditLogs(res.data.data.logs))
+      .catch(() => toast.error('Erro ao carregar logs de auditoria'))
+      .finally(() => setAuditLoading(false));
+  };
+
+  const loadUptimeStatus = () => {
+    setUptimeLoading(true);
+    api.get('/master/uptime-status')
+      .then((res) => setUptimeStatus(res.data.data))
+      .catch(() => toast.error('Erro ao carregar status do uptime'))
+      .finally(() => setUptimeLoading(false));
+  };
+
   useEffect(() => {
     loadData();
     loadSystemStatus();
+    loadAuditLogs();
+    loadUptimeStatus();
   }, []);
 
   const handleToggle = async (id: string) => {
@@ -551,54 +633,370 @@ export default function MasterDashboard() {
         )}
       </div>
 
-      {/* Tenants list */}
+      {/* Tabs Navigation */}
+      <div style={{ 
+        display: 'flex', 
+        gap: '0.5rem', 
+        marginBottom: '1rem',
+        borderBottom: '2px solid #e2e8f0',
+        paddingBottom: '0.5rem'
+      }}>
+        <button
+          onClick={() => setActiveTab('tenants')}
+          style={{
+            padding: '0.5rem 1rem',
+            border: 'none',
+            background: activeTab === 'tenants' ? '#0891b2' : 'transparent',
+            color: activeTab === 'tenants' ? 'white' : '#64748b',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 500,
+            fontSize: '0.9rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem'
+          }}
+        >
+          <FiUsers /> Contas ({tenants.length})
+        </button>
+        <button
+          onClick={() => { setActiveTab('audit'); loadAuditLogs(); }}
+          style={{
+            padding: '0.5rem 1rem',
+            border: 'none',
+            background: activeTab === 'audit' ? '#0891b2' : 'transparent',
+            color: activeTab === 'audit' ? 'white' : '#64748b',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 500,
+            fontSize: '0.9rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem'
+          }}
+        >
+          <FiFileText /> Log de Auditoria
+        </button>
+        <button
+          onClick={() => { setActiveTab('uptime'); loadUptimeStatus(); }}
+          style={{
+            padding: '0.5rem 1rem',
+            border: 'none',
+            background: activeTab === 'uptime' ? '#0891b2' : 'transparent',
+            color: activeTab === 'uptime' ? 'white' : '#64748b',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 500,
+            fontSize: '0.9rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem'
+          }}
+        >
+          <FiActivity /> Uptime
+          {uptimeStatus?.configured && uptimeStatus.summary && (
+            <span style={{
+              background: uptimeStatus.summary.offline > 0 ? '#ef4444' : '#10b981',
+              color: 'white',
+              fontSize: '0.65rem',
+              padding: '0.1rem 0.4rem',
+              borderRadius: '10px'
+            }}>
+              {uptimeStatus.summary.online}/{uptimeStatus.summary.total}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Tab Content */}
       <div className="detail-card">
-        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>Contas Cadastradas</h3>
-        {tenants.length === 0 ? (
-          <p className="empty-text">Nenhuma conta criada ainda.</p>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Empresa</th>
-                <th>Slug</th>
-                <th>OS</th>
-                <th>Clientes</th>
-                <th>Módulos</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tenants.map((t) => (
-                <tr key={t.id}>
-                  <td><strong>{t.name}</strong></td>
-                  <td style={{ color: '#64748b' }}>{t.slug}</td>
-                  <td>{t.stats.orders}</td>
-                  <td>{t.stats.clients}</td>
-                  <td>
-                    {(typeof t.modules === 'string' ? JSON.parse(t.modules) : t.modules).join(', ')}
-                  </td>
-                  <td>
-                    <span className={`badge ${t.active ? 'badge-success' : 'badge-danger'}`}>
-                      {t.active ? 'Ativo' : 'Inativo'}
-                    </span>
-                  </td>
-                  <td className="actions-cell">
-                    <button className="btn-icon" title="Editar" onClick={() => navigate(`/master/tenants/${t.id}/editar`)}>
-                      ✏️
-                    </button>
-                    <button className="btn-icon" title="Acessar como esta empresa" onClick={() => handleImpersonate(t.id)}>
-                      🔑
-                    </button>
-                    <button className="btn-icon" title={t.active ? 'Desativar' : 'Ativar'} onClick={() => handleToggle(t.id)}>
-                      {t.active ? '⏸' : '▶'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* === TAB: TENANTS === */}
+        {activeTab === 'tenants' && (
+          <>
+            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>Contas Cadastradas</h3>
+            {tenants.length === 0 ? (
+              <p className="empty-text">Nenhuma conta criada ainda.</p>
+            ) : (
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Empresa</th>
+                    <th>Slug</th>
+                    <th>OS</th>
+                    <th>Clientes</th>
+                    <th>Módulos</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tenants.map((t) => (
+                    <tr key={t.id}>
+                      <td><strong>{t.name}</strong></td>
+                      <td style={{ color: '#64748b' }}>{t.slug}</td>
+                      <td>{t.stats.orders}</td>
+                      <td>{t.stats.clients}</td>
+                      <td>
+                        {(typeof t.modules === 'string' ? JSON.parse(t.modules) : t.modules).join(', ')}
+                      </td>
+                      <td>
+                        <span className={`badge ${t.active ? 'badge-success' : 'badge-danger'}`}>
+                          {t.active ? 'Ativo' : 'Inativo'}
+                        </span>
+                      </td>
+                      <td className="actions-cell">
+                        <button className="btn-icon" title="Editar" onClick={() => navigate(`/master/tenants/${t.id}/editar`)}>
+                          ✏️
+                        </button>
+                        <button className="btn-icon" title="Acessar como esta empresa" onClick={() => handleImpersonate(t.id)}>
+                          🔑
+                        </button>
+                        <button className="btn-icon" title={t.active ? 'Desativar' : 'Ativar'} onClick={() => handleToggle(t.id)}>
+                          {t.active ? '⏸' : '▶'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </>
+        )}
+
+        {/* === TAB: LOG DE AUDITORIA === */}
+        {activeTab === 'audit' && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 600, margin: 0 }}>📝 Log de Auditoria</h3>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <select
+                  value={auditFilter.tenant_id}
+                  onChange={(e) => setAuditFilter(prev => ({ ...prev, tenant_id: e.target.value }))}
+                  style={{ padding: '0.4rem 0.6rem', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.85rem' }}
+                >
+                  <option value="">Todos os tenants</option>
+                  {tenants.map(t => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+                <select
+                  value={auditFilter.action}
+                  onChange={(e) => setAuditFilter(prev => ({ ...prev, action: e.target.value }))}
+                  style={{ padding: '0.4rem 0.6rem', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.85rem' }}
+                >
+                  <option value="">Todas as ações</option>
+                  <option value="delete_client">Excluir Cliente</option>
+                  <option value="delete_equipment">Excluir Equipamento</option>
+                  <option value="delete_service_order">Excluir OS</option>
+                  <option value="delete_technician">Excluir Técnico</option>
+                </select>
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={loadAuditLogs}
+                  disabled={auditLoading}
+                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                >
+                  <FiFilter style={{ marginRight: '0.3rem' }} />
+                  Filtrar
+                </button>
+              </div>
+            </div>
+            
+            {auditLoading ? (
+              <p className="loading-text">Carregando logs...</p>
+            ) : auditLogs.length === 0 ? (
+              <p className="empty-text">Nenhum log de auditoria encontrado.</p>
+            ) : (
+              <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Tenant</th>
+                      <th>Ação</th>
+                      <th>Descrição</th>
+                      <th>Usuário</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {auditLogs.map((log) => (
+                      <tr key={log.id}>
+                        <td style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                          {new Date(log.created_at).toLocaleString('pt-BR', { 
+                            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
+                          })}
+                        </td>
+                        <td>
+                          <span style={{ 
+                            background: '#e0f2fe', 
+                            color: '#0369a1', 
+                            padding: '0.15rem 0.4rem', 
+                            borderRadius: '4px', 
+                            fontSize: '0.75rem',
+                            fontWeight: 500
+                          }}>
+                            {log.tenant_name || log.tenant_slug}
+                          </span>
+                        </td>
+                        <td>
+                          <span style={{ 
+                            background: log.action.includes('delete') ? '#fee2e2' : '#f1f5f9', 
+                            color: log.action.includes('delete') ? '#991b1b' : '#475569', 
+                            padding: '0.15rem 0.4rem', 
+                            borderRadius: '4px', 
+                            fontSize: '0.75rem',
+                            fontWeight: 500
+                          }}>
+                            {log.action.replace('delete_', '🗑️ ').replace('_', ' ')}
+                          </span>
+                        </td>
+                        <td style={{ fontSize: '0.85rem' }}>{log.description}</td>
+                        <td style={{ fontSize: '0.85rem', color: '#64748b' }}>{log.performed_by}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* === TAB: UPTIME === */}
+        {activeTab === 'uptime' && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 600, margin: 0 }}>📈 Monitoramento de Uptime</h3>
+              <button 
+                className="btn btn-secondary" 
+                onClick={loadUptimeStatus}
+                disabled={uptimeLoading}
+                style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+              >
+                <FiRefreshCw className={uptimeLoading ? 'spin' : ''} style={{ marginRight: '0.3rem' }} />
+                Atualizar
+              </button>
+            </div>
+            
+            {uptimeLoading ? (
+              <p className="loading-text">Carregando status do uptime...</p>
+            ) : !uptimeStatus?.configured ? (
+              <div style={{ 
+                padding: '2rem', 
+                textAlign: 'center', 
+                background: '#fef3c7', 
+                borderRadius: '8px',
+                color: '#92400e'
+              }}>
+                <FiAlertTriangle style={{ fontSize: '2rem', marginBottom: '0.5rem' }} />
+                <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>UptimeRobot não configurado</p>
+                <p style={{ fontSize: '0.85rem' }}>
+                  {uptimeStatus?.message || 'Adicione UPTIMEROBOT_API_KEY nas variáveis de ambiente do Render.'}
+                </p>
+              </div>
+            ) : uptimeStatus.error ? (
+              <div style={{ padding: '1rem', background: '#fee2e2', borderRadius: '8px', color: '#991b1b' }}>
+                <strong>Erro:</strong> {uptimeStatus.error}
+              </div>
+            ) : (
+              <>
+                {/* Summary Cards */}
+                {uptimeStatus.summary && (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <div style={{ padding: '1rem', background: '#f0fdf4', borderRadius: '8px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#16a34a' }}>{uptimeStatus.summary.online}</div>
+                      <div style={{ fontSize: '0.8rem', color: '#166534' }}>Online</div>
+                    </div>
+                    <div style={{ padding: '1rem', background: '#fef2f2', borderRadius: '8px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#dc2626' }}>{uptimeStatus.summary.offline}</div>
+                      <div style={{ fontSize: '0.8rem', color: '#991b1b' }}>Offline</div>
+                    </div>
+                    <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '8px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#475569' }}>{uptimeStatus.summary.total}</div>
+                      <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Total</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Monitors List */}
+                {uptimeStatus.monitors && uptimeStatus.monitors.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {uptimeStatus.monitors.map((monitor) => (
+                      <div 
+                        key={monitor.id} 
+                        style={{ 
+                          padding: '1rem', 
+                          border: '1px solid #e2e8f0', 
+                          borderRadius: '8px',
+                          borderLeft: `4px solid ${monitor.statusCode === 2 ? '#10b981' : monitor.statusCode === 9 ? '#ef4444' : '#f59e0b'}`
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                          <div>
+                            <strong style={{ fontSize: '1rem' }}>{monitor.name}</strong>
+                            <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{monitor.url}</div>
+                          </div>
+                          <span style={{
+                            background: monitor.statusCode === 2 ? '#d1fae5' : monitor.statusCode === 9 ? '#fee2e2' : '#fef3c7',
+                            color: monitor.statusCode === 2 ? '#065f46' : monitor.statusCode === 9 ? '#991b1b' : '#92400e',
+                            padding: '0.25rem 0.75rem',
+                            borderRadius: '20px',
+                            fontSize: '0.8rem',
+                            fontWeight: 600
+                          }}>
+                            {monitor.statusCode === 2 ? '🟢 Online' : monitor.statusCode === 9 ? '🔴 Offline' : '🟡 ' + monitor.status}
+                          </span>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', fontSize: '0.8rem' }}>
+                          <div>
+                            <span style={{ color: '#94a3b8' }}>Uptime (total):</span>
+                            <div style={{ fontWeight: 600, color: parseFloat(monitor.uptime.allTime) >= 99 ? '#16a34a' : '#f59e0b' }}>
+                              {monitor.uptime.allTime}%
+                            </div>
+                          </div>
+                          <div>
+                            <span style={{ color: '#94a3b8' }}>Últimos 7 dias:</span>
+                            <div style={{ fontWeight: 600 }}>{monitor.uptime.last7Days || '-'}%</div>
+                          </div>
+                          <div>
+                            <span style={{ color: '#94a3b8' }}>Últimos 30 dias:</span>
+                            <div style={{ fontWeight: 600 }}>{monitor.uptime.last30Days || '-'}%</div>
+                          </div>
+                          <div>
+                            <span style={{ color: '#94a3b8' }}>Tempo resposta:</span>
+                            <div style={{ fontWeight: 600 }}>{monitor.responseTime.average || '-'}ms</div>
+                          </div>
+                        </div>
+                        {monitor.logs && monitor.logs.length > 0 && (
+                          <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #e2e8f0' }}>
+                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Últimos eventos:</div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                              {monitor.logs.slice(0, 3).map((log, idx) => (
+                                <span 
+                                  key={idx} 
+                                  style={{ 
+                                    fontSize: '0.7rem', 
+                                    padding: '0.2rem 0.5rem', 
+                                    background: log.type === 'down' ? '#fee2e2' : log.type === 'up' ? '#d1fae5' : '#f1f5f9',
+                                    color: log.type === 'down' ? '#991b1b' : log.type === 'up' ? '#065f46' : '#475569',
+                                    borderRadius: '4px'
+                                  }}
+                                >
+                                  {log.type === 'down' ? '🔴' : log.type === 'up' ? '🟢' : '⚪'} {new Date(log.datetime).toLocaleDateString('pt-BR')}
+                                  {log.duration && ` (${log.duration})`}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="empty-text">Nenhum monitor configurado no UptimeRobot.</p>
+                )}
+              </>
+            )}
+          </>
         )}
       </div>
       </div>
