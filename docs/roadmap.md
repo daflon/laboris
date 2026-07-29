@@ -102,11 +102,13 @@ Em andamento e planejadas:
 - [x] Logo no PDF e sidebar
 - [x] Backup automático do banco (GitHub Actions 2x/dia)
 - [x] Painel de Status do Sistema (Master): DB, Backup, Deploy, Métricas
+- [x] Lote de OS (agrupar múltiplos equipamentos do mesmo cliente)
+- [x] PDF do Lote com opção Individual ou Resumo consolidado
+- [x] Modal de seleção para PDF do Lote (filtro por status, seleção de OS)
 - [ ] Alertas visuais de falha no painel Master (backup atrasado, DB offline)
 - [ ] Tema escuro (dark mode total)
 - [ ] Controle de pagamentos na OS (valor, status, forma de pagamento)
 - [ ] QR Code para consulta de status da OS
-- [ ] Compartilhar PDF via celular (Web Share API)
 - [ ] Indicador visual de OS antigas (> 30 dias sem movimento)
 - [ ] Alerta de equipamentos com mais de 180 dias sem retirada
 - [ ] Financeiro expandido: despesas, categorias, fluxo de caixa
@@ -116,21 +118,32 @@ Em andamento e planejadas:
 
 ---
 
-## ☁️ Etapa 8 — Escala e Operações
+## ☁️ Etapa 8 — Segurança e Acessibilidade
 
-Planejado para quando escalar:
+Melhorias de segurança e conformidade WCAG:
 
 - [x] Backup automático do banco com retenção (GitHub Actions, 30 dias)
-- [ ] Log de Auditoria no painel Master (quem fez o quê)
-- [ ] Monitoramento de uptime
-- [ ] Logs centralizados
-- [ ] Rate limiting na API
+- [x] Rate limiting no PIN (5 tentativas, cooldown 5 min, por tenant+IP)
+- [x] Log de auditoria do Impersonate (tabela impersonate_logs)
+- [x] Banner visual do modo Impersonate (barra laranja fixa)
+- [x] aria-label em botões de ícone (acessibilidade para leitores de tela)
+- [x] Contraste WCAG AA nos badges de status (mínimo 4.5:1)
+- [x] Ícones nos status badges (acessibilidade para daltonismo)
+- [x] Paleta Cyan exclusiva para Painel Master (diferencia do tenant)
+- [x] localStorage draft em formulários (previne perda de dados)
+- [x] Esconder PDF Individual quando OS está em lote (simplifica UX)
+- [ ] Log de Auditoria completo no painel Master (quem fez o quê)
+- [ ] Monitoramento de uptime (integração com UptimeRobot API)
+- [ ] Logs centralizados (Sentry ou similar)
+- [ ] Rate limiting global na API (proteção contra DDoS)
 - [ ] CDN para assets estáticos
 
 ---
 
-## 💡 Ideias Futuras
+## 💡 Ideias Futuras (v2)
 
+- Identidade visual Amber (cor da marca, migração de tema)
+- Logo em storage externo (S3/Cloudinary) em vez de Base64
 - Planos pagos / cobrança automática (Stripe/Mercado Pago)
 - Cadastro self-service (cliente cria conta sozinho)
 - Foto do equipamento na entrada
@@ -139,6 +152,8 @@ Planejado para quando escalar:
 - Controle de estoque de peças
 - Agenda de atendimento por técnico
 - Backup com restauração pelo painel master
+- Refresh token para sessões longas (alternativa ao localStorage draft)
+- Compartilhar PDF via celular (Web Share API - já funciona em alguns dispositivos)
 
 ---
 

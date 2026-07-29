@@ -24,7 +24,8 @@ Versão: 1.0 | Última atualização: Julho 2026
 9. [Integrações](#9-integrações)
 10. [Infraestrutura e Deploy](#10-infraestrutura-e-deploy)
 11. [Segurança](#11-segurança)
-12. [Guia de Uso](#12-guia-de-uso)
+12. [Acessibilidade (WCAG)](#12-acessibilidade-wcag)
+13. [Guia de Uso](#13-guia-de-uso)
 
 ---
 
@@ -1435,6 +1436,7 @@ Serviço gratuito que faz ping a cada 5 minutos para evitar que o Render adorme�
 - JWT com expiração de 24h
 - Senha hashada com bcrypt (salt rounds: 10)
 - Token armazenado em localStorage
+- Rascunho de formulário salvo localmente para prevenir perda de dados
 
 ### 11.2 Autorização
 
@@ -1471,14 +1473,118 @@ app.use(cors({
 
 - Operações destrutivas requerem PIN
 - PIN hashado no banco
-- Rate limiting implícito (via UX)
+- Rate limiting: 5 tentativas por combinação tenant+IP
+- Cooldown de 5 minutos após bloqueio
+- Mensagem genérica não revela se é bloqueio ou PIN errado
+
+**Tabela de controle:**
+```sql
+CREATE TABLE pin_attempts (
+  id UUID PRIMARY KEY,
+  tenant_id UUID REFERENCES tenants(id),
+  ip_address VARCHAR(45),
+  attempts INTEGER DEFAULT 0,
+  last_attempt TIMESTAMP,
+  blocked_until TIMESTAMP
+);
+```
+
+### 11.8 Impersonate (Auditoria)
+
+Quando um super_admin acessa como outro tenant:
+
+- Log registrado na tabela `impersonate_logs`
+- Banner laranja fixo no topo da página
+- Impossível descartar o banner
+- Botão para encerrar sessão de impersonate
+
+**Dados registrados:**
+```sql
+CREATE TABLE impersonate_logs (
+  id UUID PRIMARY KEY,
+  admin_id UUID REFERENCES users(id),
+  tenant_id UUID REFERENCES tenants(id),
+  started_at TIMESTAMP DEFAULT NOW(),
+  ended_at TIMESTAMP,
+  ip_address VARCHAR(45),
+  actions_summary TEXT
+);
+```
+
+### 11.9 Rascunho de Formulário (Draft)
+
+Para evitar perda de dados quando token JWT expira:
+
+- Formulário de OS salva automaticamente a cada 2 segundos
+- Dados armazenados em localStorage
+- Ao reabrir formulário, banner oferece restaurar ou descartar
+- Rascunho limpo após salvar com sucesso
+
+**Hook:**
+```typescript
+const { hasDraft, saveDraft, clearDraft } = useFormDraft({
+  key: 'os_new',
+  initialData: emptyForm,
+  debounceMs: 2000
+});
+```
 
 ---
 
-## 12. Guia de Uso
+## 12. Acessibilidade (WCAG)
+
+### 12.1 aria-label em Botões de Ícone
+
+Todos os botões com apenas ícone possuem:
+- `aria-label` descritivo com nome da entidade
+- `title` para tooltip visual
+
+**Exemplo:**
+```jsx
+<button 
+  aria-label="Editar João Silva"
+  title="Editar João Silva"
+>
+  <FiEdit2 />
+</button>
+```
+
+### 12.2 Contraste de Cores (WCAG AA)
+
+Badges de status com contraste mínimo de 4.5:1:
+
+| Status | Background | Texto | Contraste |
+|--------|------------|-------|-----------|
+| Aberta | #dbeafe | #1e40af | 7.2:1 ✓ |
+| Aprovada | #fef3c7 | #78350f | 6.8:1 ✓ |
+| Aguardando | #ede9fe | #5b21b6 | 5.1:1 ✓ |
+| Concluída | #d1fae5 | #064e3b | 7.5:1 ✓ |
+| Entregue | #e0f2fe | #0c4a6e | 6.3:1 ✓ |
+| Cancelada | #fee2e2 | #7f1d1d | 5.8:1 ✓ |
+
+### 12.3 Ícones nos Status (Daltonismo)
+
+Para usuários com daltonismo, cada status tem ícone via CSS `::before`:
+
+```css
+.status-aberta::before { content: "○"; }
+.status-aprovada::before { content: "✓"; }
+.status-aguardando_peca::before { content: "⏳"; }
+.status-concluida::before { content: "✓✓"; }
+.status-entregue::before { content: "📦"; }
+.status-cancelada::before { content: "✕"; }
+```
+
+### 12.4 Paleta Diferenciada do Master
+
+Painel Master Admin usa cyan (#0891b2) para diferenciar visualmente do sistema do tenant (azul), evitando confusão para super_admins.
+
+---
+
+## 13. Guia de Uso
 
 
-### 12.1 Primeiro Acesso
+### 13.1 Primeiro Acesso
 
 1. Acesse o sistema pelo navegador
 2. Faça login com email e senha fornecidos
@@ -1486,7 +1592,7 @@ app.use(cors({
 4. Cadastre seus técnicos
 5. Comece a cadastrar clientes e criar OS
 
-### 12.2 Fluxo de uma Ordem de Serviço
+### 13.2 Fluxo de uma Ordem de Serviço
 
 ```
 1. RECEBER EQUIPAMENTO
@@ -1514,7 +1620,7 @@ app.use(cors({
    └─► Mudar status: ENTREGUE
 ```
 
-### 12.3 Criando um Lote
+### 13.3 Criando um Lote
 
 Quando cliente traz múltiplos equipamentos:
 
@@ -1524,7 +1630,7 @@ Quando cliente traz múltiplos equipamentos:
 4. Repita para cada equipamento
 5. Use **"PDF do Lote"** para imprimir todos ou selecionar por status
 
-### 12.4 Imprimindo PDF Resumo
+### 13.4 Imprimindo PDF Resumo
 
 Para entregar documento consolidado:
 
@@ -1537,7 +1643,7 @@ Para entregar documento consolidado:
 4. Clique em **"Gerar PDF"**
 5. Documento terá tabela com todas as OS e valor total
 
-### 12.5 Instalando como App (PWA)
+### 13.5 Instalando como App (PWA)
 
 **Android (Chrome):**
 1. Acesse o sistema
@@ -1554,7 +1660,7 @@ Para entregar documento consolidado:
 2. Ícone de instalação na barra de endereço
 3. Clique em "Instalar"
 
-### 12.6 Backup e Recuperação
+### 13.6 Backup e Recuperação
 
 Backups são automáticos (2x/dia) e armazenados no GitHub.
 
@@ -1563,7 +1669,7 @@ Backups são automáticos (2x/dia) e armazenados no GitHub.
 gunzip < backup_YYYY-MM-DD.sql.gz | psql $DATABASE_URL
 ```
 
-### 12.7 Dicas de Uso
+### 13.7 Dicas de Uso
 
 **Atalhos:**
 - `Ctrl+K` - Busca global
