@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiPlus, FiUsers, FiClipboard, FiLayers, FiDatabase, FiCloud, FiHardDrive, FiRefreshCw } from 'react-icons/fi';
+import { FiPlus, FiUsers, FiClipboard, FiLayers, FiDatabase, FiCloud, FiHardDrive, FiRefreshCw, FiAlertTriangle, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { authService } from '../../services/auth.service';
+
+interface SystemAlert {
+  id: string;
+  type: 'error' | 'warning';
+  title: string;
+  message: string;
+}
 
 interface MasterStats {
   total_tenants: number;
@@ -85,6 +92,86 @@ export default function MasterDashboard() {
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [statusLoading, setStatusLoading] = useState(false);
+  const [dismissedAlerts, setDismissedAlerts] = useState<string[]>([]);
+
+  // Gera alertas baseados no status do sistema
+  const getSystemAlerts = (): SystemAlert[] => {
+    if (!systemStatus) return [];
+    
+    const alerts: SystemAlert[] = [];
+    
+    // Alerta: Banco de dados offline
+    if (!systemStatus.database.connected) {
+      alerts.push({
+        id: 'db-offline',
+        type: 'error',
+        title: 'Banco de Dados Offline',
+        message: systemStatus.database.error || 'Não foi possível conectar ao PostgreSQL. Verifique a conexão com o Neon.'
+      });
+    }
+    
+    // Alerta: Latência alta do banco (> 500ms)
+    if (systemStatus.database.connected && systemStatus.database.latency && systemStatus.database.latency > 500) {
+      alerts.push({
+        id: 'db-slow',
+        type: 'warning',
+        title: 'Banco de Dados Lento',
+        message: `Latência atual: ${systemStatus.database.latency}ms. Pode haver lentidão no sistema.`
+      });
+    }
+    
+    // Alerta: Deploy com problemas
+    if (!systemStatus.deploy.healthy) {
+      alerts.push({
+        id: 'deploy-unhealthy',
+        type: 'error',
+        title: 'Problemas no Deploy',
+        message: systemStatus.deploy.message || 'O serviço no Render está com problemas.'
+      });
+    }
+    
+    // Alerta: Backup atrasado (> 24h)
+    if (systemStatus.backups.lastBackup) {
+      const lastBackupDate = new Date(systemStatus.backups.lastBackup.date);
+      const hoursSinceBackup = (Date.now() - lastBackupDate.getTime()) / (1000 * 60 * 60);
+      
+      if (hoursSinceBackup > 24) {
+        alerts.push({
+          id: 'backup-delayed',
+          type: 'warning',
+          title: 'Backup Atrasado',
+          message: `Último backup foi há ${Math.floor(hoursSinceBackup)} horas. O backup deveria rodar 2x por dia.`
+        });
+      }
+    } else if (!systemStatus.backups.error) {
+      // Nenhum backup encontrado
+      alerts.push({
+        id: 'backup-none',
+        type: 'warning',
+        title: 'Nenhum Backup Encontrado',
+        message: 'Não há backups registrados. Configure o GitHub Actions para backup automático.'
+      });
+    }
+    
+    // Alerta: Erro ao buscar backups
+    if (systemStatus.backups.error) {
+      alerts.push({
+        id: 'backup-error',
+        type: 'warning',
+        title: 'Erro ao Verificar Backups',
+        message: systemStatus.backups.error
+      });
+    }
+    
+    // Filtra alertas descartados
+    return alerts.filter(a => !dismissedAlerts.includes(a.id));
+  };
+
+  const dismissAlert = (alertId: string) => {
+    setDismissedAlerts(prev => [...prev, alertId]);
+  };
+
+  const systemAlerts = getSystemAlerts();
 
   const loadData = () => {
     Promise.all([
@@ -172,7 +259,25 @@ export default function MasterDashboard() {
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'white', margin: 0 }}>⚙️ Painel Master</h2>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              ⚙️ Painel Master
+              {systemAlerts.length > 0 && (
+                <span style={{
+                  background: systemAlerts.some(a => a.type === 'error') ? '#ef4444' : '#f59e0b',
+                  color: 'white',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  padding: '0.2rem 0.5rem',
+                  borderRadius: '10px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.25rem'
+                }}>
+                  <FiAlertTriangle style={{ fontSize: '0.65rem' }} />
+                  {systemAlerts.length}
+                </span>
+              )}
+            </h2>
             <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.8)', margin: '0.25rem 0 0 0' }}>Administração do Sistema</p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -184,6 +289,69 @@ export default function MasterDashboard() {
       </div>
 
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 2rem 2rem 2rem' }}>
+
+      {/* Sistema de Alertas */}
+      {systemAlerts.length > 0 && (
+        <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {systemAlerts.map((alert) => (
+            <div
+              key={alert.id}
+              style={{
+                padding: '1rem 1.25rem',
+                borderRadius: '8px',
+                background: alert.type === 'error' 
+                  ? 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)'
+                  : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+                border: `1px solid ${alert.type === 'error' ? '#fca5a5' : '#fcd34d'}`,
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.75rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+              }}
+            >
+              <FiAlertTriangle 
+                style={{ 
+                  color: alert.type === 'error' ? '#dc2626' : '#d97706',
+                  fontSize: '1.25rem',
+                  flexShrink: 0,
+                  marginTop: '2px'
+                }} 
+              />
+              <div style={{ flex: 1 }}>
+                <div style={{ 
+                  fontWeight: 600, 
+                  color: alert.type === 'error' ? '#991b1b' : '#92400e',
+                  marginBottom: '0.25rem'
+                }}>
+                  {alert.title}
+                </div>
+                <div style={{ 
+                  fontSize: '0.85rem', 
+                  color: alert.type === 'error' ? '#b91c1c' : '#a16207',
+                  lineHeight: 1.4
+                }}>
+                  {alert.message}
+                </div>
+              </div>
+              <button
+                onClick={() => dismissAlert(alert.id)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0.25rem',
+                  color: alert.type === 'error' ? '#dc2626' : '#d97706',
+                  opacity: 0.6
+                }}
+                title="Dispensar alerta"
+                aria-label="Dispensar alerta"
+              >
+                <FiX />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Stats */}
       {stats && (
