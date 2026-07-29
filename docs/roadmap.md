@@ -106,11 +106,10 @@ Em andamento e planejadas:
 - [x] PDF do Lote com opção Individual ou Resumo consolidado
 - [x] Modal de seleção para PDF do Lote (filtro por status, seleção de OS)
 - [x] Alertas visuais de falha no painel Master (backup atrasado, DB offline)
-- [ ] Tema escuro (dark mode total)
 - [ ] Controle de pagamentos na OS (valor, status, forma de pagamento)
 - [ ] QR Code para consulta de status da OS
-- [ ] Indicador visual de OS antigas (> 30 dias sem movimento)
-- [ ] Alerta de equipamentos com mais de 180 dias sem retirada
+- [x] Indicador visual de OS antigas (> 30 dias sem movimento)
+- [x] Alerta de equipamentos com mais de 180 dias sem retirada
 - [ ] Financeiro expandido: despesas, categorias, fluxo de caixa
 - [ ] Relatório mensal de faturamento por tenant
 - [ ] Relatório de OS por técnico (produtividade)
@@ -142,6 +141,7 @@ Melhorias de segurança e conformidade WCAG:
 
 ## 💡 Ideias Futuras (v2)
 
+- Tema escuro (dark mode total)
 - Identidade visual Amber (cor da marca, migração de tema)
 - Logo em storage externo (S3/Cloudinary) em vez de Base64
 - Planos pagos / cobrança automática (Stripe/Mercado Pago)
