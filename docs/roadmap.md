@@ -3,6 +3,8 @@ layout: default
 title: Roadmap
 ---
 
+_Última sincronização: 29/07/2026_
+
 # 🗺️ Roadmap — OS Laboris
 
 Acompanhe a evolução do sistema.

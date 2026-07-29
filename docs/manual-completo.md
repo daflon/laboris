@@ -3,9 +3,11 @@ layout: default
 title: Manual Completo
 ---
 
+_Última sincronização: 29/07/2026_
+
 # 📖 Manual Completo — OS Laboris
 
-**Sistema de Gestão de Ordens de Serviço para Assistência Técnica de Ferramentas Elétricas**
+**Sistema SaaS Multi-tenant de Gestão de Ordens de Serviço para Assistência Técnica de Ferramentas Elétricas**
 
 Versão: 1.0 | Última atualização: Julho 2026
 
