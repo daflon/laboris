@@ -9,8 +9,8 @@ const serviceOrdersController = {
   async findAll(req, res, next) {
     try {
       const { page, limit, offset } = getPaginationParams(req.query);
-      const { search, status } = req.query;
-      const { orders, total } = await serviceOrdersService.findAll(req.tenantId, { search, status, limit, offset });
+      const { search, status, filter } = req.query;
+      const { orders, total } = await serviceOrdersService.findAll(req.tenantId, { search, status, filter, limit, offset });
       res.json({ success: true, data: orders, meta: buildPaginationMeta(page, limit, total) });
     } catch (error) { next(error); }
   },

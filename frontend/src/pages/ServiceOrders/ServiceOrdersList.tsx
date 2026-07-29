@@ -57,6 +57,7 @@ export default function ServiceOrdersList() {
   const [orders, setOrders] = useState<ServiceOrder[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'all');
+  const [specialFilter, setSpecialFilter] = useState(searchParams.get('filter') || '');
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [meta, setMeta] = useState({ page: 1, totalPages: 1, total: 0 });
@@ -67,6 +68,7 @@ export default function ServiceOrdersList() {
       const response = await serviceOrdersService.list({
         search,
         status: statusFilter,
+        filter: specialFilter || undefined,
         page,
         limit: 20,
       });
@@ -82,7 +84,7 @@ export default function ServiceOrdersList() {
   useEffect(() => {
     const timeout = setTimeout(() => loadOrders(), 300);
     return () => clearTimeout(timeout);
-  }, [search, statusFilter]);
+  }, [search, statusFilter, specialFilter]);
 
   const handleDeleteWithPin = async () => {
     if (!deleteId) return;
@@ -113,6 +115,42 @@ export default function ServiceOrdersList() {
           <FiPlus /> Nova OS
         </Link>
       </PageHeader>
+
+      {/* Banner de filtro especial ativo */}
+      {specialFilter && (
+        <div style={{
+          padding: '0.6rem 1rem',
+          marginBottom: '1rem',
+          borderRadius: '6px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: specialFilter === 'abandoned' ? '#fee2e2' : '#fef3c7',
+          border: `1px solid ${specialFilter === 'abandoned' ? '#fca5a5' : '#fcd34d'}`,
+          color: specialFilter === 'abandoned' ? '#991b1b' : '#92400e'
+        }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>
+            {specialFilter === 'old' && '⏰ Mostrando OS paradas há mais de 30 dias'}
+            {specialFilter === 'abandoned' && '⚠️ Mostrando equipamentos há mais de 180 dias (Lei PL 2545/22)'}
+          </span>
+          <button
+            onClick={() => {
+              setSpecialFilter('');
+              navigate('/os');
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.85rem',
+              textDecoration: 'underline',
+              color: 'inherit'
+            }}
+          >
+            Limpar filtro
+          </button>
+        </div>
+      )}
 
       <div className="filters-row">
         <SearchInput

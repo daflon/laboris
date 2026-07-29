@@ -103,7 +103,7 @@ export const PAYMENT_METHODS = [
 ];
 
 export const serviceOrdersService = {
-  async list(params?: { search?: string; status?: string; page?: number; limit?: number }) {
+  async list(params?: { search?: string; status?: string; filter?: string; page?: number; limit?: number }) {
     const response = await api.get('/service-orders', { params });
     return response.data;
   },

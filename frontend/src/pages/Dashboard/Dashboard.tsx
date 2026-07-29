@@ -65,7 +65,7 @@ export default function Dashboard() {
         }}>
           {data.alerts.old_orders > 0 && (
             <div 
-              onClick={() => navigate('/os')}
+              onClick={() => navigate('/os?filter=old')}
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -78,7 +78,7 @@ export default function Dashboard() {
                 color: '#92400e',
                 cursor: 'pointer'
               }}
-              title="Clique para ver lista de OS"
+              title="Clique para ver lista de OS antigas"
             >
               <span>⏰</span>
               <span><strong>{data.alerts.old_orders}</strong> OS {data.alerts.old_orders === 1 ? 'parada' : 'paradas'} há mais de 30 dias</span>
@@ -86,7 +86,7 @@ export default function Dashboard() {
           )}
           {data.alerts.abandoned_equipment > 0 && (
             <div 
-              onClick={() => navigate('/os')}
+              onClick={() => navigate('/os?filter=abandoned')}
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 

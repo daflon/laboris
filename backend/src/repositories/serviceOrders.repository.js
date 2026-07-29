@@ -130,7 +130,7 @@ const serviceOrdersRepository = {
     return this.findById(tenantId, orderId);
   },
 
-  async findAll(tenantId, { search, status, limit, offset }) {
+  async findAll(tenantId, { search, status, filter, limit, offset }) {
     const query = db(TABLE)
       .where(`${TABLE}.tenant_id`, tenantId)
       .whereNull(`${TABLE}.deleted_at`)
@@ -139,6 +139,20 @@ const serviceOrdersRepository = {
       .leftJoin('technicians', 'technicians.id', `${TABLE}.technician_id`);
 
     if (status && status !== 'all') query.where(`${TABLE}.status`, status);
+
+    // Filtro especial: OS antigas (> 30 dias, não finalizadas)
+    if (filter === 'old') {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      query.whereNotIn(`${TABLE}.status`, ['entregue', 'cancelada']);
+      query.where(`${TABLE}.entry_date`, '<', thirtyDaysAgo);
+    }
+
+    // Filtro especial: Equipamentos abandonados (> 180 dias, não finalizados)
+    if (filter === 'abandoned') {
+      const oneEightyDaysAgo = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      query.whereNotIn(`${TABLE}.status`, ['entregue', 'cancelada']);
+      query.where(`${TABLE}.entry_date`, '<', oneEightyDaysAgo);
+    }
 
     if (search) {
       const term = `%${search.toLowerCase()}%`;
@@ -153,6 +167,19 @@ const serviceOrdersRepository = {
       .whereNull(`${TABLE}.deleted_at`)
       .leftJoin('clients', 'clients.id', `${TABLE}.client_id`);
     if (status && status !== 'all') countQuery.where(`${TABLE}.status`, status);
+    
+    // Aplicar mesmos filtros especiais na contagem
+    if (filter === 'old') {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      countQuery.whereNotIn(`${TABLE}.status`, ['entregue', 'cancelada']);
+      countQuery.where(`${TABLE}.entry_date`, '<', thirtyDaysAgo);
+    }
+    if (filter === 'abandoned') {
+      const oneEightyDaysAgo = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      countQuery.whereNotIn(`${TABLE}.status`, ['entregue', 'cancelada']);
+      countQuery.where(`${TABLE}.entry_date`, '<', oneEightyDaysAgo);
+    }
+    
     if (search) {
       const term = `%${search.toLowerCase()}%`;
       countQuery.where(function () {
