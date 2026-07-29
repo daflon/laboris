@@ -511,6 +511,9 @@ O Dashboard é a tela inicial após login, apresentando uma visão geral do neg�
   - Aguardando Peça (violeta)
   - Concluídas (verde)
   - Entregues (índigo)
+- **Alertas de Atenção:** Banners clicáveis que filtram a listagem
+  - ⏰ OS paradas há mais de 30 dias (amarelo)
+  - ⚠️ Equipamentos há mais de 180 dias (vermelho) - Lei PL 2545/22
 - **Ranking de Técnicos:** Top 3 técnicos com mais OS concluídas (gamificação 🥇🥈🥉)
 - **Últimas OS:** Lista das 5 últimas ordens criadas
 
@@ -619,6 +622,12 @@ O Dashboard é a tela inicial após login, apresentando uma visão geral do neg�
 - `/os/:id` - Detalhes
 - `/os/:id/editar` - Edição
 - `/os/:id/adicionar-lote` - Adicionar equipamento ao lote
+- `/os?filter=old` - Lista filtrada: OS > 30 dias
+- `/os?filter=abandoned` - Lista filtrada: Equipamentos > 180 dias
+
+**Indicadores visuais na listagem:**
+- ⏰ Ícone ao lado do número: OS parada há mais de 30 dias
+- `LOTE` Badge azul: OS faz parte de um lote
 
 **Campos principais:**
 | Campo | Tipo | Obrigatório | Descrição |
