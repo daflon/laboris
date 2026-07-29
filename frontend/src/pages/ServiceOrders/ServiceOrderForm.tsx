@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiPlus, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiSave } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import {
   serviceOrdersService,
@@ -16,6 +16,7 @@ import PageHeader from '../../components/PageHeader';
 import QuickClientModal from '../../components/QuickClientModal';
 import QuickEquipmentModal from '../../components/QuickEquipmentModal';
 import { formatDocument } from '../../utils/masks';
+import { useFormDraft } from '../../hooks/useFormDraft';
 
 const emptyItem: ServiceOrderItem = { quantity: 1, description: '', unit_price: 0 };
 
@@ -39,6 +40,14 @@ export default function ServiceOrderForm() {
   const { id } = useParams();
   const isEditing = !!id;
 
+  // Draft key único por OS (novo ou edição)
+  const draftKey = isEditing ? `os_edit_${id}` : 'os_new';
+  const { hasDraft, saveDraft, clearDraft, getSavedDraft } = useFormDraft<ServiceOrderFormData>({
+    key: draftKey,
+    initialData: emptyForm,
+    debounceMs: 2000
+  });
+
   const [form, setForm] = useState<ServiceOrderFormData>(emptyForm);
   const [clients, setClients] = useState<Client[]>([]);
   const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
@@ -47,6 +56,8 @@ export default function ServiceOrderForm() {
   const [saving, setSaving] = useState(false);
   const [showClientModal, setShowClientModal] = useState(false);
   const [showEquipmentModal, setShowEquipmentModal] = useState(false);
+  const [showDraftBanner, setShowDraftBanner] = useState(false);
+  const [draftRestored, setDraftRestored] = useState(false);
 
   // Carregar dados auxiliares
   useEffect(() => {
@@ -58,6 +69,43 @@ export default function ServiceOrderForm() {
       setTechnicians(techRes.data);
     });
   }, []);
+
+  // Verificar se há rascunho ao montar (apenas para nova OS)
+  useEffect(() => {
+    if (!isEditing && hasDraft) {
+      setShowDraftBanner(true);
+    }
+  }, [isEditing, hasDraft]);
+
+  // Salvar rascunho quando form muda (apenas após interação do usuário)
+  useEffect(() => {
+    // Não salvar se estiver carregando ou se acabou de restaurar
+    if (loading || draftRestored) {
+      setDraftRestored(false);
+      return;
+    }
+    // Só salvar se tiver algum dado preenchido
+    const hasData = form.client_id || form.equipment_id || form.reported_defect || form.items.length > 0;
+    if (hasData) {
+      saveDraft(form);
+    }
+  }, [form, loading, saveDraft, draftRestored]);
+
+  const handleRestoreDraft = useCallback(() => {
+    const draft = getSavedDraft();
+    if (draft) {
+      setDraftRestored(true);
+      setForm(draft);
+      setShowDraftBanner(false);
+      toast.success('Rascunho restaurado!');
+    }
+  }, [getSavedDraft]);
+
+  const handleDiscardDraft = useCallback(() => {
+    clearDraft();
+    setShowDraftBanner(false);
+    toast.success('Rascunho descartado');
+  }, [clearDraft]);
 
   // Carregar equipamentos ao selecionar cliente
   useEffect(() => {
@@ -140,6 +188,8 @@ export default function ServiceOrderForm() {
         await serviceOrdersService.create(form);
         toast.success('OS criada com sucesso');
       }
+      // Limpar rascunho após salvar com sucesso
+      clearDraft();
       navigate('/os');
     } catch (error: any) {
       const msg = error.response?.data?.error?.message || 'Erro ao salvar OS';
@@ -159,6 +209,47 @@ export default function ServiceOrderForm() {
   return (
     <div>
       <PageHeader title={isEditing ? 'Editar Ordem de Serviço' : 'Nova Ordem de Serviço'} />
+
+      {/* Banner de rascunho recuperado */}
+      {showDraftBanner && (
+        <div style={{
+          marginBottom: '1rem',
+          padding: '0.75rem 1rem',
+          background: '#fef3c7',
+          border: '1px solid #fbbf24',
+          borderRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1rem',
+          flexWrap: 'wrap'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <FiSave style={{ color: '#d97706' }} />
+            <span style={{ fontSize: '0.9rem', color: '#92400e' }}>
+              <strong>Rascunho encontrado!</strong> Você tem dados não salvos de uma sessão anterior.
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={handleDiscardDraft}
+              style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}
+            >
+              Descartar
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-primary" 
+              onClick={handleRestoreDraft}
+              style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem', background: '#d97706' }}
+            >
+              Restaurar Rascunho
+            </button>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="form-card">
         {/* Dados principais */}

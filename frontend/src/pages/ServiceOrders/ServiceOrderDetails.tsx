@@ -199,9 +199,11 @@ export default function ServiceOrderDetails() {
         <button className="btn btn-success" onClick={handleWhatsApp} style={{ background: '#25d366', color: 'white' }}>
           <FiMessageCircle /> WhatsApp
         </button>
-        <button className="btn btn-secondary" onClick={() => handlePrint(false)}>
-          <FiPrinter /> PDF
-        </button>
+        {!order.lote_numero && (
+          <button className="btn btn-secondary" onClick={() => handlePrint(false)}>
+            <FiPrinter /> PDF
+          </button>
+        )}
         {order.lote_numero && (
           <button className="btn btn-secondary" onClick={() => setShowLoteModal(true)} style={{ background: '#dbeafe', color: '#1e40af' }}>
             <FiLayers /> PDF do Lote

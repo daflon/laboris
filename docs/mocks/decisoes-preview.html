@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OS Laboris - Preview de Decisões</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: #f1f5f9; 
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    h1 { text-align: center; margin-bottom: 0.5rem; color: #0f172a; }
+    .subtitle { text-align: center; color: #64748b; margin-bottom: 2rem; }
+    
+    /* Decision Card */
+    .decision-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .decision-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .decision-number {
+      background: #3b82f6;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .decision-title { font-size: 1.1rem; font-weight: 600; }
+    .decision-desc { color: #64748b; font-size: 0.85rem; margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎨 Preview de Decisões</h1>
+  <p class="subtitle">Visualize as opções antes de decidir</p>
+
+  <!-- DECISÃO 1: Paleta Master -->
+  <div class="decision-card">
+    <div class="decision-header">
+      <div class="decision-number">1</div>
+      <div class="decision-title">Paleta do Painel Master</div>
+    </div>
+    <p class="decision-desc">
+      Atualmente o painel Master usa <strong>violet</strong>, mesma cor do status "Aguardando Peça". 
+      Isso pode confundir. Escolha uma cor exclusiva para o Master Admin.
+    </p>
+    
+    <style>
+      .palette-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+      @media (max-width: 768px) { .palette-options { grid-template-columns: 1fr; } }
+      .palette-option { border: 2px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+      .palette-option.selected { border-color: #3b82f6; }
+      .palette-label { padding: 0.75rem; background: #f8fafc; font-weight: 600; font-size: 0.85rem; }
+      .palette-preview { padding: 1rem; }
+      .mini-sidebar { width: 100%; border-radius: 6px; overflow: hidden; }
+      .mini-sidebar-header { padding: 0.75rem; color: white; font-weight: 600; font-size: 0.8rem; }
+      .mini-sidebar-item { padding: 0.5rem 0.75rem; font-size: 0.75rem; color: rgba(255,255,255,0.7); }
+      .mini-sidebar-item.active { background: rgba(255,255,255,0.1); color: white; }
+      
+      /* Cores das opções */
+      .sidebar-violet { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); }
+      .sidebar-cyan { background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%); }
+      .sidebar-green { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+    </style>
+    
+    <div class="palette-options">
+      <!-- Opção A: Cyan -->
+      <div class="palette-option">
+        <div class="palette-label">A) Cyan #0891b2</div>
+        <div class="palette-preview">
+          <div class="mini-sidebar sidebar-cyan">
+            <div class="mini-sidebar-header">⚙️ Master Admin</div>
+            <div class="mini-sidebar-item active">Dashboard</div>
+            <div class="mini-sidebar-item">Tenants</div>
+            <div class="mini-sidebar-item">Usuários</div>
+          </div>
+          <p style="margin-top: 0.75rem; font-size: 0.75rem; color: #64748b;">
+            ✓ Cor fria e profissional<br>
+            ✓ Não conflita com nenhum status
+          </p>
+        </div>
+      </div>
+      
+      <!-- Opção B: Verde -->
+      <div class="palette-option">
+        <div class="palette-label">B) Verde #059669</div>
+        <div class="palette-preview">
+          <div class="mini-sidebar sidebar-green">
+            <div class="mini-sidebar-header">⚙️ Master Admin</div>
+            <div class="mini-sidebar-item active">Dashboard</div>
+            <div class="mini-sidebar-item">Tenants</div>
+            <div class="mini-sidebar-item">Usuários</div>
+          </div>
+          <p style="margin-top: 0.75rem; font-size: 0.75rem; color: #64748b;">
+            ✓ Transmite confiança<br>
+            ⚠️ Pode confundir com "Concluída"
+          </p>
+        </div>
+      </div>
+      
+      <!-- Opção C: Manter Violet -->
+      <div class="palette-option">
+        <div class="palette-label">C) Manter Violet</div>
+        <div class="palette-preview">
+          <div class="mini-sidebar sidebar-violet">
+            <div class="mini-sidebar-header">⚙️ Master Admin</div>
+            <div class="mini-sidebar-item active">Dashboard</div>
+            <div class="mini-sidebar-item">Tenants</div>
+            <div class="mini-sidebar-item">Usuários</div>
+          </div>
+          <p style="margin-top: 0.75rem; font-size: 0.75rem; color: #64748b;">
+            ✓ Não muda nada no Master<br>
+            → Mudar "Aguardando Peça" para rosa/pink
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DECISÃO 2: Simplificar PDF no Lote -->
+  <div class="decision-card">
+    <div class="decision-header">
+      <div class="decision-number">2</div>
+      <div class="decision-title">Simplificar PDF no Lote</div>
+    </div>
+    <p class="decision-desc">
+      Quando uma OS pertence a um lote, faz sentido esconder o botão "PDF Individual" 
+      e mostrar apenas "PDF do Lote"?
+    </p>
+    
+    <style>
+      .pdf-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+      @media (max-width: 768px) { .pdf-options { grid-template-columns: 1fr; } }
+      .pdf-option { border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; }
+      .pdf-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+      .mock-btn { 
+        padding: 0.5rem 1rem; 
+        border-radius: 6px; 
+        font-size: 0.8rem; 
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+      }
+      .mock-btn-primary { background: #3b82f6; color: white; }
+      .mock-btn-secondary { background: #e2e8f0; color: #475569; }
+      .mock-btn-disabled { background: #f1f5f9; color: #94a3b8; opacity: 0.6; }
+      .lote-badge { 
+        display: inline-block;
+        background: #dbeafe; 
+        color: #1e40af; 
+        padding: 0.2rem 0.5rem; 
+        border-radius: 4px; 
+        font-size: 0.7rem; 
+        font-weight: 600;
+      }
+    </style>
+    
+    <div class="pdf-options">
+      <!-- Opção A: Esconder -->
+      <div class="pdf-option">
+        <div class="palette-label" style="margin: -1rem -1rem 1rem -1rem; padding: 0.75rem; background: #f8fafc;">
+          A) Esconder PDF Individual
+        </div>
+        <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">
+          OS #0025 <span class="lote-badge">Lote 1A</span>
+        </p>
+        <div class="pdf-buttons">
+          <button class="mock-btn mock-btn-primary">📄 PDF do Lote</button>
+        </div>
+        <p style="font-size: 0.75rem; color: #64748b;">
+          ✓ Interface mais limpa<br>
+          ✓ Evita confusão<br>
+          ⚠️ Se precisar PDF individual, tem que tirar do lote
+        </p>
+      </div>
+      
+      <!-- Opção B: Manter ambos -->
+      <div class="pdf-option">
+        <div class="palette-label" style="margin: -1rem -1rem 1rem -1rem; padding: 0.75rem; background: #f8fafc;">
+          B) Manter Ambos Visíveis
+        </div>
+        <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">
+          OS #0025 <span class="lote-badge">Lote 1A</span>
+        </p>
+        <div class="pdf-buttons">
+          <button class="mock-btn mock-btn-secondary">📄 PDF Individual</button>
+          <button class="mock-btn mock-btn-primary">📦 PDF do Lote</button>
+        </div>
+        <p style="font-size: 0.75rem; color: #64748b;">
+          ✓ Flexibilidade total<br>
+          ✓ Usuário escolhe<br>
+          ⚠️ Mais opções = mais confusão potencial
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DECISÃO 3: Identidade Visual (Amber) -->
+  <div class="decision-card">
+    <div class="decision-header">
+      <div class="decision-number">3</div>
+      <div class="decision-title">Identidade Visual - Cor da Marca</div>
+    </div>
+    <p class="decision-desc">
+      O sistema usa azul como cor primária. Amber/dourado poderia dar uma identidade 
+      mais única e relacionada ao trabalho manual/ferramentas.
+    </p>
+    
+    <style>
+      .brand-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+      @media (max-width: 768px) { .brand-options { grid-template-columns: 1fr; } }
+      .brand-option { border: 2px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+      .brand-header { padding: 1rem; color: white; }
+      .brand-header-blue { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+      .brand-header-amber { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+      .brand-logo-blue { color: #3b82f6; font-weight: 700; font-size: 1.1rem; }
+      .brand-logo-amber { color: #f59e0b; font-weight: 700; font-size: 1.1rem; }
+      .brand-content { padding: 1rem; }
+      .brand-btn-blue { background: #3b82f6; color: white; }
+      .brand-btn-amber { background: #f59e0b; color: #1e293b; }
+      .brand-link-blue { color: #3b82f6; }
+      .brand-link-amber { color: #d97706; }
+    </style>
+    
+    <div class="brand-options">
+      <!-- Atual: Azul -->
+      <div class="brand-option">
+        <div class="brand-header brand-header-blue">
+          <span class="brand-logo-blue">⚡ OS Laboris</span>
+          <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.25rem;">Gestão de Ordens de Serviço</p>
+        </div>
+        <div class="brand-content">
+          <p style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">Atual: Azul #3b82f6</p>
+          <button class="mock-btn brand-btn-blue" style="margin-bottom: 0.5rem;">Novo Cliente</button>
+          <p style="font-size: 0.75rem;"><a href="#" class="brand-link-blue" style="text-decoration: none;">Ver detalhes →</a></p>
+          <p style="font-size: 0.75rem; color: #64748b; margin-top: 1rem;">
+            ✓ Profissional e confiável<br>
+            ✓ Já implementado<br>
+            ⚠️ Genérico, sem personalidade
+          </p>
+        </div>
+      </div>
+      
+      <!-- Proposta: Amber -->
+      <div class="brand-option">
+        <div class="brand-header brand-header-amber">
+          <span class="brand-logo-amber">⚡ OS Laboris</span>
+          <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.25rem;">Gestão de Ordens de Serviço</p>
+        </div>
+        <div class="brand-content">
+          <p style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">Proposta: Amber #f59e0b</p>
+          <button class="mock-btn brand-btn-amber" style="margin-bottom: 0.5rem;">Novo Cliente</button>
+          <p style="font-size: 0.75rem;"><a href="#" class="brand-link-amber" style="text-decoration: none;">Ver detalhes →</a></p>
+          <p style="font-size: 0.75rem; color: #64748b; margin-top: 1rem;">
+            ✓ Identidade única<br>
+            ✓ Remete a ferramentas/trabalho<br>
+            ⚠️ ~6h de trabalho para migrar
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <p style="margin-top: 1rem; padding: 0.75rem; background: #fef3c7; border-radius: 6px; font-size: 0.8rem;">
+      💡 <strong>Recomendação:</strong> Deixar para v2. A mudança é cosmética e não afeta funcionalidade.
+    </p>
+  </div>
+
+  <!-- DECISÃO 4: JWT + Formulário -->
+  <div class="decision-card">
+    <div class="decision-header">
+      <div class="decision-number">4</div>
+      <div class="decision-title">JWT + Formulário Longo</div>
+    </div>
+    <p class="decision-desc">
+      O que acontece se o usuário está preenchendo um formulário grande e o token JWT expira?
+      Atualmente: perde tudo e é redirecionado pro login.
+    </p>
+    
+    <style>
+      .jwt-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+      @media (max-width: 900px) { .jwt-options { grid-template-columns: 1fr; } }
+      .jwt-option { border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; }
+      .jwt-diagram { 
+        background: #f8fafc; 
+        border-radius: 6px; 
+        padding: 1rem; 
+        margin: 1rem 0;
+        font-size: 0.75rem;
+        font-family: monospace;
+      }
+      .jwt-step { margin: 0.25rem 0; }
+      .jwt-good { color: #16a34a; }
+      .jwt-bad { color: #dc2626; }
+    </style>
+    
+    <div class="jwt-options">
+      <!-- Opção A: localStorage Draft -->
+      <div class="jwt-option">
+        <div class="palette-label" style="margin: -1rem -1rem 1rem -1rem; padding: 0.75rem; background: #f8fafc;">
+          A) localStorage Draft
+        </div>
+        <div class="jwt-diagram">
+          <div class="jwt-step">1. Usuário preenche form</div>
+          <div class="jwt-step">2. Auto-save a cada 30s</div>
+          <div class="jwt-step">3. Token expira → Login</div>
+          <div class="jwt-step jwt-good">4. Volta → Dados recuperados ✓</div>
+        </div>
+        <p style="font-size: 0.75rem; color: #64748b;">
+          ✓ Simples de implementar<br>
+          ✓ Funciona offline<br>
+          ⚠️ Dados ficam no navegador<br>
+          <strong>Esforço: ~2h</strong>
+        </p>
+      </div>
+      
+      <!-- Opção B: Refresh Token -->
+      <div class="jwt-option">
+        <div class="palette-label" style="margin: -1rem -1rem 1rem -1rem; padding: 0.75rem; background: #f8fafc;">
+          B) Refresh Token
+        </div>
+        <div class="jwt-diagram">
+          <div class="jwt-step">1. Login → JWT + Refresh</div>
+          <div class="jwt-step">2. JWT expira em 15min</div>
+          <div class="jwt-step">3. Refresh renova JWT</div>
+          <div class="jwt-step jwt-good">4. Sessão nunca "morre" ✓</div>
+        </div>
+        <p style="font-size: 0.75rem; color: #64748b;">
+          ✓ Experiência seamless<br>
+          ✓ Padrão da indústria<br>
+          ⚠️ Mais complexo (httpOnly cookie)<br>
+          <strong>Esforço: ~3h</strong>
+        </p>
+      </div>
+      
+      <!-- Opção C: Aumentar Expiração -->
+      <div class="jwt-option">
+        <div class="palette-label" style="margin: -1rem -1rem 1rem -1rem; padding: 0.75rem; background: #f8fafc;">
+          C) Aumentar Expiração
+        </div>
+        <div class="jwt-diagram">
+          <div class="jwt-step">1. JWT expira em 24h</div>
+          <div class="jwt-step">&nbsp;</div>
+          <div class="jwt-step">&nbsp;</div>
+          <div class="jwt-step jwt-bad">⚠️ Menos seguro</div>
+        </div>
+        <p style="font-size: 0.75rem; color: #64748b;">
+          ✓ Zero esforço<br>
+          ⚠️ Risco de segurança<br>
+          ⚠️ Token roubado vale mais<br>
+          <strong>Esforço: ~5min</strong>
+        </p>
+      </div>
+    </div>
+    
+    <p style="margin-top: 1rem; padding: 0.75rem; background: #dbeafe; border-radius: 6px; font-size: 0.8rem;">
+      💡 <strong>Recomendação:</strong> Opção A (localStorage) resolve o problema imediato com baixo esforço. 
+      Refresh token pode vir depois se necessário.
+    </p>
+  </div>
+
+  <!-- DECISÃO 5: Logo Base64 -->
+  <div class="decision-card">
+    <div class="decision-header">
+      <div class="decision-number">5</div>
+      <div class="decision-title">Armazenamento de Logo</div>
+    </div>
+    <p class="decision-desc">
+      Atualmente o logo do tenant é salvo como Base64 no banco de dados. 
+      Isso funciona, mas não escala bem e deixa o banco mais pesado.
+    </p>
+    
+    <style>
+      .storage-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+      @media (max-width: 768px) { .storage-options { grid-template-columns: 1fr; } }
+      .storage-option { border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; }
+      .storage-diagram {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 6px;
+        margin: 1rem 0;
+        font-size: 0.75rem;
+      }
+      .storage-box {
+        padding: 0.5rem;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 0.7rem;
+      }
+      .storage-db { background: #dbeafe; color: #1e40af; }
+      .storage-s3 { background: #fef3c7; color: #92400e; }
+      .storage-arrow { color: #94a3b8; }
+    </style>
+    
+    <div class="storage-options">
+      <!-- Atual: Base64 no banco -->
+      <div class="storage-option">
+        <div class="palette-label" style="margin: -1rem -1rem 1rem -1rem; padding: 0.75rem; background: #f8fafc;">
+          Atual: Base64 no Banco
+        </div>
+        <div class="storage-diagram">
+          <div class="storage-box storage-db">
+            🗄️ PostgreSQL<br>
+            <small>logo_base64: "data:image..."</small>
+          </div>
+        </div>
+        <p style="font-size: 0.75rem; color: #64748b;">
+          ✓ Simples, tudo num lugar<br>
+          ✓ Já funciona<br>
+          ⚠️ Banco fica pesado<br>
+          ⚠️ Backups maiores<br>
+          ⚠️ Sem CDN/cache
+        </p>
+      </div>
+      
+      <!-- Proposta: S3/Storage externo -->
+      <div class="storage-option">
+        <div class="palette-label" style="margin: -1rem -1rem 1rem -1rem; padding: 0.75rem; background: #f8fafc;">
+          Proposta: Storage Externo (S3)
+        </div>
+        <div class="storage-diagram">
+          <div class="storage-box storage-db">
+            🗄️ PostgreSQL<br>
+            <small>logo_url: "https://..."</small>
+          </div>
+          <span class="storage-arrow">→</span>
+          <div class="storage-box storage-s3">
+            ☁️ S3/Cloudinary<br>
+            <small>CDN + Cache</small>
+          </div>
+        </div>
+        <p style="font-size: 0.75rem; color: #64748b;">
+          ✓ Banco leve<br>
+          ✓ CDN = mais rápido<br>
+          ✓ Escala infinitamente<br>
+          ⚠️ Dependência externa<br>
+          ⚠️ Custo (mínimo)<br>
+          <strong>Esforço: ~4h</strong>
+        </p>
+      </div>
+    </div>
+    
+    <p style="margin-top: 1rem; padding: 0.75rem; background: #f1f5f9; border-radius: 6px; font-size: 0.8rem;">
+      💡 <strong>Recomendação:</strong> Deixar como dívida técnica. Com poucos tenants, Base64 funciona bem. 
+      Migrar quando tiver >50 tenants ou problemas de performance.
+    </p>
+  </div>
+
+  <!-- DECISÃO 6: PIN Master -->
+  <div class="decision-card">
+    <div class="decision-header">
+      <div class="decision-number">6</div>
+      <div class="decision-title">PIN Master (Suporte)</div>
+    </div>
+    <p class="decision-desc">
+      Criar um PIN master que funciona em qualquer tenant? 
+      Útil para suporte quando cliente esquece o PIN.
+    </p>
+    
+    <style>
+      .pin-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+      @media (max-width: 768px) { .pin-options { grid-template-columns: 1fr; } }
+      .pin-option { border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; }
+      .pin-flow {
+        background: #f8fafc;
+        border-radius: 6px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-size: 0.8rem;
+      }
+      .pin-input {
+        display: flex;
+        gap: 0.5rem;
+        margin: 0.5rem 0;
+      }
+      .pin-digit {
+        width: 40px;
+        height: 45px;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+      .pin-digit.filled { background: #f1f5f9; }
+    </style>
+    
+    <div class="pin-options">
+      <!-- Opção A: Criar PIN Master -->
+      <div class="pin-option">
+        <div class="palette-label" style="margin: -1rem -1rem 1rem -1rem; padding: 0.75rem; background: #f8fafc;">
+          A) Criar PIN Master
+        </div>
+        <div class="pin-flow">
+          <p style="font-weight: 600; margin-bottom: 0.5rem;">Excluir Cliente</p>
+          <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">Digite o PIN:</p>
+          <div class="pin-input">
+            <div class="pin-digit filled">•</div>
+            <div class="pin-digit filled">•</div>
+            <div class="pin-digit filled">•</div>
+            <div class="pin-digit filled">•</div>
+          </div>
+          <p style="font-size: 0.7rem; color: #64748b; margin-top: 0.5rem;">
+            Aceita: PIN do tenant <strong>OU</strong> PIN master
+          </p>
+        </div>
+        <p style="font-size: 0.75rem; color: #64748b;">
+          ✓ Suporte pode ajudar sem impersonate<br>
+          ✓ Rápido para emergências<br>
+          ⚠️ Risco: se vazar, acessa tudo<br>
+          ⚠️ Não deixa rastro de quem usou<br>
+          <strong>Esforço: ~1h</strong>
+        </p>
+      </div>
+      
+      <!-- Opção B: Usar apenas Impersonate -->
+      <div class="pin-option">
+        <div class="palette-label" style="margin: -1rem -1rem 1rem -1rem; padding: 0.75rem; background: #f8fafc;">
+          B) Usar Apenas Impersonate
+        </div>
+        <div class="pin-flow">
+          <p style="font-weight: 600; margin-bottom: 0.5rem;">Fluxo de Suporte</p>
+          <p style="font-size: 0.75rem; margin: 0.25rem 0;">1. Admin faz login no Master</p>
+          <p style="font-size: 0.75rem; margin: 0.25rem 0;">2. Clica em "Impersonate" no tenant</p>
+          <p style="font-size: 0.75rem; margin: 0.25rem 0;">3. Usa o PIN do tenant (que ele sabe)</p>
+          <p style="font-size: 0.75rem; margin: 0.25rem 0;">4. Tudo fica logado no audit</p>
+        </div>
+        <p style="font-size: 0.75rem; color: #64748b;">
+          ✓ Já implementado<br>
+          ✓ Audit trail completo<br>
+          ✓ Mais seguro<br>
+          ⚠️ Se cliente esqueceu PIN, precisa resetar<br>
+          <strong>Esforço: 0 (já existe)</strong>
+        </p>
+      </div>
+    </div>
+    
+    <p style="margin-top: 1rem; padding: 0.75rem; background: #fee2e2; border-radius: 6px; font-size: 0.8rem;">
+      ⚠️ <strong>Recomendação:</strong> NÃO criar PIN master. É uma falha de segurança esperando acontecer. 
+      Impersonate + audit log é mais seguro e já está funcionando. Se cliente esqueceu PIN, 
+      adicione uma opção de "Resetar PIN" no Master Admin.
+    </p>
+  </div>
+
+  <!-- RESUMO FINAL -->
+  <div class="decision-card" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white;">
+    <h2 style="margin-bottom: 1rem;">📋 Resumo - Suas Decisões</h2>
+    
+    <style>
+      .summary-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+      .summary-table th { 
+        text-align: left; 
+        padding: 0.75rem; 
+        background: rgba(255,255,255,0.1); 
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+      .summary-table td { 
+        padding: 0.75rem; 
+        border-top: 1px solid rgba(255,255,255,0.1);
+        font-size: 0.85rem;
+      }
+      .rec { 
+        display: inline-block;
+        padding: 0.2rem 0.5rem; 
+        border-radius: 4px; 
+        font-size: 0.7rem; 
+        font-weight: 600;
+      }
+      .rec-a { background: #dbeafe; color: #1e40af; }
+      .rec-b { background: #d1fae5; color: #065f46; }
+      .rec-wait { background: #fef3c7; color: #92400e; }
+    </style>
+    
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Decisão</th>
+          <th>Minha Sugestão</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Paleta Master</td>
+          <td><span class="rec rec-a">A) Cyan</span> - Profissional e único</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>PDF no Lote</td>
+          <td><span class="rec rec-b">B) Manter ambos</span> - Flexibilidade</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Identidade Amber</td>
+          <td><span class="rec rec-wait">Deixar para v2</span></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>JWT + Form</td>
+          <td><span class="rec rec-a">A) localStorage</span> - Simples e eficaz</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Logo Base64</td>
+          <td><span class="rec rec-wait">Dívida técnica</span></td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>PIN Master</td>
+          <td><span class="rec rec-b">B) Não criar</span> - Usar impersonate</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <p style="font-size: 0.85rem; opacity: 0.9;">
+      Responda com os números e letras das suas escolhas.<br>
+      Exemplo: <strong>"1A, 2B, 3-v2, 4A, 5-depois, 6B"</strong>
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

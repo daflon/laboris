@@ -76,11 +76,24 @@ export default function EditTenant() {
   if (loading) return <p className="loading-text">Carregando...</p>;
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: '2rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-        <button className="btn btn-secondary" onClick={() => navigate('/master')}><FiArrowLeft /> Voltar</button>
-        <h2 style={{ fontSize: '1.3rem', fontWeight: 600 }}>Editar Conta</h2>
+    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+      {/* Master Header - Cyan */}
+      <div style={{ 
+        background: 'linear-gradient(135deg, #0891b2 0%, #0e7490 100%)',
+        padding: '1rem 2rem',
+        marginBottom: '2rem',
+        boxShadow: '0 2px 8px rgba(8, 145, 178, 0.3)'
+      }}>
+        <div style={{ maxWidth: 600, margin: '0 auto', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button className="btn" onClick={() => navigate('/master')} style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}><FiArrowLeft /> Voltar</button>
+          <div>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'white', margin: 0 }}>Editar Conta</h2>
+            <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)', margin: 0 }}>Painel Master</p>
+          </div>
+        </div>
       </div>
+
+      <div style={{ maxWidth: 600, margin: '0 auto', padding: '0 2rem 2rem 2rem' }}>
 
       <form onSubmit={handleSave} className="form-card" style={{ marginBottom: '1.5rem' }}>
         <div className="form-section">
@@ -104,7 +117,7 @@ export default function EditTenant() {
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="btn btn-primary" disabled={saving}>
+          <button type="submit" className="btn btn-primary" disabled={saving} style={{ background: '#0891b2' }}>
             {saving ? 'Salvando...' : 'Salvar'}
           </button>
         </div>
@@ -132,11 +145,12 @@ export default function EditTenant() {
               <label>Nova Senha</label>
               <input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Nova senha..." />
             </div>
-            <button type="button" className="btn btn-primary" onClick={handleResetPassword} style={{ alignSelf: 'flex-start' }}>
+            <button type="button" className="btn btn-primary" onClick={handleResetPassword} style={{ alignSelf: 'flex-start', background: '#0891b2' }}>
               Alterar Senha
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

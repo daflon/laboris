@@ -162,15 +162,28 @@ export default function MasterDashboard() {
   if (loading) return <p className="loading-text">Carregando...</p>;
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>🛡️ Painel Master</h2>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button className="btn btn-primary" onClick={handleGoToApp} style={{ background: '#10b981' }}>🚀 Meu App</button>
-          <Link to="/master/tenants/novo" className="btn btn-primary"><FiPlus /> Nova Conta</Link>
-          <button className="btn btn-secondary" onClick={handleLogout}>Sair</button>
+    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+      {/* Master Header - Cyan */}
+      <div style={{ 
+        background: 'linear-gradient(135deg, #0891b2 0%, #0e7490 100%)',
+        padding: '1rem 2rem',
+        marginBottom: '2rem',
+        boxShadow: '0 2px 8px rgba(8, 145, 178, 0.3)'
+      }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'white', margin: 0 }}>⚙️ Painel Master</h2>
+            <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.8)', margin: '0.25rem 0 0 0' }}>Administração do Sistema</p>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button className="btn" onClick={handleGoToApp} style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}>🚀 Meu App</button>
+            <Link to="/master/tenants/novo" className="btn" style={{ background: 'white', color: '#0891b2' }}><FiPlus /> Nova Conta</Link>
+            <button className="btn" onClick={handleLogout} style={{ background: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}>Sair</button>
+          </div>
         </div>
       </div>
+
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 2rem 2rem 2rem' }}>
 
       {/* Stats */}
       {stats && (
@@ -419,6 +432,7 @@ export default function MasterDashboard() {
             </tbody>
           </table>
         )}
+      </div>
       </div>
     </div>
   );
