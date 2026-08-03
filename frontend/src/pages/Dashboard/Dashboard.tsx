@@ -121,7 +121,7 @@ export default function Dashboard() {
           <div className="dash-card-icon"><FiCheckCircle /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.aprovada || 0}</span>
-            <span className="dash-card-label">Aprovadas</span>
+            <span className="dash-card-label">Avisadas</span>
           </div>
         </div>
         <div className="dash-card dash-card-purple" onClick={() => navigate('/os?status=aguardando_peca')}>
