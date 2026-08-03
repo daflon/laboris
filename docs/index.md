@@ -3,7 +3,7 @@ layout: default
 title: Home
 ---
 
-_Última sincronização: 29/07/2026_
+_Última sincronização: 03/08/2026_
 
 # OS Laboris
 
@@ -40,7 +40,7 @@ O OS Laboris é um sistema **SaaS (Software as a Service)** onde cada empresa (t
 - Numeração sequencial automática (#0001, #0002...)
 - Vinculação: Cliente → Equipamento → Técnico
 - Tabela de itens com cálculo automático de valores
-- 6 status: Aberta, Aprovada, Aguardando Peça, Concluída, Entregue, Cancelada
+- 6 status: Aberta, Avisada, Aguardando Peça, Concluída, Entregue, Cancelada
 - Geração de PDF profissional (2 vias em A4)
 - Integração WhatsApp com mensagem pré-formatada
 - Botão "Duplicar OS"

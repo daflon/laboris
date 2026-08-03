@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview: Identidade Visual Âmbar - OS Laboris</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      /* ATUAL */
+      --current-primary: #3b82f6;
+      --current-sidebar-bg: #1e293b;
+      --current-text: #1e293b;
+      
+      /* PROPOSTA ÂMBAR */
+      --amber-brand: #F0A23D;
+      --amber-hover: #E8922A;
+      --graphite-dark: #1B1D1F;
+      --graphite-surface: #242729;
+      --graphite-card: #2C2F32;
+      
+      /* STATUS COLORS */
+      --status-aberta: #2563eb;
+      --status-aprovada-atual: #d97706;
+      --status-aprovada-nova: #92400e;  /* amber-800 - mais escuro */
+      --status-aguardando: #7c3aed;
+      --status-concluida: #059669;
+      --status-entregue: #4f46e5;
+    }
+    
+    body { font-family: 'Inter', sans-serif; background: #f0f0f0; color: #333; }
+    
+    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 2rem; margin-bottom: 1rem; }
+    h2 { font-size: 1.2rem; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #ddd; }
+    h3 { font-size: 1rem; margin: 1.5rem 0 0.75rem; color: #555; }
+    
+    .alert-box { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+    .alert-box.danger { background: #fee2e2; border-color: #fca5a5; }
+    .alert-box strong { color: #92400e; }
+    .alert-box.danger strong { color: #991b1b; }
+    
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 1.5rem 0; }
+    .comparison-item { border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .comparison-item h4 { padding: 0.75rem 1rem; font-size: 0.9rem; text-align: center; }
+    .comparison-item.current h4 { background: #e2e8f0; color: #475569; }
+    .comparison-item.proposed h4 { background: var(--amber-brand); color: #000; }
+    
+    /* Sidebar Mock */
+    .sidebar-mock { width: 100%; height: 350px; padding: 1rem; }
+    .sidebar-mock.current { background: var(--current-sidebar-bg); }
+    .sidebar-mock.proposed { background: var(--graphite-dark); }
+    
+    .sidebar-logo { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-logo .icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .current .sidebar-logo .icon { background: var(--current-primary); }
+    .proposed .sidebar-logo .icon { background: var(--amber-brand); }
+    .sidebar-logo span { color: white; font-weight: 600; }
+    .proposed .sidebar-logo span { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; letter-spacing: 0.5px; }
+    
+    .sidebar-menu { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-item { padding: 0.6rem 0.75rem; border-radius: 6px; color: rgba(255,255,255,0.7); font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
+    .sidebar-item.active { color: white; font-weight: 500; }
+    .current .sidebar-item.active { background: rgba(59, 130, 246, 0.2); border-left: 3px solid var(--current-primary); }
+    .proposed .sidebar-item.active { background: rgba(240, 162, 61, 0.15); border-left: 3px solid var(--amber-brand); }
+    
+    /* Buttons */
+    .buttons-row { display: flex; gap: 1rem; padding: 1.5rem; background: #fff; }
+    .btn { padding: 0.6rem 1.25rem; border-radius: 6px; border: none; font-weight: 500; cursor: pointer; font-size: 0.9rem; }
+    .current .btn-primary { background: var(--current-primary); color: white; }
+    .proposed .btn-primary { background: var(--amber-brand); color: #000; }
+    .btn-secondary { background: #e2e8f0; color: #475569; }
+    
+    /* OS Number with identity bar */
+    .os-number-demo { padding: 1.5rem; background: #fff; }
+    .os-number { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.1rem; }
+    .proposed .os-number { border-left: 3px solid var(--amber-brand); padding-left: 0.5rem; font-family: 'JetBrains Mono', monospace; }
+    .os-number .lote { font-size: 0.7rem; background: #dbeafe; color: #1e40af; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 600; }
+    
+    /* Dashboard Cards */
+    .dashboard-cards { display: flex; gap: 1rem; padding: 1.5rem; background: #f8fafc; flex-wrap: wrap; }
+    .dash-card { padding: 1rem; border-radius: 8px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); min-width: 120px; }
+    .dash-card .value { font-size: 1.75rem; font-weight: 700; }
+    .proposed .dash-card .value { font-family: 'Barlow Condensed', sans-serif; font-size: 2rem; }
+    .dash-card .label { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; }
+    
+    /* Status Badges */
+    .status-demo { padding: 1.5rem; background: #fff; }
+    .status-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    .badge { padding: 0.35rem 0.65rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem; }
+    .badge-aberta { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
+    .badge-aprovada-atual { background: rgba(217, 119, 6, 0.15); color: #d97706; }
+    .badge-aprovada-nova { background: rgba(146, 64, 14, 0.15); color: #92400e; }
+    .badge-aguardando { background: rgba(124, 58, 237, 0.15); color: #7c3aed; }
+    .badge-concluida { background: rgba(5, 150, 105, 0.15); color: #059669; }
+    .badge-entregue { background: rgba(79, 70, 229, 0.15); color: #4f46e5; }
+    
+    /* Contrast Test */
+    .contrast-test { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+    .contrast-box { padding: 1.5rem; border-radius: 8px; text-align: center; }
+    .contrast-box .ratio { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .contrast-box .status { font-size: 0.85rem; padding: 0.3rem 0.6rem; border-radius: 4px; display: inline-block; }
+    .contrast-box .status.pass { background: #dcfce7; color: #166534; }
+    .contrast-box .status.fail { background: #fee2e2; color: #991b1b; }
+    
+    /* Collision Warning */
+    .collision-demo { background: #fff; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; }
+    .collision-row { display: flex; align-items: center; gap: 2rem; margin: 1rem 0; }
+    .color-swatch { width: 60px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; font-weight: 600; }
+    
+    /* Decision Buttons */
+    .decisions { margin-top: 2rem; padding: 1.5rem; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .decision-item { margin: 1.5rem 0; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; }
+    .decision-item h4 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+    .decision-options { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .decision-btn { padding: 0.5rem 1rem; border-radius: 6px; border: 2px solid #e2e8f0; background: white; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+    .decision-btn:hover { border-color: var(--amber-brand); }
+    .decision-btn.selected { border-color: var(--amber-brand); background: rgba(240, 162, 61, 0.1); }
+    .decision-btn.danger { border-color: #fca5a5; }
+    .decision-btn.danger:hover { background: #fee2e2; }
+    
+    /* Typography Demo */
+    .typo-demo { padding: 1.5rem; background: #fff; }
+    .typo-row { display: flex; align-items: baseline; gap: 2rem; margin: 1rem 0; padding: 0.75rem; background: #f8fafc; border-radius: 6px; }
+    .typo-label { font-size: 0.75rem; color: #64748b; width: 120px; flex-shrink: 0; }
+    .typo-current { flex: 1; }
+    .typo-proposed { flex: 1; }
+    .font-barlow { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; }
+    .font-jetbrains { font-family: 'JetBrains Mono', monospace; }
+    .font-inter { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Preview: Identidade Visual Âmbar</h1>
+    <p style="color: #64748b; margin-bottom: 2rem;">Compare o visual atual com a proposta antes de decidir.</p>
+
+    <!-- ALERT: Collision -->
+    <div class="alert-box danger">
+      <strong>⚠️ Colisão Identificada:</strong> O status "Aprovada" usa <code>#d97706</code> (amber-600), muito similar à cor de marca proposta <code>#F0A23D</code>. Se aprovar a identidade Âmbar, o status "Aprovada" precisa mudar para <code>#92400e</code> (amber-800) para diferenciar.
+    </div>
+
+    <!-- SECTION: Sidebar -->
+    <h2>1. Sidebar e Botões Primários</h2>
+    <div class="comparison">
+      <div class="comparison-item current">
+        <h4>ATUAL (Blue + Slate)</h4>
+        <div class="sidebar-mock current">
+          <div class="sidebar-logo">
+            <div class="icon">🔧</div>
+            <span>OS Laboris</span>
+          </div>
+          <div class="sidebar-menu">
+            <div class="sidebar-item active">📊 Dashboard</div>
+            <div class="sidebar-item">📋 Ordens de Serviço</div>
+            <div class="sidebar-item">👥 Clientes</div>
+            <div class="sidebar-item">🔧 Equipamentos</div>
+            <div class="sidebar-item">👨‍🔧 Técnicos</div>
+          </div>
+        </div>
+        <div class="buttons-row current">
+          <button class="btn btn-primary">+ Nova OS</button>
+          <button class="btn btn-secondary">Cancelar</button>
+        </div>
+      </div>
+      
+      <div class="comparison-item proposed">
+        <h4>PROPOSTA (Âmbar + Grafite)</h4>
+        <div class="sidebar-mock proposed">
+          <div class="sidebar-logo">
+            <div class="icon">🔧</div>
+            <span>OS LABORIS</span>
+          </div>
+          <div class="sidebar-menu">
+            <div class="sidebar-item active">📊 Dashboard</div>
+            <div class="sidebar-item">📋 Ordens de Serviço</div>
+            <div class="sidebar-item">👥 Clientes</div>
+            <div class="sidebar-item">🔧 Equipamentos</div>
+            <div class="sidebar-item">👨‍🔧 Técnicos</div>
+          </div>
+        </div>
+        <div class="buttons-row proposed">
+          <button class="btn btn-primary">+ Nova OS</button>
+          <button class="btn btn-secondary">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Typography -->
+    <h2>2. Tipografia</h2>
+    <div class="typo-demo">
+      <div class="typo-row">
+        <span class="typo-label">Títulos (h1):</span>
+        <span class="typo-current font-inter" style="font-size: 1.5rem; font-weight: 600;">Dashboard</span>
+        <span class="typo-proposed font-barlow" style="font-size: 1.75rem;">DASHBOARD</span>
+      </div>
+      <div class="typo-row">
+        <span class="typo-label">Números OS:</span>
+        <span class="typo-current font-inter" style="font-weight: 700;">#0025-A</span>
+        <span class="typo-proposed font-jetbrains" style="font-weight: 500;">#0025-A</span>
+      </div>
+      <div class="typo-row">
+        <span class="typo-label">Valores:</span>
+        <span class="typo-current font-inter">R$ 1.250,00</span>
+        <span class="typo-proposed font-jetbrains">R$ 1.250,00</span>
+      </div>
+      <div class="typo-row">
+        <span class="typo-label">Cards Dashboard:</span>
+        <span class="typo-current font-inter" style="font-size: 2rem; font-weight: 700;">23</span>
+        <span class="typo-proposed font-barlow" style="font-size: 2.5rem;">23</span>
+      </div>
+    </div>
+
+    <!-- SECTION: OS Number Identity -->
+    <h2>3. Elemento de Identidade - Número da OS</h2>
+    <div class="comparison">
+      <div class="comparison-item current">
+        <h4>ATUAL</h4>
+        <div class="os-number-demo current">
+          <span class="os-number">#0025-A <span class="lote">LOTE</span></span>
+          <p style="margin-top: 1rem; color: #64748b; font-size: 0.85rem;">Número simples, sem destaque visual</p>
+        </div>
+      </div>
+      <div class="comparison-item proposed">
+        <h4>PROPOSTA</h4>
+        <div class="os-number-demo proposed">
+          <span class="os-number">#0025-A <span class="lote">LOTE</span></span>
+          <p style="margin-top: 1rem; color: #64748b; font-size: 0.85rem;">Barra âmbar 3px + fonte mono = "etiqueta"</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Dashboard Cards -->
+    <h2>4. Cards do Dashboard</h2>
+    <div class="comparison">
+      <div class="comparison-item current">
+        <h4>ATUAL</h4>
+        <div class="dashboard-cards current">
+          <div class="dash-card"><div class="value">9</div><div class="label">Abertas</div></div>
+          <div class="dash-card"><div class="value">4</div><div class="label">Aprovadas</div></div>
+          <div class="dash-card"><div class="value">3</div><div class="label">Aguardando</div></div>
+          <div class="dash-card"><div class="value">34</div><div class="label">Clientes</div></div>
+        </div>
+      </div>
+      <div class="comparison-item proposed">
+        <h4>PROPOSTA</h4>
+        <div class="dashboard-cards proposed">
+          <div class="dash-card"><div class="value">9</div><div class="label">Abertas</div></div>
+          <div class="dash-card"><div class="value">4</div><div class="label">Aprovadas</div></div>
+          <div class="dash-card"><div class="value">3</div><div class="label">Aguardando</div></div>
+          <div class="dash-card"><div class="value">34</div><div class="label">Clientes</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Status Collision -->
+    <h2>5. Colisão de Cores - Status "Aprovada"</h2>
+    <div class="collision-demo">
+      <h3>Problema: Cores muito similares</h3>
+      <div class="collision-row">
+        <div>
+          <div class="color-swatch" style="background: #F0A23D;">#F0A23D</div>
+          <p style="font-size: 0.75rem; margin-top: 0.25rem;">Marca Âmbar</p>
+        </div>
+        <div style="font-size: 2rem;">≈</div>
+        <div>
+          <div class="color-swatch" style="background: #d97706;">#d97706</div>
+          <p style="font-size: 0.75rem; margin-top: 0.25rem;">Status Aprovada (atual)</p>
+        </div>
+        <div style="font-size: 1.5rem;">→</div>
+        <div>
+          <div class="color-swatch" style="background: #92400e;">#92400e</div>
+          <p style="font-size: 0.75rem; margin-top: 0.25rem;">Aprovada (nova)</p>
+        </div>
+      </div>
+      
+      <h3 style="margin-top: 1.5rem;">Comparação de Badges</h3>
+      <div class="status-row">
+        <span class="badge badge-aberta">● Aberta</span>
+        <span class="badge badge-aprovada-atual">✓ Aprovada (ATUAL)</span>
+        <span class="badge badge-aguardando">◐ Aguardando</span>
+        <span class="badge badge-concluida">✓ Concluída</span>
+        <span class="badge badge-entregue">✓ Entregue</span>
+      </div>
+      <div class="status-row" style="margin-top: 0.5rem;">
+        <span class="badge badge-aberta">● Aberta</span>
+        <span class="badge badge-aprovada-nova">✓ Aprovada (NOVA)</span>
+        <span class="badge badge-aguardando">◐ Aguardando</span>
+        <span class="badge badge-concluida">✓ Concluída</span>
+        <span class="badge badge-entregue">✓ Entregue</span>
+      </div>
+    </div>
+
+    <!-- SECTION: Contrast Test -->
+    <h2>6. Teste de Contraste WCAG</h2>
+    <div class="contrast-test">
+      <div class="contrast-box" style="background: var(--graphite-dark); color: var(--amber-brand);">
+        <div class="ratio">6.2:1</div>
+        <div>Âmbar sobre Grafite</div>
+        <div class="status pass">✓ WCAG AA</div>
+      </div>
+      <div class="contrast-box" style="background: var(--amber-brand); color: #000;">
+        <div class="ratio">8.5:1</div>
+        <div>Preto sobre Âmbar</div>
+        <div class="status pass">✓ WCAG AAA</div>
+      </div>
+      <div class="contrast-box" style="background: var(--amber-brand); color: #fff;">
+        <div class="ratio">2.5:1</div>
+        <div>Branco sobre Âmbar</div>
+        <div class="status fail">✗ FALHA</div>
+      </div>
+    </div>
+    <div class="alert-box">
+      <strong>💡 Recomendação:</strong> Usar texto <strong>preto</strong> sobre botões âmbar (não branco). O contraste 8.5:1 passa até em AAA.
+    </div>
+
+    <!-- SECTION: Decisions -->
+    <h2>📋 Decisões Necessárias</h2>
+    <div class="decisions">
+      
+      <div class="decision-item">
+        <h4>1. Aplicar identidade Âmbar?</h4>
+        <div class="decision-options">
+          <button class="decision-btn" onclick="select(this)">✅ Sim, aplicar agora</button>
+          <button class="decision-btn" onclick="select(this)">⏸️ Deixar para v2</button>
+          <button class="decision-btn danger" onclick="select(this)">❌ Não aplicar</button>
+        </div>
+      </div>
+      
+      <div class="decision-item">
+        <h4>2. Mudar cor do status "Aprovada" de #d97706 para #92400e?</h4>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem;">Necessário se aprovar a identidade Âmbar para evitar confusão visual.</p>
+        <div class="decision-options">
+          <button class="decision-btn" onclick="select(this)">✅ Sim, mudar</button>
+          <button class="decision-btn" onclick="select(this)">🔄 Usar outra cor (sugerir)</button>
+          <button class="decision-btn danger" onclick="select(this)">❌ Manter (conflito aceito)</button>
+        </div>
+      </div>
+      
+      <div class="decision-item">
+        <h4>3. Aplicar tipografia Barlow Condensed e JetBrains Mono?</h4>
+        <div class="decision-options">
+          <button class="decision-btn" onclick="select(this)">✅ Ambas</button>
+          <button class="decision-btn" onclick="select(this)">📝 Só Barlow (títulos)</button>
+          <button class="decision-btn" onclick="select(this)">🔢 Só JetBrains (números)</button>
+          <button class="decision-btn" onclick="select(this)">⏸️ Manter Inter em tudo</button>
+        </div>
+      </div>
+      
+      <div class="decision-item">
+        <h4>4. Adicionar barra âmbar no número da OS (elemento de identidade)?</h4>
+        <div class="decision-options">
+          <button class="decision-btn" onclick="select(this)">✅ Sim, lista + detalhes + PDF</button>
+          <button class="decision-btn" onclick="select(this)">📄 Só na tela (não no PDF)</button>
+          <button class="decision-btn" onclick="select(this)">❌ Não adicionar</button>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Summary -->
+    <h2>📊 Resumo do Impacto</h2>
+    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <thead>
+        <tr style="background: #f1f5f9;">
+          <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e2e8f0;">Componente</th>
+          <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e2e8f0;">Alteração</th>
+          <th style="padding: 0.75rem; text-align: center; border-bottom: 1px solid #e2e8f0;">Esforço</th>
+          <th style="padding: 0.75rem; text-align: center; border-bottom: 1px solid #e2e8f0;">Risco</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">Sidebar</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">Grafite + âmbar no item ativo</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟢 Baixo</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟢 Baixo</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">Botões primários</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">Azul → Âmbar (texto preto)</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟢 Baixo</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟢 Baixo</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">Status "Aprovada"</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">#d97706 → #92400e</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟢 Baixo</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟡 Médio</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">Tipografia</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">Barlow + JetBrains</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟡 Médio</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟢 Baixo</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">Barra identidade OS</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">Barra 3px + fonte mono</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟢 Baixo</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟢 Baixo</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">manifest.json</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">theme_color → #F0A23D</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟢 Baixo</td>
+          <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: center;">🟢 Baixo</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <p style="color: #64748b; font-size: 0.85rem; margin-top: 1rem;">
+      <strong>Tempo estimado total:</strong> 3-4 horas (aplicação incremental)<br>
+      <strong>Não afetado:</strong> Painel Master (mantém paleta Cyan), ícones de status (mantidos para daltonismo), aria-labels existentes
+    </p>
+
+  </div>
+
+  <script>
+    function select(btn) {
+      const siblings = btn.parentElement.querySelectorAll('.decision-btn');
+      siblings.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+  </script>
+</body>
+</html>

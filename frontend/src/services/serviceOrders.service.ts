@@ -66,7 +66,7 @@ export interface ServiceOrderFormData {
 
 export const STATUSES = [
   { value: 'aberta', label: 'Aberta', color: '#2563eb' },           // blue-600
-  { value: 'aprovada', label: 'Aprovada', color: '#d97706' },       // amber-600
+  { value: 'aprovada', label: 'Avisada', color: '#d97706' },        // amber-600 (cliente foi avisado)
   { value: 'aguardando_peca', label: 'Aguardando Peça', color: '#7c3aed' }, // violet-600
   { value: 'concluida', label: 'Concluída', color: '#059669' },     // emerald-600
   { value: 'entregue', label: 'Entregue', color: '#4f46e5' },       // indigo-600

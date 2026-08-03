@@ -3,7 +3,7 @@ layout: default
 title: API Reference
 ---
 
-_Última sincronização: 29/07/2026_
+_Última sincronização: 03/08/2026_
 
 # 🔌 API Reference
 
@@ -113,7 +113,7 @@ Lista ordens de serviço com paginação e filtros.
 **Query params:**
 | Param | Descrição |
 |-------|-----------|
-| `status` | Filtrar por status (aberta, aprovada, etc) |
+| `status` | Filtrar por status (aberta, aprovada/avisada, etc) |
 | `filter` | Filtro especial: `old` (>30 dias) ou `abandoned` (>180 dias) |
 | `search` | Busca por nº OS ou nome do cliente |
 | `page` | Página (default: 1) |
@@ -159,7 +159,7 @@ Atualiza apenas o status.
 }
 ```
 
-**Status válidos:** `aberta`, `aprovada`, `aguardando_peca`, `concluida`, `entregue`, `cancelada`
+**Status válidos:** `aberta`, `aprovada` (exibido como "Avisada"), `aguardando_peca`, `concluida`, `entregue`, `cancelada`
 
 ### POST /service-orders/:id/duplicate
 

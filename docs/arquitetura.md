@@ -3,7 +3,7 @@ layout: default
 title: Arquitetura
 ---
 
-_Última sincronização: 29/07/2026_
+_Última sincronização: 03/08/2026_
 
 # 🏗️ Arquitetura do Sistema
 
@@ -299,10 +299,12 @@ O `tenant_id` é extraído do JWT no middleware de autenticação e injetado aut
 ### Status de Ordem de Serviço
 
 ```
-aberta ──► aprovada ──► aguardando_peca ──► concluida ──► entregue
+aberta ──► aprovada (Avisada) ──► aguardando_peca ──► concluida ──► entregue
   │                                                           
   └───────────────────────► cancelada
 ```
+
+> **Nota:** O valor interno é `aprovada`, mas o label exibido na interface é "Avisada" (cliente foi notificado do diagnóstico/orçamento).
 
 ### Sistema de Lotes
 

@@ -3,7 +3,7 @@ layout: default
 title: Roadmap
 ---
 
-_Última sincronização: 29/07/2026_
+_Última sincronização: 03/08/2026_
 
 # 🗺️ Roadmap — OS Laboris
 
@@ -26,7 +26,7 @@ Acompanhe a evolução do sistema.
 - [x] CRUD de OS com número sequencial
 - [x] Vinculação: cliente → equipamento → técnico
 - [x] Tabela de itens (Qtd / Descrição / Valor) com cálculo automático
-- [x] Status: Aberta, Aprovada, Aguardando Peça, Concluída, Entregue, Cancelada
+- [x] Status: Aberta, Avisada, Aguardando Peça, Concluída, Entregue, Cancelada
 - [x] Forma de pagamento (lista fixa)
 - [x] Garantia em dias
 - [x] Cadastro rápido de cliente/equipamento na abertura da OS

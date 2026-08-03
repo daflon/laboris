@@ -28,7 +28,7 @@ PWA instalável — funciona como app no celular.
 - CRUD completo com número sequencial automático (#0001, #0002...)
 - Vinculação: Cliente → Equipamento → Técnico
 - Tabela de itens (Qtd / Parecer Técnico / Valor) com cálculo automático
-- Status: Aberta, Aprovada, Aguardando Peça, Concluída, Entregue, Cancelada
+- Status: Aberta, Avisada, Aguardando Peça, Concluída, Entregue, Cancelada
 - Badges de status em formato pill com cores harmoniosas
 - Mudança rápida de status direto na listagem
 - Cadastro rápido de cliente e equipamento (modal na abertura da OS)

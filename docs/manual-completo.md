@@ -3,7 +3,7 @@ layout: default
 title: Manual Completo
 ---
 
-_Última sincronização: 29/07/2026_
+_Última sincronização: 03/08/2026_
 
 # 📖 Manual Completo — OS Laboris
 
@@ -384,7 +384,7 @@ Ordens de serviço (coração do sistema).
 
 **Status possíveis:**
 - `aberta` - Recém criada
-- `aprovada` - Cliente aprovou orçamento
+- `aprovada` - Cliente foi avisado sobre o diagnóstico/orçamento
 - `aguardando_peca` - Aguardando peça de reposição
 - `concluida` - Serviço finalizado
 - `entregue` - Equipamento entregue ao cliente
@@ -509,7 +509,7 @@ O Dashboard é a tela inicial após login, apresentando uma visão geral do neg�
 **Componentes:**
 - **Cards de Status:** Contadores clicáveis por status de OS
   - Abertas (azul)
-  - Aprovadas (âmbar)
+  - Avisadas (âmbar)
   - Aguardando Peça (violeta)
   - Concluídas (verde)
   - Entregues (índigo)
@@ -660,10 +660,10 @@ O Dashboard é a tela inicial após login, apresentando uma visão geral do neg�
   ┌─────────┐
   │ ABERTA  │
   └────┬────┘
-       │ Cliente aprova
+       │ Cliente avisado
        ▼
   ┌──────────┐
-  │ APROVADA │
+  │ AVISADA  │
   └────┬─────┘
        │
        ├─────────────────┐
@@ -1015,7 +1015,7 @@ jobs:
 | Status | Cor | Hex |
 |--------|-----|-----|
 | Aberta | Azul | #2563eb |
-| Aprovada | Âmbar | #d97706 |
+| Avisada | Âmbar | #d97706 |
 | Aguardando Peça | Violeta | #7c3aed |
 | Concluída | Verde | #059669 |
 | Entregue | Índigo | #4f46e5 |
@@ -1567,7 +1567,7 @@ Badges de status com contraste mínimo de 4.5:1:
 | Status | Background | Texto | Contraste |
 |--------|------------|-------|-----------|
 | Aberta | #dbeafe | #1e40af | 7.2:1 ✓ |
-| Aprovada | #fef3c7 | #78350f | 6.8:1 ✓ |
+| Avisada | #fef3c7 | #78350f | 6.8:1 ✓ |
 | Aguardando | #ede9fe | #5b21b6 | 5.1:1 ✓ |
 | Concluída | #d1fae5 | #064e3b | 7.5:1 ✓ |
 | Entregue | #e0f2fe | #0c4a6e | 6.3:1 ✓ |
@@ -1579,7 +1579,7 @@ Para usuários com daltonismo, cada status tem ícone via CSS `::before`:
 
 ```css
 .status-aberta::before { content: "○"; }
-.status-aprovada::before { content: "✓"; }
+.status-aprovada::before { content: "✓"; }  /* valor interno: aprovada, label: Avisada */
 .status-aguardando_peca::before { content: "⏳"; }
 .status-concluida::before { content: "✓✓"; }
 .status-entregue::before { content: "📦"; }
@@ -1616,9 +1616,9 @@ Painel Master Admin usa cyan (#0891b2) para diferenciar visualmente do sistema d
    └─► Preencher diagnóstico e itens
    └─► Enviar orçamento via WhatsApp
 
-3. APROVAÇÃO
-   └─► Cliente aprova
-   └─► Mudar status: APROVADA
+3. AVISO AO CLIENTE
+   └─► Cliente foi notificado
+   └─► Mudar status: AVISADA
 
 4. EXECUÇÃO
    └─► Se precisa peça → Status: AGUARDANDO PEÇA
