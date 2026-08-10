@@ -1,0 +1,234 @@
+/* Faturamento Page Styles */
+
+.faturamento-page {
+  padding-bottom: 2rem;
+}
+
+/* Grid de gráfico e técnicos */
+.faturamento-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .faturamento-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Seções */
+.faturamento-section {
+  background: var(--bg-card, #fff);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
+}
+
+.faturamento-lista {
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title svg {
+  color: var(--primary, #2563eb);
+}
+
+/* Gráfico de barras */
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.chart-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chart-label {
+  width: 40px;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #64748b);
+  flex-shrink: 0;
+}
+
+.chart-bar-bg {
+  flex: 1;
+  height: 28px;
+  background: var(--bg-muted, #f1f5f9);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.chart-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  border-radius: 6px;
+  min-width: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  transition: width 0.3s ease;
+}
+
+.chart-bar-value {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Lista de técnicos */
+.tech-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tech-row {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-muted, #f8fafc);
+  border-radius: 8px;
+  gap: 0.75rem;
+}
+
+.tech-medal {
+  width: 24px;
+  font-size: 1rem;
+}
+
+.tech-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+}
+
+.tech-os {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #64748b);
+  margin-right: 1rem;
+}
+
+.tech-value {
+  font-weight: 600;
+  color: #059669;
+}
+
+/* Tabela - Total row */
+.data-table tfoot .total-row {
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  color: #fff;
+}
+
+.data-table tfoot .total-row td {
+  border: none;
+  padding: 1rem 0.75rem;
+}
+
+/* Modal de PDF */
+.pdf-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.pdf-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-muted, #f8fafc);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.pdf-option:hover {
+  border-color: var(--primary, #2563eb);
+  background: #eff6ff;
+}
+
+.pdf-option-icon {
+  font-size: 1.75rem;
+}
+
+.pdf-option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pdf-option-info strong {
+  font-size: 0.95rem;
+  color: var(--text-primary, #1e293b);
+}
+
+.pdf-option-info span {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #64748b);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .faturamento-page .dashboard-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .chart-bar-value {
+    font-size: 0.65rem;
+  }
+  
+  .tech-row {
+    flex-wrap: wrap;
+  }
+  
+  .tech-os {
+    margin-right: 0;
+  }
+  
+  .tech-value {
+    width: 100%;
+    text-align: right;
+    margin-top: 0.25rem;
+  }
+  
+  .hide-mobile {
+    display: none;
+  }
+  
+  .data-table tfoot .total-row td[colspan] {
+    display: none;
+  }
+  
+  .data-table tfoot .total-row td:last-child::before {
+    content: 'TOTAL: ';
+  }
+}
+
+@media (max-width: 480px) {
+  .faturamento-page .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .faturamento-section {
+    padding: 1rem;
+  }
+}

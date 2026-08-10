@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock - Relatório de Faturamento PDF</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+    
+    /* Opções de layout */
+    .options {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .option-btn {
+      padding: 0.75rem 1.5rem;
+      border: 2px solid #444;
+      background: transparent;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    
+    .option-btn:hover {
+      border-color: #2563eb;
+      background: rgba(37, 99, 235, 0.1);
+    }
+    
+    .option-btn.active {
+      border-color: #2563eb;
+      background: #2563eb;
+    }
+    
+    /* PDF Preview */
+    .pdf-container {
+      background: #fff;
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 15mm;
+      color: #000;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.4;
+    }
+    
+    /* Header da empresa */
+    .pdf-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .company-info h2 {
+      font-size: 18pt;
+      color: #1e40af;
+      margin-bottom: 5px;
+    }
+    
+    .company-info p {
+      font-size: 9pt;
+      color: #666;
+      margin: 2px 0;
+    }
+    
+    .report-title {
+      text-align: right;
+    }
+    
+    .report-title h1 {
+      font-size: 14pt;
+      color: #1e40af;
+      margin-bottom: 5px;
+    }
+    
+    .report-title .period {
+      font-size: 12pt;
+      color: #333;
+      font-weight: 600;
+    }
+    
+    .report-title .date {
+      font-size: 9pt;
+      color: #666;
+    }
+    
+    /* Cards de resumo */
+    .summary-cards {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .summary-card {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .summary-card.highlight {
+      background: #1e40af;
+      color: #fff;
+      border-color: #1e40af;
+    }
+    
+    .summary-card .value {
+      font-size: 20pt;
+      font-weight: 700;
+      display: block;
+    }
+    
+    .summary-card.highlight .value {
+      color: #fff;
+    }
+    
+    .summary-card .label {
+      font-size: 9pt;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .summary-card.highlight .label {
+      color: rgba(255,255,255,0.8);
+    }
+    
+    /* Seções */
+    .section {
+      margin-bottom: 25px;
+    }
+    
+    .section-title {
+      font-size: 11pt;
+      font-weight: 600;
+      color: #1e40af;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+    }
+    
+    /* Tabela de OS */
+    .os-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9pt;
+    }
+    
+    .os-table th {
+      background: #f1f5f9;
+      padding: 10px 8px;
+      text-align: left;
+      font-weight: 600;
+      color: #334155;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .os-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .os-table tr:nth-child(even) {
+      background: #f8fafc;
+    }
+    
+    .os-table .text-right {
+      text-align: right;
+    }
+    
+    .os-table .text-center {
+      text-align: center;
+    }
+    
+    .os-table .total-row {
+      background: #1e40af !important;
+      color: #fff;
+      font-weight: 700;
+    }
+    
+    .os-table .total-row td {
+      border-bottom: none;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 8pt;
+      font-weight: 600;
+    }
+    
+    .status-concluida {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status-entregue {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    /* Gráfico simples (barras CSS) */
+    .chart-container {
+      margin-top: 10px;
+    }
+    
+    .chart-bar-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .chart-label {
+      width: 80px;
+      font-size: 9pt;
+      color: #64748b;
+    }
+    
+    .chart-bar-bg {
+      flex: 1;
+      height: 20px;
+      background: #f1f5f9;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .chart-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #3b82f6);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      color: #fff;
+      font-size: 8pt;
+      font-weight: 600;
+      min-width: 60px;
+    }
+    
+    /* Por técnico */
+    .tech-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .tech-row:last-child {
+      border-bottom: none;
+    }
+    
+    .tech-name {
+      font-weight: 500;
+    }
+    
+    .tech-stats {
+      color: #64748b;
+      font-size: 9pt;
+    }
+    
+    .tech-value {
+      font-weight: 600;
+      color: #059669;
+    }
+    
+    /* Rodapé */
+    .pdf-footer {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 8pt;
+      color: #94a3b8;
+    }
+    
+    /* Versão compacta */
+    .compact .summary-cards {
+      gap: 10px;
+    }
+    
+    .compact .summary-card {
+      padding: 10px;
+    }
+    
+    .compact .summary-card .value {
+      font-size: 16pt;
+    }
+    
+    .compact .os-table th,
+    .compact .os-table td {
+      padding: 6px 5px;
+      font-size: 8pt;
+    }
+    
+    /* Versão com gráfico */
+    .with-chart .chart-section {
+      display: block;
+    }
+    
+    .chart-section {
+      display: none;
+    }
+    
+    /* Versão com técnicos */
+    .with-tech .tech-section {
+      display: block;
+    }
+    
+    .tech-section {
+      display: none;
+    }
+    
+    /* Toggle info */
+    .info-box {
+      background: rgba(37, 99, 235, 0.1);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .info-box p {
+      color: #93c5fd;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📄 Mock: Relatório de Faturamento (PDF)</h1>
+    <p class="subtitle">Visualize como ficaria o relatório mensal para impressão ou envio</p>
+    
+    <div class="info-box">
+      <p>Clique nas opções abaixo para ver diferentes versões do relatório</p>
+    </div>
+    
+    <div class="options">
+      <button class="option-btn active" onclick="setLayout('default')">📋 Padrão</button>
+      <button class="option-btn" onclick="setLayout('compact')">📄 Compacto</button>
+      <button class="option-btn" onclick="setLayout('chart')">📊 Com Gráfico</button>
+      <button class="option-btn" onclick="setLayout('tech')">👷 Por Técnico</button>
+      <button class="option-btn" onclick="setLayout('full')">📑 Completo</button>
+    </div>
+    
+    <!-- PDF Preview -->
+    <div class="pdf-container" id="pdf">
+      <!-- Header -->
+      <div class="pdf-header">
+        <div class="company-info">
+          <h2>ESM Ferramentas</h2>
+          <p>CNPJ: 12.345.678/0001-90</p>
+          <p>(21) 97361-4554 | esm@email.com</p>
+          <p>Rua Exemplo, 123 - Rio de Janeiro/RJ</p>
+        </div>
+        <div class="report-title">
+          <h1>RELATÓRIO DE FATURAMENTO</h1>
+          <div class="period">Agosto 2026</div>
+          <div class="date">Gerado em: 10/08/2026 às 14:32</div>
+        </div>
+      </div>
+      
+      <!-- Resumo -->
+      <div class="summary-cards">
+        <div class="summary-card highlight">
+          <span class="value">R$ 4.850,00</span>
+          <span class="label">Total Faturado</span>
+        </div>
+        <div class="summary-card">
+          <span class="value">32</span>
+          <span class="label">OS Concluídas</span>
+        </div>
+        <div class="summary-card">
+          <span class="value">R$ 151,56</span>
+          <span class="label">Ticket Médio</span>
+        </div>
+        <div class="summary-card">
+          <span class="value">28</span>
+          <span class="label">Clientes Atendidos</span>
+        </div>
+      </div>
+      
+      <!-- Gráfico (opcional) -->
+      <div class="section chart-section">
+        <div class="section-title">📈 Evolução Mensal (últimos 6 meses)</div>
+        <div class="chart-container">
+          <div class="chart-bar-row">
+            <span class="chart-label">Março</span>
+            <div class="chart-bar-bg">
+              <div class="chart-bar" style="width: 45%;">R$ 2.180</div>
+            </div>
+          </div>
+          <div class="chart-bar-row">
+            <span class="chart-label">Abril</span>
+            <div class="chart-bar-bg">
+              <div class="chart-bar" style="width: 62%;">R$ 3.020</div>
+            </div>
+          </div>
+          <div class="chart-bar-row">
+            <span class="chart-label">Maio</span>
+            <div class="chart-bar-bg">
+              <div class="chart-bar" style="width: 58%;">R$ 2.840</div>
+            </div>
+          </div>
+          <div class="chart-bar-row">
+            <span class="chart-label">Junho</span>
+            <div class="chart-bar-bg">
+              <div class="chart-bar" style="width: 75%;">R$ 3.650</div>
+            </div>
+          </div>
+          <div class="chart-bar-row">
+            <span class="chart-label">Julho</span>
+            <div class="chart-bar-bg">
+              <div class="chart-bar" style="width: 88%;">R$ 4.280</div>
+            </div>
+          </div>
+          <div class="chart-bar-row">
+            <span class="chart-label">Agosto</span>
+            <div class="chart-bar-bg">
+              <div class="chart-bar" style="width: 100%;">R$ 4.850</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Por Técnico (opcional) -->
+      <div class="section tech-section">
+        <div class="section-title">👷 Faturamento por Técnico</div>
+        <div class="tech-row">
+          <span class="tech-name">🥇 Fernando</span>
+          <span class="tech-stats">18 OS</span>
+          <span class="tech-value">R$ 2.720,00</span>
+        </div>
+        <div class="tech-row">
+          <span class="tech-name">🥈 Igor</span>
+          <span class="tech-stats">10 OS</span>
+          <span class="tech-value">R$ 1.580,00</span>
+        </div>
+        <div class="tech-row">
+          <span class="tech-name">🥉 Carlos</span>
+          <span class="tech-stats">4 OS</span>
+          <span class="tech-value">R$ 550,00</span>
+        </div>
+      </div>
+      
+      <!-- Lista de OS -->
+      <div class="section">
+        <div class="section-title">📋 Ordens de Serviço do Período</div>
+        <table class="os-table">
+          <thead>
+            <tr>
+              <th>OS</th>
+              <th>Data</th>
+              <th>Cliente</th>
+              <th>Equipamento</th>
+              <th class="text-center">Status</th>
+              <th class="text-right">Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>#0045</strong></td>
+              <td>08/08</td>
+              <td>João Silva</td>
+              <td>Esmerilhadeira Dewalt</td>
+              <td class="text-center"><span class="status-badge status-concluida">Concluída</span></td>
+              <td class="text-right">R$ 180,00</td>
+            </tr>
+            <tr>
+              <td><strong>#0044</strong></td>
+              <td>07/08</td>
+              <td>Maria Santos</td>
+              <td>Furadeira Bosch</td>
+              <td class="text-center"><span class="status-badge status-entregue">Entregue</span></td>
+              <td class="text-right">R$ 250,00</td>
+            </tr>
+            <tr>
+              <td><strong>#0043</strong></td>
+              <td>06/08</td>
+              <td>Pedro Lima</td>
+              <td>Serra Circular Makita</td>
+              <td class="text-center"><span class="status-badge status-entregue">Entregue</span></td>
+              <td class="text-right">R$ 95,00</td>
+            </tr>
+            <tr>
+              <td><strong>#0042-A</strong></td>
+              <td>05/08</td>
+              <td>Ana Costa</td>
+              <td>Plaina Elétrica</td>
+              <td class="text-center"><span class="status-badge status-entregue">Entregue</span></td>
+              <td class="text-right">R$ 320,00</td>
+            </tr>
+            <tr>
+              <td><strong>#0042-B</strong></td>
+              <td>05/08</td>
+              <td>Ana Costa</td>
+              <td>Lixadeira Orbital</td>
+              <td class="text-center"><span class="status-badge status-entregue">Entregue</span></td>
+              <td class="text-right">R$ 85,00</td>
+            </tr>
+            <tr>
+              <td><strong>#0041</strong></td>
+              <td>04/08</td>
+              <td>Roberto Alves</td>
+              <td>Martelete Bosch</td>
+              <td class="text-center"><span class="status-badge status-concluida">Concluída</span></td>
+              <td class="text-right">R$ 450,00</td>
+            </tr>
+            <tr>
+              <td><strong>#0040</strong></td>
+              <td>03/08</td>
+              <td>Fernanda Dias</td>
+              <td>Tupia DeWalt</td>
+              <td class="text-center"><span class="status-badge status-entregue">Entregue</span></td>
+              <td class="text-right">R$ 280,00</td>
+            </tr>
+            <tr>
+              <td><strong>#0039</strong></td>
+              <td>02/08</td>
+              <td>Carlos Mendes</td>
+              <td>Parafusadeira Makita</td>
+              <td class="text-center"><span class="status-badge status-entregue">Entregue</span></td>
+              <td class="text-right">R$ 120,00</td>
+            </tr>
+            <tr>
+              <td colspan="5" style="text-align: center; color: #64748b; font-style: italic;">
+                ... mais 24 ordens de serviço ...
+              </td>
+              <td class="text-right" style="color: #64748b;">R$ 3.070,00</td>
+            </tr>
+            <tr class="total-row">
+              <td colspan="5"><strong>TOTAL DO PERÍODO</strong></td>
+              <td class="text-right"><strong>R$ 4.850,00</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Rodapé -->
+      <div class="pdf-footer">
+        <span>OS Laboris - Sistema de Gestão de Ordens de Serviço</span>
+        <span>Página 1 de 1</span>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 2rem; color: #666;">
+      <p>Este é um mock visual. O PDF real será gerado pelo sistema.</p>
+    </div>
+  </div>
+  
+  <script>
+    function setLayout(type) {
+      const pdf = document.getElementById('pdf');
+      const buttons = document.querySelectorAll('.option-btn');
+      
+      // Reset classes
+      pdf.classList.remove('compact', 'with-chart', 'with-tech');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      
+      // Apply selected
+      event.target.classList.add('active');
+      
+      switch(type) {
+        case 'compact':
+          pdf.classList.add('compact');
+          break;
+        case 'chart':
+          pdf.classList.add('with-chart');
+          break;
+        case 'tech':
+          pdf.classList.add('with-tech');
+          break;
+        case 'full':
+          pdf.classList.add('with-chart', 'with-tech');
+          break;
+      }
+    }
+  </script>
+</body>
+</html>

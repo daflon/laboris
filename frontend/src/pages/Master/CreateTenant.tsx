@@ -105,6 +105,9 @@ export default function CreateTenant() {
               <input type="checkbox" checked={true} disabled /> OS (sempre ativo)
             </label>
             <label className="checkbox-label" style={{ marginTop: 0 }}>
+              <input type="checkbox" checked={form.modules.includes('faturamento')} onChange={() => handleModuleToggle('faturamento')} /> Faturamento
+            </label>
+            <label className="checkbox-label" style={{ marginTop: 0 }}>
               <input type="checkbox" checked={form.modules.includes('financeiro')} onChange={() => handleModuleToggle('financeiro')} /> Financeiro
             </label>
           </div>

@@ -21,6 +21,7 @@ import ServiceOrderDetails from './pages/ServiceOrders/ServiceOrderDetails';
 import AddToLote from './pages/ServiceOrders/AddToLote';
 import CompanySettingsPage from './pages/Settings/CompanySettings';
 import FinanceiroPage from './pages/Financeiro/FinanceiroPage';
+import FaturamentoPage from './pages/Faturamento/FaturamentoPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!authService.isAuthenticated()) {
@@ -83,6 +84,7 @@ export default function App() {
 
           <Route path="configuracoes" element={<CompanySettingsPage />} />
           <Route path="financeiro" element={<FinanceiroPage />} />
+          <Route path="faturamento" element={<FaturamentoPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign, FiAlertTriangle } from 'react-icons/fi';
+import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign, FiAlertTriangle, FiBarChart2 } from 'react-icons/fi';
 import api from '../services/api';
 import { authService } from '../services/auth.service';
 import GlobalSearch from './GlobalSearch';
@@ -121,6 +121,11 @@ export default function Layout() {
           {modules.includes('financeiro') && (
             <NavLink to="/financeiro" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               <FiDollarSign /> <span>Financeiro</span>
+            </NavLink>
+          )}
+          {modules.includes('faturamento') && (
+            <NavLink to="/faturamento" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <FiBarChart2 /> <span>Faturamento</span>
             </NavLink>
           )}
         </nav>

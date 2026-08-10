@@ -19,6 +19,7 @@ const pdfRoutes = require('./pdf.routes');
 const adminRoutes = require('./admin.routes');
 const searchRoutes = require('./search.routes');
 const financeiroRoutes = require('./financeiro.routes');
+const faturamentoRoutes = require('./faturamento.routes');
 
 const equipmentController = require('../controllers/equipment.controller');
 const serviceOrdersController = require('../controllers/serviceOrders.controller');
@@ -45,6 +46,7 @@ router.use('/pdf', authenticate, pdfRoutes);
 router.use('/admin', authenticate, adminRoutes);
 router.use('/search', authenticate, searchRoutes);
 router.use('/financeiro', authenticate, financeiroRoutes);
+router.use('/faturamento', authenticate, faturamentoRoutes);
 
 // Rotas aninhadas
 router.get('/clients/:id/equipment', authenticate, equipmentController.findByClientId);
