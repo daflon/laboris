@@ -24,18 +24,15 @@ export default function Layout() {
       .catch(() => {});
 
     // Carregar módulos e nome da empresa
-    if (isMasterImpersonating) {
-      setModules(['os', 'financeiro']);
-    } else {
-      api.get('/auth/me')
-        .then((res) => {
-          if (res.data.data.tenant?.modules) {
-            const mods = res.data.data.tenant.modules;
-            setModules(typeof mods === 'string' ? JSON.parse(mods) : mods);
-          }
-        })
-        .catch(() => {});
-    }
+    // Sempre buscar os módulos do tenant via API (inclui impersonate)
+    api.get('/auth/me')
+      .then((res) => {
+        if (res.data.data.tenant?.modules) {
+          const mods = res.data.data.tenant.modules;
+          setModules(typeof mods === 'string' ? JSON.parse(mods) : mods);
+        }
+      })
+      .catch(() => {});
 
     // Pegar nome da empresa das configurações
     api.get('/company')
