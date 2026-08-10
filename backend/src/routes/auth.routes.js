@@ -84,9 +84,13 @@ router.get('/me', authenticate, async (req, res, next) => {
       return res.status(404).json({ success: false, error: { message: 'Usuário não encontrado' } });
     }
 
+    // Usar tenantId do token (importante para impersonate)
+    // Durante impersonate, o token tem o tenantId do tenant sendo acessado
+    const effectiveTenantId = req.user.tenantId || user.tenant_id;
+    
     let tenant = null;
-    if (user.tenant_id) {
-      tenant = await db('tenants').where({ id: user.tenant_id }).first();
+    if (effectiveTenantId) {
+      tenant = await db('tenants').where({ id: effectiveTenantId }).first();
     }
 
     res.json({
@@ -96,7 +100,7 @@ router.get('/me', authenticate, async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        tenant_id: user.tenant_id,
+        tenant_id: effectiveTenantId,
         tenant: tenant ? { id: tenant.id, name: tenant.name, slug: tenant.slug, modules: tenant.modules } : null,
       },
     });

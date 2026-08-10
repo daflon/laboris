@@ -4,15 +4,58 @@
   padding-bottom: 2rem;
 }
 
+/* Filtros */
+.faturamento-page .filters-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Cards de resumo - alinhamento */
+.faturamento-page .dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.faturamento-page .dash-card {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.faturamento-page .dash-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.faturamento-page .dash-card-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.faturamento-page .dash-card-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
 /* Grid de gráfico e técnicos */
 .faturamento-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.2fr 0.8fr;
   gap: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .faturamento-grid {
     grid-template-columns: 1fr;
   }
@@ -48,7 +91,7 @@
 .chart-container {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .chart-bar-row {
@@ -58,15 +101,16 @@
 }
 
 .chart-label {
-  width: 40px;
-  font-size: 0.8rem;
+  width: 35px;
+  font-size: 0.75rem;
   color: var(--text-secondary, #64748b);
   flex-shrink: 0;
+  text-align: right;
 }
 
 .chart-bar-bg {
   flex: 1;
-  height: 28px;
+  height: 24px;
   background: var(--bg-muted, #f1f5f9);
   border-radius: 6px;
   overflow: hidden;
@@ -86,7 +130,7 @@
 
 .chart-bar-value {
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -104,29 +148,40 @@
   padding: 0.75rem;
   background: var(--bg-muted, #f8fafc);
   border-radius: 8px;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .tech-medal {
-  width: 24px;
-  font-size: 1rem;
+  width: 20px;
+  font-size: 0.9rem;
+  flex-shrink: 0;
 }
 
 .tech-name {
   flex: 1;
   font-weight: 500;
   color: var(--text-primary, #1e293b);
+  font-size: 0.9rem;
 }
 
 .tech-os {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-secondary, #64748b);
-  margin-right: 1rem;
+  margin-right: 0.75rem;
 }
 
 .tech-value {
   font-weight: 600;
   color: #059669;
+  font-size: 0.9rem;
+}
+
+/* Quando não tem técnicos */
+.faturamento-section .empty-text {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary, #64748b);
+  font-style: italic;
 }
 
 /* Tabela - Total row */
@@ -187,13 +242,27 @@
 }
 
 /* Responsividade */
+@media (max-width: 1200px) {
+  .faturamento-page .dashboard-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .faturamento-page .dashboard-cards {
     grid-template-columns: repeat(2, 1fr);
   }
   
+  .faturamento-page .dash-card {
+    padding: 1rem;
+  }
+  
+  .faturamento-page .dash-card-value {
+    font-size: 1.25rem;
+  }
+  
   .chart-bar-value {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
   }
   
   .tech-row {
@@ -213,14 +282,6 @@
   .hide-mobile {
     display: none;
   }
-  
-  .data-table tfoot .total-row td[colspan] {
-    display: none;
-  }
-  
-  .data-table tfoot .total-row td:last-child::before {
-    content: 'TOTAL: ';
-  }
 }
 
 @media (max-width: 480px) {
@@ -230,5 +291,13 @@
   
   .faturamento-section {
     padding: 1rem;
+  }
+  
+  .faturamento-page .filters-row {
+    flex-direction: row;
+  }
+  
+  .faturamento-page .filter-select {
+    flex: 1;
   }
 }
