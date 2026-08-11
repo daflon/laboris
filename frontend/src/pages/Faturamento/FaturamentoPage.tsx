@@ -197,7 +197,7 @@ export default function FaturamentoPage() {
                     <td className="hide-mobile">{order.equipment_type} {order.equipment_brand}</td>
                     <td>
                       <span className={`status-badge status-${order.status}`}>
-                        {order.status === 'concluida' ? '✅ Concluída' : '📦 Entregue'}
+                        {order.status === 'concluida' ? 'Concluída' : 'Entregue'}
                       </span>
                     </td>
                     <td className="text-right"><strong>{formatCurrency(order.total)}</strong></td>
