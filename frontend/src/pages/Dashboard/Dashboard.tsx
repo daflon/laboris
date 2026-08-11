@@ -28,6 +28,7 @@ interface DashboardData {
 
 function getStatusLabel(status: string) {
   const s = STATUSES.find((s) => s.value === status);
+  // Retorna COM emoji para usar em badges
   return s ? `${s.emoji} ${s.label}` : status;
 }
 

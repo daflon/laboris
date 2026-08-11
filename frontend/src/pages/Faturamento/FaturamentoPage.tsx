@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { FiDollarSign, FiFileText, FiTrendingUp, FiUsers, FiDownload, FiBarChart2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { faturamentoService, FaturamentoResumo, GraficoItem, TecnicoFaturamento, OSFaturada } from '../../services/faturamento.service';
-import { getStatusLabelWithEmoji } from '../../services/serviceOrders.service';
 import PageHeader from '../../components/PageHeader';
 import './FaturamentoPage.css';
 
@@ -198,7 +197,7 @@ export default function FaturamentoPage() {
                     <td className="hide-mobile">{order.equipment_type} {order.equipment_brand}</td>
                     <td>
                       <span className={`status-badge status-${order.status}`}>
-                        {getStatusLabelWithEmoji(order.status)}
+                        {order.status === 'concluida' ? '✅ Concluída' : '📦 Entregue'}
                       </span>
                     </td>
                     <td className="text-right"><strong>{formatCurrency(order.total)}</strong></td>
