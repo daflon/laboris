@@ -58,8 +58,9 @@ export const faturamentoService = {
   },
 
   getPdfUrl(params: { month: number; year: number; tipo: 'compacto' | 'grafico' | 'completo' }) {
-    const baseUrl = api.defaults.baseURL || '/api/v1';
     const token = localStorage.getItem('token');
+    // Em produção, usar URL relativa; em dev, usar baseURL do axios
+    const baseUrl = window.location.origin + '/api/v1';
     return `${baseUrl}/faturamento/pdf?month=${params.month}&year=${params.year}&tipo=${params.tipo}&token=${token}`;
   }
 };

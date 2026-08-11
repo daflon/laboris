@@ -215,10 +215,17 @@ export default function Layout() {
           <FiUsers />
           <span>Clientes</span>
         </NavLink>
-        <NavLink to="/tecnicos" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
-          <FiTool />
-          <span>Técnicos</span>
-        </NavLink>
+        {modules.includes('faturamento') ? (
+          <NavLink to="/faturamento" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
+            <FiBarChart2 />
+            <span>Fatur.</span>
+          </NavLink>
+        ) : (
+          <NavLink to="/tecnicos" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
+            <FiTool />
+            <span>Técnicos</span>
+          </NavLink>
+        )}
         <NavLink to="/configuracoes" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
           <FiSettings />
           <span>Config</span>
