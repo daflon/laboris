@@ -8,7 +8,8 @@ import { formatDocument, formatPhone } from '../../utils/masks';
 import LotePdfModal from '../../components/LotePdfModal';
 
 function getStatusLabel(status: string) {
-  return STATUSES.find((s) => s.value === status)?.label || status;
+  const s = STATUSES.find((s) => s.value === status);
+  return s ? `${s.emoji} ${s.label}` : status;
 }
 
 function getStatusColor(status: string) {
@@ -283,7 +284,7 @@ export default function ServiceOrderDetails() {
                 }}
                 onClick={() => handleStatusChange(s.value)}
               >
-                {s.label}
+                {s.emoji} {s.label}
               </button>
             ))}
           </div>

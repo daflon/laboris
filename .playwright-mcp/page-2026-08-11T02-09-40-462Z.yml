@@ -1,0 +1,291 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - heading "Empresa Master" [level=1] [ref=e60]
+      - text: Assistência Técnica
+    - navigation [ref=e7]:
+      - link "Dashboard" [ref=e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Ordens de Serviço 17" [ref=e61] [cursor=pointer]:
+        - /url: /os
+        - generic [ref=e17]: Ordens de Serviço
+        - generic [ref=e62]: "17"
+      - link "Clientes" [ref=e18] [cursor=pointer]:
+        - /url: /clientes
+      - link "Técnicos" [ref=e25] [cursor=pointer]:
+        - /url: /tecnicos
+      - link "Equipamentos" [ref=e29] [cursor=pointer]:
+        - /url: /equipamentos
+      - link "Financeiro" [ref=e63] [cursor=pointer]:
+        - /url: /financeiro
+      - link "Faturamento" [ref=e67] [cursor=pointer]:
+        - /url: /faturamento
+    - generic [ref=e33]:
+      - button "Painel Master" [ref=e34] [cursor=pointer]
+      - link "Configurações" [ref=e38] [cursor=pointer]:
+        - /url: /configuracoes
+      - button "Sair" [ref=e43] [cursor=pointer]
+    - generic [ref=e48]:
+      - generic [ref=e49]: OS Laboris
+      - 'link "Suporte: (21) 97430-3932" [ref=e50] [cursor=pointer]':
+        - /url: https://wa.me/5521974303932
+  - main [ref=e51]:
+    - alert [ref=e70]:
+      - generic [ref=e73]:
+        - text: Você está acessando como
+        - strong [ref=e74]: "\"Empresa Master\""
+      - button "Sair do modo impersonate" [ref=e75] [cursor=pointer]
+    - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=e58]
+    - generic [ref=e76]:
+      - generic [ref=e77]:
+        - heading "Faturamento" [level=2] [ref=e78]
+        - button "Gerar relatório PDF" [active] [ref=e80] [cursor=pointer]: Gerar PDF
+      - generic [ref=e84]:
+        - combobox "Selecionar mês" [ref=e85]:
+          - option "Janeiro"
+          - option "Fevereiro"
+          - option "Março"
+          - option "Abril"
+          - option "Maio"
+          - option "Junho"
+          - option "Julho"
+          - option "Agosto" [selected]
+          - option "Setembro"
+          - option "Outubro"
+          - option "Novembro"
+          - option "Dezembro"
+        - combobox "Selecionar ano" [ref=e86]:
+          - option "2025"
+          - option "2026" [selected]
+          - option "2027"
+          - option "2028"
+      - generic [ref=e87]:
+        - generic [ref=e92] [cursor=pointer]:
+          - generic [ref=e93]: R$ 2.358,00
+          - generic [ref=e94]: Total Faturado
+        - generic [ref=e100] [cursor=pointer]:
+          - generic [ref=e101]: "15"
+          - generic [ref=e102]: OS Concluídas
+        - generic [ref=e108] [cursor=pointer]:
+          - generic [ref=e109]: R$ 157,20
+          - generic [ref=e110]: Ticket Médio
+        - generic [ref=e118] [cursor=pointer]:
+          - generic [ref=e119]: "7"
+          - generic [ref=e120]: Clientes
+      - generic [ref=e121]:
+        - generic [ref=e122]:
+          - heading "Evolução (6 meses)" [level=3] [ref=e123]
+          - generic [ref=e125]:
+            - generic [ref=e126]:
+              - generic [ref=e127]: Mar
+              - generic [ref=e128]: R$ 1.398,00
+            - generic [ref=e131]:
+              - generic [ref=e132]: Abr
+              - generic [ref=e133]: R$ 1.773,00
+            - generic [ref=e136]:
+              - generic [ref=e137]: Mai
+              - generic [ref=e138]: R$ 2.424,00
+            - generic [ref=e141]:
+              - generic [ref=e142]: Jun
+              - generic [ref=e143]: R$ 2.650,00
+            - generic [ref=e146]:
+              - generic [ref=e147]: Jul
+              - generic [ref=e148]: R$ 3.991,00
+            - generic [ref=e151]:
+              - generic [ref=e152]: Ago
+              - generic [ref=e153]: R$ 2.358,00
+        - generic [ref=e156]:
+          - heading "👷 Por Técnico" [level=3] [ref=e157]
+          - generic [ref=e158]:
+            - generic [ref=e159]:
+              - generic [ref=e160]: 🥇
+              - generic [ref=e161]: Igor
+              - generic [ref=e162]: 7 OS
+              - generic [ref=e163]: R$ 1.219,00
+            - generic [ref=e164]:
+              - generic [ref=e165]: 🥈
+              - generic [ref=e166]: Marcos
+              - generic [ref=e167]: 3 OS
+              - generic [ref=e168]: R$ 520,00
+            - generic [ref=e169]:
+              - generic [ref=e170]: 🥉
+              - generic [ref=e171]: Carlos
+              - generic [ref=e172]: 4 OS
+              - generic [ref=e173]: R$ 441,00
+            - generic [ref=e174]:
+              - generic [ref=e175]: Fernando
+              - generic [ref=e176]: 1 OS
+              - generic [ref=e177]: R$ 178,00
+      - generic [ref=e178]:
+        - heading "Ordens de Serviço do Período" [level=3] [ref=e179]
+        - table [ref=e184]:
+          - rowgroup [ref=e185]:
+            - row [ref=e186]:
+              - columnheader "OS" [ref=e187]
+              - columnheader "Data" [ref=e188]
+              - columnheader "Cliente" [ref=e189]
+              - columnheader "Equipamento" [ref=e190]
+              - columnheader "Status" [ref=e191]
+              - columnheader "Valor" [ref=e192]
+          - rowgroup [ref=e193]:
+            - row [ref=e194]:
+              - cell [ref=e195]:
+                - strong [ref=e196]: "#0085"
+              - cell "25/08" [ref=e197]
+              - cell "Pedro Oliveira Lima" [ref=e198]
+              - cell "Policorte Dewalt" [ref=e199]
+              - cell "📦 Entregue" [ref=e200]
+              - cell [ref=e202]:
+                - strong [ref=e203]: R$ 86,00
+            - row [ref=e204]:
+              - cell [ref=e205]:
+                - strong [ref=e206]: "#0090"
+              - cell "24/08" [ref=e207]
+              - cell "Roberto Mendes Filho" [ref=e208]
+              - cell "Policorte Dewalt" [ref=e209]
+              - cell "📦 Entregue" [ref=e210]
+              - cell [ref=e212]:
+                - strong [ref=e213]: R$ 178,00
+            - row [ref=e214]:
+              - cell [ref=e215]:
+                - strong [ref=e216]: "#0098"
+              - cell "23/08" [ref=e217]
+              - cell "João Silva Ferreira" [ref=e218]
+              - cell "Policorte Dewalt" [ref=e219]
+              - cell "📦 Entregue" [ref=e220]
+              - cell [ref=e222]:
+                - strong [ref=e223]: R$ 211,00
+            - row [ref=e224]:
+              - cell [ref=e225]:
+                - strong [ref=e226]: "#0084"
+              - cell "21/08" [ref=e227]
+              - cell "Ana Paula Rodrigues" [ref=e228]
+              - cell "Serra Circular Makita" [ref=e229]
+              - cell "✓✓ Concluída" [ref=e230]
+              - cell [ref=e232]:
+                - strong [ref=e233]: R$ 60,00
+            - row [ref=e234]:
+              - cell [ref=e235]:
+                - strong [ref=e236]: "#0097"
+              - cell "21/08" [ref=e237]
+              - cell "João Silva Ferreira" [ref=e238]
+              - cell "Plaina Makita" [ref=e239]
+              - cell "📦 Entregue" [ref=e240]
+              - cell [ref=e242]:
+                - strong [ref=e243]: R$ 176,00
+            - row [ref=e244]:
+              - cell [ref=e245]:
+                - strong [ref=e246]: "#0093"
+              - cell "20/08" [ref=e247]
+              - cell "Juliana Castro Reis" [ref=e248]
+              - cell "Tupia Makita" [ref=e249]
+              - cell "📦 Entregue" [ref=e250]
+              - cell [ref=e252]:
+                - strong [ref=e253]: R$ 32,00
+            - row [ref=e254]:
+              - cell [ref=e255]:
+                - strong [ref=e256]: "#0095"
+              - cell "18/08" [ref=e257]
+              - cell "Pedro Oliveira Lima" [ref=e258]
+              - cell "Lixadeira Dewalt" [ref=e259]
+              - cell "✓✓ Concluída" [ref=e260]
+              - cell [ref=e262]:
+                - strong [ref=e263]: R$ 288,00
+            - row [ref=e264]:
+              - cell [ref=e265]:
+                - strong [ref=e266]: "#0086"
+              - cell "17/08" [ref=e267]
+              - cell "Pedro Oliveira Lima" [ref=e268]
+              - cell "Esmerilhadeira Dewalt" [ref=e269]
+              - cell "📦 Entregue" [ref=e270]
+              - cell [ref=e272]:
+                - strong [ref=e273]: R$ 61,00
+            - row [ref=e274]:
+              - cell [ref=e275]:
+                - strong [ref=e276]: "#0089"
+              - cell "11/08" [ref=e277]
+              - cell "Carlos Eduardo Alves" [ref=e278]
+              - cell "Esmerilhadeira Dewalt" [ref=e279]
+              - cell "📦 Entregue" [ref=e280]
+              - cell [ref=e282]:
+                - strong [ref=e283]: R$ 213,00
+            - row [ref=e284]:
+              - cell [ref=e285]:
+                - strong [ref=e286]: "#0088"
+              - cell "10/08" [ref=e287]
+              - cell "Maria Santos Costa" [ref=e288]
+              - cell "Martelete Bosch" [ref=e289]
+              - cell "✓✓ Concluída" [ref=e290]
+              - cell [ref=e292]:
+                - strong [ref=e293]: R$ 185,00
+            - row [ref=e294]:
+              - cell [ref=e295]:
+                - strong [ref=e296]: "#0096"
+              - cell "07/08" [ref=e297]
+              - cell "Juliana Castro Reis" [ref=e298]
+              - cell "Martelete Bosch" [ref=e299]
+              - cell "✓✓ Concluída" [ref=e300]
+              - cell [ref=e302]:
+                - strong [ref=e303]: R$ 204,00
+            - row [ref=e304]:
+              - cell [ref=e305]:
+                - strong [ref=e306]: "#0092"
+              - cell "07/08" [ref=e307]
+              - cell "Roberto Mendes Filho" [ref=e308]
+              - cell "Policorte Dewalt" [ref=e309]
+              - cell "✓✓ Concluída" [ref=e310]
+              - cell [ref=e312]:
+                - strong [ref=e313]: R$ 47,00
+            - row [ref=e314]:
+              - cell [ref=e315]:
+                - strong [ref=e316]: "#0087"
+              - cell "07/08" [ref=e317]
+              - cell "Ana Paula Rodrigues" [ref=e318]
+              - cell "Tupia Makita" [ref=e319]
+              - cell "📦 Entregue" [ref=e320]
+              - cell [ref=e322]:
+                - strong [ref=e323]: R$ 207,00
+            - row [ref=e324]:
+              - cell [ref=e325]:
+                - strong [ref=e326]: "#0094"
+              - cell "06/08" [ref=e327]
+              - cell "João Silva Ferreira" [ref=e328]
+              - cell "Furadeira Bosch" [ref=e329]
+              - cell "✓✓ Concluída" [ref=e330]
+              - cell [ref=e332]:
+                - strong [ref=e333]: R$ 300,00
+            - row [ref=e334]:
+              - cell [ref=e335]:
+                - strong [ref=e336]: "#0091"
+              - cell "03/08" [ref=e337]
+              - cell "Juliana Castro Reis" [ref=e338]
+              - cell "Esmerilhadeira Dewalt" [ref=e339]
+              - cell "📦 Entregue" [ref=e340]
+              - cell [ref=e342]:
+                - strong [ref=e343]: R$ 110,00
+          - rowgroup [ref=e344]:
+            - row [ref=e345]:
+              - cell [ref=e346]:
+                - strong [ref=e347]: TOTAL
+              - cell [ref=e348]:
+                - strong [ref=e349]: R$ 2.358,00
+      - generic [ref=e351]:
+        - heading "Gerar Relatório PDF" [level=3] [ref=e352]
+        - paragraph [ref=e353]: "Selecione o formato do relatório de Agosto 2026:"
+        - generic [ref=e354]:
+          - button "📄 Compacto Resumo + lista de OS" [ref=e355] [cursor=pointer]:
+            - generic [ref=e356]: 📄
+            - generic [ref=e357]:
+              - strong [ref=e358]: Compacto
+              - generic [ref=e359]: Resumo + lista de OS
+          - button "📊 Com Gráfico Resumo + evolução 6 meses + lista" [ref=e360] [cursor=pointer]:
+            - generic [ref=e361]: 📊
+            - generic [ref=e362]:
+              - strong [ref=e363]: Com Gráfico
+              - generic [ref=e364]: Resumo + evolução 6 meses + lista
+          - 'button "📑 Completo Tudo: resumo, gráfico, técnicos, lista" [ref=e365] [cursor=pointer]':
+            - generic [ref=e366]: 📑
+            - generic [ref=e367]:
+              - strong [ref=e368]: Completo
+              - generic [ref=e369]: "Tudo: resumo, gráfico, técnicos, lista"
+        - button "Cancelar" [ref=e371] [cursor=pointer]

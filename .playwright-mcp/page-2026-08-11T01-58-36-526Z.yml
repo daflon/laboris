@@ -1,0 +1,28 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - heading "OS Laboris" [level=1] [ref=e6]
+      - text: Assistência Técnica
+    - navigation [ref=e7]:
+      - link "Dashboard" [ref=e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Ordens de Serviço" [ref=e13] [cursor=pointer]:
+        - /url: /os
+      - link "Clientes" [ref=e18] [cursor=pointer]:
+        - /url: /clientes
+      - link "Técnicos" [ref=e25] [cursor=pointer]:
+        - /url: /tecnicos
+      - link "Equipamentos" [ref=e29] [cursor=pointer]:
+        - /url: /equipamentos
+    - generic [ref=e33]:
+      - button "Painel Master" [ref=e34] [cursor=pointer]
+      - link "Configurações" [ref=e38] [cursor=pointer]:
+        - /url: /configuracoes
+      - button "Sair" [ref=e43] [cursor=pointer]
+    - generic [ref=e48]:
+      - generic [ref=e49]: OS Laboris
+      - 'link "Suporte: (21) 97430-3932" [ref=e50] [cursor=pointer]':
+        - /url: https://wa.me/5521974303932
+  - main [ref=e51]:
+    - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=e58]
+    - paragraph [ref=e59]: Carregando faturamento...

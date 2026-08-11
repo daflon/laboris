@@ -27,7 +27,8 @@ interface DashboardData {
 }
 
 function getStatusLabel(status: string) {
-  return STATUSES.find((s) => s.value === status)?.label || status;
+  const s = STATUSES.find((s) => s.value === status);
+  return s ? `${s.emoji} ${s.label}` : status;
 }
 
 function getStatusColor(status: string) {
@@ -114,42 +115,42 @@ export default function Dashboard() {
           <div className="dash-card-icon"><FiAlertCircle /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.aberta || 0}</span>
-            <span className="dash-card-label">Abertas</span>
+            <span className="dash-card-label">📋 Abertas</span>
           </div>
         </div>
         <div className="dash-card dash-card-yellow" onClick={() => navigate('/os?status=aprovada')}>
           <div className="dash-card-icon"><FiCheckCircle /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.aprovada || 0}</span>
-            <span className="dash-card-label">Avisadas</span>
+            <span className="dash-card-label">📞 Avisadas</span>
           </div>
         </div>
         <div className="dash-card dash-card-purple" onClick={() => navigate('/os?status=aguardando_peca')}>
           <div className="dash-card-icon"><FiClock /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.aguardando_peca || 0}</span>
-            <span className="dash-card-label">Aguardando Peça</span>
+            <span className="dash-card-label">⏳ Aguardando Peça</span>
           </div>
         </div>
         <div className="dash-card dash-card-green" onClick={() => navigate('/os?status=concluida')}>
           <div className="dash-card-icon"><FiCheckCircle /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.concluida || 0}</span>
-            <span className="dash-card-label">Concluídas</span>
+            <span className="dash-card-label">✅ Concluídas</span>
           </div>
         </div>
         <div className="dash-card dash-card-gray" onClick={() => navigate('/os?status=entregue')}>
           <div className="dash-card-icon"><FiClipboard /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.statuses.entregue || 0}</span>
-            <span className="dash-card-label">Entregues</span>
+            <span className="dash-card-label">📦 Entregues</span>
           </div>
         </div>
         <div className="dash-card dash-card-dark">
           <div className="dash-card-icon"><FiUsers /></div>
           <div className="dash-card-content">
             <span className="dash-card-value">{data.total_clients}</span>
-            <span className="dash-card-label">Clientes</span>
+            <span className="dash-card-label">👥 Clientes</span>
           </div>
         </div>
       </div>
@@ -165,7 +166,7 @@ export default function Dashboard() {
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             {STATUSES.filter(s => ['aberta', 'aprovada', 'aguardando_peca'].includes(s.value)).map((s) => (
               <div key={s.value} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}>
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: s.color, display: 'inline-block' }}></span>
+                <span>{s.emoji}</span>
                 {s.label}: <strong>{data.statuses[s.value] || 0}</strong>
               </div>
             ))}

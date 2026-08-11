@@ -65,13 +65,29 @@ export interface ServiceOrderFormData {
 }
 
 export const STATUSES = [
-  { value: 'aberta', label: 'Aberta', color: '#2563eb' },           // blue-600
-  { value: 'aprovada', label: 'Avisada', color: '#d97706' },        // amber-600 (cliente foi avisado)
-  { value: 'aguardando_peca', label: 'Aguardando Peça', color: '#7c3aed' }, // violet-600
-  { value: 'concluida', label: 'Concluída', color: '#059669' },     // emerald-600
-  { value: 'entregue', label: 'Entregue', color: '#4f46e5' },       // indigo-600
-  { value: 'cancelada', label: 'Cancelada', color: '#dc2626' },     // red-600
+  { value: 'aberta', label: 'Aberta', color: '#2563eb', emoji: '📋' },           // blue-600
+  { value: 'aprovada', label: 'Avisada', color: '#d97706', emoji: '📞' },        // amber-600 (cliente foi avisado)
+  { value: 'aguardando_peca', label: 'Aguardando Peça', color: '#7c3aed', emoji: '⏳' }, // violet-600
+  { value: 'concluida', label: 'Concluída', color: '#059669', emoji: '✅' },     // emerald-600
+  { value: 'entregue', label: 'Entregue', color: '#4f46e5', emoji: '📦' },       // indigo-600
+  { value: 'cancelada', label: 'Cancelada', color: '#dc2626', emoji: '❌' },     // red-600
 ];
+
+/**
+ * Retorna o emoji correspondente a um status
+ */
+export function getStatusEmoji(status: string): string {
+  const found = STATUSES.find(s => s.value === status);
+  return found?.emoji || '';
+}
+
+/**
+ * Retorna o label com emoji para um status
+ */
+export function getStatusLabelWithEmoji(status: string): string {
+  const found = STATUSES.find(s => s.value === status);
+  return found ? `${found.emoji} ${found.label}` : status;
+}
 
 /**
  * Retorna as classes CSS para um status de OS

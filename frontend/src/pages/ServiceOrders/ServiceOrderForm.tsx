@@ -297,7 +297,7 @@ export default function ServiceOrderForm() {
               <label htmlFor="status">Status</label>
               <select id="status" name="status" value={form.status} onChange={handleChange}>
                 {STATUSES.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
+                  <option key={s.value} value={s.value}>{s.emoji} {s.label}</option>
                 ))}
               </select>
             </div>

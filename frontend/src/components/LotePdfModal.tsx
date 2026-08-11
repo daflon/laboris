@@ -19,7 +19,8 @@ interface LotePdfModalProps {
 }
 
 function getStatusLabel(status: string) {
-  return STATUSES.find((s) => s.value === status)?.label || status;
+  const s = STATUSES.find((s) => s.value === status);
+  return s ? `${s.emoji} ${s.label}` : status;
 }
 
 function getStatusColor(status: string) {

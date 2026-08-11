@@ -1,0 +1,658 @@
+- generic [ref=f2e2]:
+  - generic [ref=f2e3]:
+    - link "Skip to content" [ref=f2e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner [ref=f2e8]:
+      - heading "Navigation Menu" [level=2] [ref=f2e9]
+      - generic [ref=f2e10]:
+        - link "Homepage" [ref=f2e12] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f2e15]:
+          - navigation "Global" [ref=f2e16]:
+            - list [ref=f2e17]:
+              - listitem [ref=f2e18]:
+                - button "Platform" [ref=f2e20] [cursor=pointer]
+              - listitem [ref=f2e23]:
+                - button "Solutions" [ref=f2e25] [cursor=pointer]
+              - listitem [ref=f2e28]:
+                - button "Resources" [ref=f2e30] [cursor=pointer]
+              - listitem [ref=f2e33]:
+                - button "Open Source" [ref=f2e35] [cursor=pointer]
+              - listitem [ref=f2e38]:
+                - button "Enterprise" [ref=f2e40] [cursor=pointer]
+              - listitem [ref=f2e43]:
+                - link "Pricing" [ref=f2e44] [cursor=pointer]:
+                  - /url: https://github.com/pricing
+          - generic [ref=f2e45]:
+            - button "Search or jump to, type / to search" [ref=f2e47] [cursor=pointer]:
+              - generic [ref=f2e50]:
+                - text: Type
+                - generic [ref=f2e51]: /
+                - text: to search
+            - link "Sign in" [ref=f2e53] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fdaflon%2Flaboris%2Factions
+            - link "Sign up" [ref=f2e54] [cursor=pointer]:
+              - /url: /signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E%2Factions%2Findex&source=header-repo&source_repo=daflon%2Flaboris
+            - button "Appearance settings" [ref=f2e55] [cursor=pointer]
+  - main [ref=f2e61]:
+    - generic [ref=f2e62]:
+      - generic [ref=f2e63]:
+        - generic [ref=f2e65]:
+          - link "daflon" [ref=f2e69] [cursor=pointer]:
+            - /url: /daflon
+          - generic [ref=f2e70]: /
+          - strong [ref=f2e71]:
+            - link "laboris" [ref=f2e72] [cursor=pointer]:
+              - /url: /daflon/laboris
+          - generic [ref=f2e73]: Public
+        - generic [ref=f2e74]:
+          - list:
+            - listitem [ref=f2e75]:
+              - link "You must be signed in to change notification settings" [ref=f2e76] [cursor=pointer]:
+                - /url: /login?return_to=%2Fdaflon%2Flaboris
+                - text: Notifications
+            - listitem [ref=f2e79]:
+              - link "Fork 0" [ref=f2e80] [cursor=pointer]:
+                - /url: /login?return_to=%2Fdaflon%2Flaboris
+                - text: Fork
+                - generic "0" [ref=f2e83]
+            - listitem [ref=f2e84]:
+              - link "You must be signed in to star a repository" [ref=f2e86] [cursor=pointer]:
+                - /url: /login?return_to=%2Fdaflon%2Flaboris
+                - text: Star
+                - generic "0 users starred this repository" [ref=f2e89]: "0"
+      - navigation "Repository" [ref=f2e90]:
+        - list [ref=f2e91]:
+          - listitem [ref=f2e92]:
+            - link "Code" [ref=f2e93] [cursor=pointer]:
+              - /url: /daflon/laboris
+          - listitem [ref=f2e97]:
+            - link "Issues" [ref=f2e98] [cursor=pointer]:
+              - /url: /daflon/laboris/issues
+          - listitem [ref=f2e103]:
+            - link "Pull requests" [ref=f2e104] [cursor=pointer]:
+              - /url: /daflon/laboris/pulls
+          - listitem [ref=f2e108]:
+            - link "Actions" [ref=f2e109] [cursor=pointer]:
+              - /url: /daflon/laboris/actions
+          - listitem [ref=f2e113]:
+            - link "Projects" [ref=f2e114] [cursor=pointer]:
+              - /url: /daflon/laboris/projects
+          - listitem [ref=f2e118]:
+            - link "Security and quality" [ref=f2e119] [cursor=pointer]:
+              - /url: /daflon/laboris/security
+          - listitem [ref=f2e123]:
+            - link "Insights" [ref=f2e124] [cursor=pointer]:
+              - /url: /daflon/laboris/pulse
+    - generic [ref=f2e129]:
+      - 'heading "Actions: daflon/laboris" [level=1] [ref=f2e130]'
+      - generic [ref=f2e133]:
+        - generic [ref=f2e134]:
+          - heading "Actions" [level=2] [ref=f2e136]
+          - navigation "Actions Workflows" [ref=f2e140]:
+            - list [ref=f2e142]:
+              - listitem [ref=f2e143]:
+                - link "All workflows" [ref=f2e144] [cursor=pointer]:
+                  - /url: /daflon/laboris/actions
+              - listitem [ref=f2e146]
+              - listitem [ref=f2e147]:
+                - list "Workflows" [ref=f2e151]:
+                  - listitem [ref=f2e152]:
+                    - link "Database Backup" [ref=f2e153] [cursor=pointer]:
+                      - /url: /daflon/laboris/actions/workflows/backup.yml
+                  - listitem [ref=f2e155]:
+                    - link "Deploy to Render" [ref=f2e156] [cursor=pointer]:
+                      - /url: /daflon/laboris/actions/workflows/deploy.yml
+                  - listitem [ref=f2e158]:
+                    - link "pages-build-deployment" [ref=f2e159] [cursor=pointer]:
+                      - /url: /daflon/laboris/actions/workflows/pages/pages-build-deployment
+              - listitem [ref=f2e161]
+              - listitem [ref=f2e162]:
+                - generic [ref=f2e165]:
+                  - heading "Management" [level=3] [ref=f2e167]
+                  - list "Management" [ref=f2e168]:
+                    - listitem [ref=f2e169]:
+                      - link "Caches" [ref=f2e170] [cursor=pointer]:
+                        - /url: /daflon/laboris/actions/caches
+                    - listitem [ref=f2e172]:
+                      - link "Deployments" [ref=f2e173] [cursor=pointer]:
+                        - /url: /daflon/laboris/deployments
+        - generic [ref=f2e177]:
+          - generic [ref=f2e178]:
+            - generic [ref=f2e179]:
+              - heading "All workflows" [level=2] [ref=f2e181]
+              - search [ref=f2e187]:
+                - combobox "Filter workflow runs" [ref=f2e188]
+            - generic [ref=f2e189]: Showing runs from all workflows
+          - generic [ref=f2e190]:
+            - generic [ref=f2e191]:
+              - strong [ref=f2e194]: 113 workflow runs
+              - generic [ref=f2e195]:
+                - button "Workflow" [ref=f2e199] [cursor=pointer]
+                - button "Event" [ref=f2e205] [cursor=pointer]
+                - button "Status" [ref=f2e211] [cursor=pointer]
+                - button "Branch" [ref=f2e217] [cursor=pointer]
+                - button "Actor" [ref=f2e223] [cursor=pointer]
+            - generic [ref=f2e226]:
+              - generic [ref=f2e228]:
+                - generic [ref=f2e229]:
+                  - 'link "completed successfully: Run 8 of Deploy to Render. fix: remover middleware authenticate duplicado na rota faturamento (PDF)" [ref=f2e230] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31448879236
+                    - img "completed successfully:" [ref=f2e232]
+                    - generic [ref=f2e234]: "fix: remover middleware authenticate duplicado na rota faturamento (PDF)"
+                  - generic [ref=f2e235]:
+                    - text: "Deploy to Render #8:"
+                    - generic [ref=f2e236]:
+                      - text: Commit
+                      - link "80938ad" [ref=f2e237] [cursor=pointer]:
+                        - /url: /daflon/laboris/commit/80938ad0cdaf68f097e4b39d696be1b7c80e5ee3
+                      - text: pushed by
+                      - link "daflon" [ref=f2e238] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e240] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e242]:
+                  - generic [ref=f2e243]:
+                    - generic "Aug 10, 2026, 22:18 GMT-3" [ref=f2e248]: now
+                    - generic [ref=f2e249]:
+                      - img "Run duration" [ref=f2e250]
+                      - text: 6s
+                  - group [ref=f2e253]:
+                    - img "Show options" [ref=f2e255] [cursor=pointer]
+              - generic [ref=f2e258]:
+                - generic [ref=f2e259]:
+                  - 'link "queued: Run 74 of pages-build-deployment. pages build and deployment" [ref=f2e260] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31448878666
+                    - img "queued:" [ref=f2e262]
+                    - generic [ref=f2e264]: pages build and deployment
+                  - generic [ref=f2e265]:
+                    - text: "pages-build-deployment #74:"
+                    - generic [ref=f2e266]:
+                      - text: by
+                      - link "daflon" [ref=f2e267] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e269] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e272]:
+                  - generic "Aug 10, 2026, 22:18 GMT-3" [ref=f2e277]: now
+                  - generic [ref=f2e278]: Queued
+              - generic [ref=f2e282]:
+                - generic [ref=f2e283]:
+                  - 'link "completed successfully: Run 7 of Deploy to Render. fix: faturamento mobile nav e URL do PDF em produção" [ref=f2e284] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31448721273
+                    - img "completed successfully:" [ref=f2e286]
+                    - generic [ref=f2e288]: "fix: faturamento mobile nav e URL do PDF em produção"
+                  - generic [ref=f2e289]:
+                    - text: "Deploy to Render #7:"
+                    - generic [ref=f2e290]:
+                      - text: Commit
+                      - link "cf3546a" [ref=f2e291] [cursor=pointer]:
+                        - /url: /daflon/laboris/commit/cf3546a08e629ea415a8310dd1cef5055d7a45fa
+                      - text: pushed by
+                      - link "daflon" [ref=f2e292] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e294] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e296]:
+                  - generic [ref=f2e297]:
+                    - generic "Aug 10, 2026, 22:15 GMT-3" [ref=f2e302]: 3 minutes ago
+                    - generic [ref=f2e303]:
+                      - img "Run duration" [ref=f2e304]
+                      - text: 7s
+                  - group [ref=f2e307]:
+                    - img "Show options" [ref=f2e309] [cursor=pointer]
+              - generic [ref=f2e312]:
+                - generic [ref=f2e313]:
+                  - 'link "completed successfully: Run 73 of pages-build-deployment. pages build and deployment" [ref=f2e314] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31448720607
+                    - img "completed successfully:" [ref=f2e316]
+                    - generic [ref=f2e318]: pages build and deployment
+                  - generic [ref=f2e319]:
+                    - text: "pages-build-deployment #73:"
+                    - generic [ref=f2e320]:
+                      - text: by
+                      - link "daflon" [ref=f2e321] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e323] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e326]:
+                  - generic "Aug 10, 2026, 22:15 GMT-3" [ref=f2e331]: 3 minutes ago
+                  - generic [ref=f2e332]:
+                    - img "Run duration" [ref=f2e333]
+                    - text: 45s
+              - generic [ref=f2e336]:
+                - generic [ref=f2e337]:
+                  - 'link "completed successfully: Run 6 of Deploy to Render. fix: PDF faturamento com logo + remover emojis que nao renderizam" [ref=f2e338] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31443666584
+                    - img "completed successfully:" [ref=f2e340]
+                    - generic [ref=f2e342]: "fix: PDF faturamento com logo + remover emojis que nao renderizam"
+                  - generic [ref=f2e343]:
+                    - text: "Deploy to Render #6:"
+                    - generic [ref=f2e344]:
+                      - text: Commit
+                      - link "8a2d4de" [ref=f2e345] [cursor=pointer]:
+                        - /url: /daflon/laboris/commit/8a2d4de6ef6138e70b6614cb1567a939961cc80c
+                      - text: pushed by
+                      - link "daflon" [ref=f2e346] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e348] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e350]:
+                  - generic [ref=f2e351]:
+                    - generic "Aug 10, 2026, 20:47 GMT-3" [ref=f2e356]: Aug 10, 20:47 GMT-3
+                    - generic [ref=f2e357]:
+                      - img "Run duration" [ref=f2e358]
+                      - text: 14s
+                  - group [ref=f2e361]:
+                    - img "Show options" [ref=f2e363] [cursor=pointer]
+              - generic [ref=f2e366]:
+                - generic [ref=f2e367]:
+                  - 'link "completed successfully: Run 72 of pages-build-deployment. pages build and deployment" [ref=f2e368] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31443665670
+                    - img "completed successfully:" [ref=f2e370]
+                    - generic [ref=f2e372]: pages build and deployment
+                  - generic [ref=f2e373]:
+                    - text: "pages-build-deployment #72:"
+                    - generic [ref=f2e374]:
+                      - text: by
+                      - link "daflon" [ref=f2e375] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e377] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e380]:
+                  - generic "Aug 10, 2026, 20:47 GMT-3" [ref=f2e385]: Aug 10, 20:47 GMT-3
+                  - generic [ref=f2e386]:
+                    - img "Run duration" [ref=f2e387]
+                    - text: 42s
+              - generic [ref=f2e390]:
+                - generic [ref=f2e391]:
+                  - 'link "completed successfully: Run 5 of Deploy to Render. fix: /auth/me retornar tenant do impersonate + alinhamentos CSS fatur…" [ref=f2e392] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31432339130
+                    - img "completed successfully:" [ref=f2e394]
+                    - generic [ref=f2e396]: "fix: /auth/me retornar tenant do impersonate + alinhamentos CSS fatur…"
+                  - generic [ref=f2e397]:
+                    - text: "Deploy to Render #5:"
+                    - generic [ref=f2e398]:
+                      - text: Commit
+                      - link "07980e6" [ref=f2e399] [cursor=pointer]:
+                        - /url: /daflon/laboris/commit/07980e6f4cf87e01887f2098cf87dede6759cc74
+                      - text: pushed by
+                      - link "daflon" [ref=f2e400] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e402] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e404]:
+                  - generic [ref=f2e405]:
+                    - generic "Aug 10, 2026, 18:07 GMT-3" [ref=f2e410]: Aug 10, 18:07 GMT-3
+                    - generic [ref=f2e411]:
+                      - img "Run duration" [ref=f2e412]
+                      - text: 7s
+                  - group [ref=f2e415]:
+                    - img "Show options" [ref=f2e417] [cursor=pointer]
+              - generic [ref=f2e420]:
+                - generic [ref=f2e421]:
+                  - 'link "completed successfully: Run 71 of pages-build-deployment. pages build and deployment" [ref=f2e422] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31432338375
+                    - img "completed successfully:" [ref=f2e424]
+                    - generic [ref=f2e426]: pages build and deployment
+                  - generic [ref=f2e427]:
+                    - text: "pages-build-deployment #71:"
+                    - generic [ref=f2e428]:
+                      - text: by
+                      - link "daflon" [ref=f2e429] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e431] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e434]:
+                  - generic "Aug 10, 2026, 18:07 GMT-3" [ref=f2e439]: Aug 10, 18:07 GMT-3
+                  - generic [ref=f2e440]:
+                    - img "Run duration" [ref=f2e441]
+                    - text: 45s
+              - generic [ref=f2e444]:
+                - generic [ref=f2e445]:
+                  - 'link "completed successfully: Run 4 of Deploy to Render. fix: carregar modulos reais do tenant no impersonate" [ref=f2e446] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31431578929
+                    - img "completed successfully:" [ref=f2e448]
+                    - generic [ref=f2e450]: "fix: carregar modulos reais do tenant no impersonate"
+                  - generic [ref=f2e451]:
+                    - text: "Deploy to Render #4:"
+                    - generic [ref=f2e452]:
+                      - text: Commit
+                      - link "def3601" [ref=f2e453] [cursor=pointer]:
+                        - /url: /daflon/laboris/commit/def3601010d98d9c3d60cc1d80b07c0b24fa3b94
+                      - text: pushed by
+                      - link "daflon" [ref=f2e454] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e456] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e458]:
+                  - generic [ref=f2e459]:
+                    - generic "Aug 10, 2026, 17:57 GMT-3" [ref=f2e464]: Aug 10, 17:57 GMT-3
+                    - generic [ref=f2e465]:
+                      - img "Run duration" [ref=f2e466]
+                      - text: 6s
+                  - group [ref=f2e469]:
+                    - img "Show options" [ref=f2e471] [cursor=pointer]
+              - generic [ref=f2e474]:
+                - generic [ref=f2e475]:
+                  - 'link "completed successfully: Run 70 of pages-build-deployment. pages build and deployment" [ref=f2e476] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31431576397
+                    - img "completed successfully:" [ref=f2e478]
+                    - generic [ref=f2e480]: pages build and deployment
+                  - generic [ref=f2e481]:
+                    - text: "pages-build-deployment #70:"
+                    - generic [ref=f2e482]:
+                      - text: by
+                      - link "daflon" [ref=f2e483] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e485] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e488]:
+                  - generic "Aug 10, 2026, 17:57 GMT-3" [ref=f2e493]: Aug 10, 17:57 GMT-3
+                  - generic [ref=f2e494]:
+                    - img "Run duration" [ref=f2e495]
+                    - text: 36s
+              - generic [ref=f2e498]:
+                - generic [ref=f2e499]:
+                  - 'link "completed successfully: Run 3 of Deploy to Render. feat: modulo Faturamento com PDF (compacto, grafico, completo)" [ref=f2e500] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31430942724
+                    - img "completed successfully:" [ref=f2e502]
+                    - generic [ref=f2e504]: "feat: modulo Faturamento com PDF (compacto, grafico, completo)"
+                  - generic [ref=f2e505]:
+                    - text: "Deploy to Render #3:"
+                    - generic [ref=f2e506]:
+                      - text: Commit
+                      - link "d0abddb" [ref=f2e507] [cursor=pointer]:
+                        - /url: /daflon/laboris/commit/d0abddb3b173776ec719b29f2f5f1ffd73bd4296
+                      - text: pushed by
+                      - link "daflon" [ref=f2e508] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e510] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e512]:
+                  - generic [ref=f2e513]:
+                    - generic "Aug 10, 2026, 17:49 GMT-3" [ref=f2e518]: Aug 10, 17:49 GMT-3
+                    - generic [ref=f2e519]:
+                      - img "Run duration" [ref=f2e520]
+                      - text: 14s
+                  - group [ref=f2e523]:
+                    - img "Show options" [ref=f2e525] [cursor=pointer]
+              - generic [ref=f2e528]:
+                - generic [ref=f2e529]:
+                  - 'link "completed successfully: Run 69 of pages-build-deployment. pages build and deployment" [ref=f2e530] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31430939952
+                    - img "completed successfully:" [ref=f2e532]
+                    - generic [ref=f2e534]: pages build and deployment
+                  - generic [ref=f2e535]:
+                    - text: "pages-build-deployment #69:"
+                    - generic [ref=f2e536]:
+                      - text: by
+                      - link "daflon" [ref=f2e537] [cursor=pointer]:
+                        - /url: /daflon
+                - link "master" [ref=f2e539] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e542]:
+                  - generic "Aug 10, 2026, 17:49 GMT-3" [ref=f2e547]: Aug 10, 17:49 GMT-3
+                  - generic [ref=f2e548]:
+                    - img "Run duration" [ref=f2e549]
+                    - text: 41s
+              - generic [ref=f2e552]:
+                - generic [ref=f2e553]:
+                  - 'link "completed successfully: Run 68 of pages-build-deployment. pages build and deployment" [ref=f2e554] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31420203533
+                    - img "completed successfully:" [ref=f2e556]
+                    - generic [ref=f2e558]: pages build and deployment
+                  - generic [ref=f2e559]:
+                    - text: "pages-build-deployment #68:"
+                    - generic [ref=f2e560]:
+                      - text: by
+                      - link "github-pages" [ref=f2e561] [cursor=pointer]:
+                        - /url: /apps/github-pages
+                      - generic [ref=f2e562]: Bot
+                - link "master" [ref=f2e564] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e567]:
+                  - generic "Aug 10, 2026, 15:39 GMT-3" [ref=f2e572]: Aug 10, 15:39 GMT-3
+                  - generic [ref=f2e573]:
+                    - img "Run duration" [ref=f2e574]
+                    - text: 44s
+              - generic [ref=f2e577]:
+                - generic [ref=f2e578]:
+                  - 'link "completed successfully: Run 31 of Database Backup." [ref=f2e579] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31420165597
+                    - img "completed successfully:" [ref=f2e581]
+                    - generic [ref=f2e583]: Database Backup
+                  - generic [ref=f2e584]: "Database Backup #31: Scheduled"
+                - link "master" [ref=f2e586] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e588]:
+                  - generic [ref=f2e589]:
+                    - generic "Aug 10, 2026, 15:39 GMT-3" [ref=f2e594]: Aug 10, 15:39 GMT-3
+                    - generic [ref=f2e595]:
+                      - img "Run duration" [ref=f2e596]
+                      - text: 30s
+                  - group [ref=f2e599]:
+                    - img "Show options" [ref=f2e601] [cursor=pointer]
+              - generic [ref=f2e604]:
+                - generic [ref=f2e605]:
+                  - 'link "completed successfully: Run 67 of pages-build-deployment. pages build and deployment" [ref=f2e606] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31367933637
+                    - img "completed successfully:" [ref=f2e608]
+                    - generic [ref=f2e610]: pages build and deployment
+                  - generic [ref=f2e611]:
+                    - text: "pages-build-deployment #67:"
+                    - generic [ref=f2e612]:
+                      - text: by
+                      - link "github-pages" [ref=f2e613] [cursor=pointer]:
+                        - /url: /apps/github-pages
+                      - generic [ref=f2e614]: Bot
+                - link "master" [ref=f2e616] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e619]:
+                  - generic "Aug 10, 2026, 04:56 GMT-3" [ref=f2e624]: Aug 10, 04:56 GMT-3
+                  - generic [ref=f2e625]:
+                    - img "Run duration" [ref=f2e626]
+                    - text: 40s
+              - generic [ref=f2e629]:
+                - generic [ref=f2e630]:
+                  - 'link "completed successfully: Run 30 of Database Backup." [ref=f2e631] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31367912193
+                    - img "completed successfully:" [ref=f2e633]
+                    - generic [ref=f2e635]: Database Backup
+                  - generic [ref=f2e636]: "Database Backup #30: Scheduled"
+                - link "master" [ref=f2e638] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e640]:
+                  - generic [ref=f2e641]:
+                    - generic "Aug 10, 2026, 04:56 GMT-3" [ref=f2e646]: Aug 10, 04:56 GMT-3
+                    - generic [ref=f2e647]:
+                      - img "Run duration" [ref=f2e648]
+                      - text: 21s
+                  - group [ref=f2e651]:
+                    - img "Show options" [ref=f2e653] [cursor=pointer]
+              - generic [ref=f2e656]:
+                - generic [ref=f2e657]:
+                  - 'link "completed successfully: Run 66 of pages-build-deployment. pages build and deployment" [ref=f2e658] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31328828374
+                    - img "completed successfully:" [ref=f2e660]
+                    - generic [ref=f2e662]: pages build and deployment
+                  - generic [ref=f2e663]:
+                    - text: "pages-build-deployment #66:"
+                    - generic [ref=f2e664]:
+                      - text: by
+                      - link "github-pages" [ref=f2e665] [cursor=pointer]:
+                        - /url: /apps/github-pages
+                      - generic [ref=f2e666]: Bot
+                - link "master" [ref=f2e668] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e671]:
+                  - generic "Aug 9, 2026, 15:21 GMT-3" [ref=f2e676]: Aug 9, 15:21 GMT-3
+                  - generic [ref=f2e677]:
+                    - img "Run duration" [ref=f2e678]
+                    - text: 47s
+              - generic [ref=f2e681]:
+                - generic [ref=f2e682]:
+                  - 'link "completed successfully: Run 29 of Database Backup." [ref=f2e683] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31328811234
+                    - img "completed successfully:" [ref=f2e685]
+                    - generic [ref=f2e687]: Database Backup
+                  - generic [ref=f2e688]: "Database Backup #29: Scheduled"
+                - link "master" [ref=f2e690] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e692]:
+                  - generic [ref=f2e693]:
+                    - generic "Aug 9, 2026, 15:21 GMT-3" [ref=f2e698]: Aug 9, 15:21 GMT-3
+                    - generic [ref=f2e699]:
+                      - img "Run duration" [ref=f2e700]
+                      - text: 28s
+                  - group [ref=f2e703]:
+                    - img "Show options" [ref=f2e705] [cursor=pointer]
+              - generic [ref=f2e708]:
+                - generic [ref=f2e709]:
+                  - 'link "completed successfully: Run 65 of pages-build-deployment. pages build and deployment" [ref=f2e710] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31300446949
+                    - img "completed successfully:" [ref=f2e712]
+                    - generic [ref=f2e714]: pages build and deployment
+                  - generic [ref=f2e715]:
+                    - text: "pages-build-deployment #65:"
+                    - generic [ref=f2e716]:
+                      - text: by
+                      - link "github-pages" [ref=f2e717] [cursor=pointer]:
+                        - /url: /apps/github-pages
+                      - generic [ref=f2e718]: Bot
+                - link "master" [ref=f2e720] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e723]:
+                  - generic "Aug 9, 2026, 04:08 GMT-3" [ref=f2e728]: Aug 9, 04:08 GMT-3
+                  - generic [ref=f2e729]:
+                    - img "Run duration" [ref=f2e730]
+                    - text: 43s
+              - generic [ref=f2e733]:
+                - generic [ref=f2e734]:
+                  - 'link "completed successfully: Run 28 of Database Backup." [ref=f2e735] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31300434683
+                    - img "completed successfully:" [ref=f2e737]
+                    - generic [ref=f2e739]: Database Backup
+                  - generic [ref=f2e740]: "Database Backup #28: Scheduled"
+                - link "master" [ref=f2e742] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e744]:
+                  - generic [ref=f2e745]:
+                    - generic "Aug 9, 2026, 04:07 GMT-3" [ref=f2e750]: Aug 9, 04:07 GMT-3
+                    - generic [ref=f2e751]:
+                      - img "Run duration" [ref=f2e752]
+                      - text: 24s
+                  - group [ref=f2e755]:
+                    - img "Show options" [ref=f2e757] [cursor=pointer]
+              - generic [ref=f2e760]:
+                - generic [ref=f2e761]:
+                  - 'link "completed successfully: Run 64 of pages-build-deployment. pages build and deployment" [ref=f2e762] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31271648490
+                    - img "completed successfully:" [ref=f2e764]
+                    - generic [ref=f2e766]: pages build and deployment
+                  - generic [ref=f2e767]:
+                    - text: "pages-build-deployment #64:"
+                    - generic [ref=f2e768]:
+                      - text: by
+                      - link "github-pages" [ref=f2e769] [cursor=pointer]:
+                        - /url: /apps/github-pages
+                      - generic [ref=f2e770]: Bot
+                - link "master" [ref=f2e772] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e775]:
+                  - generic "Aug 8, 2026, 15:19 GMT-3" [ref=f2e780]: Aug 8, 15:19 GMT-3
+                  - generic [ref=f2e781]:
+                    - img "Run duration" [ref=f2e782]
+                    - text: 35s
+              - generic [ref=f2e785]:
+                - generic [ref=f2e786]:
+                  - 'link "completed successfully: Run 27 of Database Backup." [ref=f2e787] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31271632492
+                    - img "completed successfully:" [ref=f2e789]
+                    - generic [ref=f2e791]: Database Backup
+                  - generic [ref=f2e792]: "Database Backup #27: Scheduled"
+                - link "master" [ref=f2e794] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e796]:
+                  - generic [ref=f2e797]:
+                    - generic "Aug 8, 2026, 15:19 GMT-3" [ref=f2e802]: Aug 8, 15:19 GMT-3
+                    - generic [ref=f2e803]:
+                      - img "Run duration" [ref=f2e804]
+                      - text: 28s
+                  - group [ref=f2e807]:
+                    - img "Show options" [ref=f2e809] [cursor=pointer]
+              - generic [ref=f2e812]:
+                - generic [ref=f2e813]:
+                  - 'link "completed successfully: Run 63 of pages-build-deployment. pages build and deployment" [ref=f2e814] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31245379939
+                    - img "completed successfully:" [ref=f2e816]
+                    - generic [ref=f2e818]: pages build and deployment
+                  - generic [ref=f2e819]:
+                    - text: "pages-build-deployment #63:"
+                    - generic [ref=f2e820]:
+                      - text: by
+                      - link "github-pages" [ref=f2e821] [cursor=pointer]:
+                        - /url: /apps/github-pages
+                      - generic [ref=f2e822]: Bot
+                - link "master" [ref=f2e824] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e827]:
+                  - generic "Aug 8, 2026, 04:05 GMT-3" [ref=f2e832]: Aug 8, 04:05 GMT-3
+                  - generic [ref=f2e833]:
+                    - img "Run duration" [ref=f2e834]
+                    - text: 41s
+              - generic [ref=f2e837]:
+                - generic [ref=f2e838]:
+                  - 'link "completed successfully: Run 26 of Database Backup." [ref=f2e839] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31245364932
+                    - img "completed successfully:" [ref=f2e841]
+                    - generic [ref=f2e843]: Database Backup
+                  - generic [ref=f2e844]: "Database Backup #26: Scheduled"
+                - link "master" [ref=f2e846] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e848]:
+                  - generic [ref=f2e849]:
+                    - generic "Aug 8, 2026, 04:04 GMT-3" [ref=f2e854]: Aug 8, 04:04 GMT-3
+                    - generic [ref=f2e855]:
+                      - img "Run duration" [ref=f2e856]
+                      - text: 29s
+                  - group [ref=f2e859]:
+                    - img "Show options" [ref=f2e861] [cursor=pointer]
+              - generic [ref=f2e864]:
+                - generic [ref=f2e865]:
+                  - 'link "completed successfully: Run 62 of pages-build-deployment. pages build and deployment" [ref=f2e866] [cursor=pointer]':
+                    - /url: /daflon/laboris/actions/runs/31207758246
+                    - img "completed successfully:" [ref=f2e868]
+                    - generic [ref=f2e870]: pages build and deployment
+                  - generic [ref=f2e871]:
+                    - text: "pages-build-deployment #62:"
+                    - generic [ref=f2e872]:
+                      - text: by
+                      - link "github-pages" [ref=f2e873] [cursor=pointer]:
+                        - /url: /apps/github-pages
+                      - generic [ref=f2e874]: Bot
+                - link "master" [ref=f2e876] [cursor=pointer]:
+                  - /url: /daflon/laboris/tree/refs/heads/master
+                - generic [ref=f2e879]:
+                  - generic "Aug 7, 2026, 15:36 GMT-3" [ref=f2e884]: Aug 7, 15:36 GMT-3
+                  - generic [ref=f2e885]:
+                    - img "Run duration" [ref=f2e886]
+                    - text: 51s
+          - navigation "Pagination" [ref=f2e890]:
+            - generic "Previous page" [ref=f2e891]: Previous
+            - emphasis [ref=f2e892] [cursor=pointer]: "1"
+            - link "Page 2" [ref=f2e893] [cursor=pointer]:
+              - /url: /daflon/laboris/actions?page=2
+              - text: "2"
+            - link "Page 3" [ref=f2e894] [cursor=pointer]:
+              - /url: /daflon/laboris/actions?page=3
+              - text: "3"
+            - link "Page 4" [ref=f2e895] [cursor=pointer]:
+              - /url: /daflon/laboris/actions?page=4
+              - text: "4"
+            - link "Page 5" [ref=f2e896] [cursor=pointer]:
+              - /url: /daflon/laboris/actions?page=5
+              - text: "5"
+            - link "Next page" [ref=f2e897] [cursor=pointer]:
+              - /url: /daflon/laboris/actions?page=2
+              - text: Next

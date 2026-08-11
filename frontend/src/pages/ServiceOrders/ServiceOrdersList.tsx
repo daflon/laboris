@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { FiPlus, FiEye, FiEdit2, FiTrash2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { serviceOrdersService, ServiceOrder, STATUSES } from '../../services/serviceOrders.service';
+import { serviceOrdersService, ServiceOrder, STATUSES, getStatusEmoji } from '../../services/serviceOrders.service';
 import PageHeader from '../../components/PageHeader';
 import SearchInput from '../../components/SearchInput';
 import PinModal from '../../components/PinModal';
 import api from '../../services/api';
 
 function getStatusLabel(status: string) {
-  return STATUSES.find((s) => s.value === status)?.label || status;
+  const s = STATUSES.find((s) => s.value === status);
+  return s ? `${s.emoji} ${s.label}` : status;
 }
 
 function getStatusStyle(status: string) {
@@ -165,7 +166,7 @@ export default function ServiceOrdersList() {
         >
           <option value="all">Todos os status</option>
           {STATUSES.map((s) => (
-            <option key={s.value} value={s.value}>{s.label}</option>
+            <option key={s.value} value={s.value}>{s.emoji} {s.label}</option>
           ))}
         </select>
       </div>
@@ -234,7 +235,7 @@ export default function ServiceOrdersList() {
                       style={getStatusStyle(order.status)}
                     >
                       {STATUSES.map((s) => (
-                        <option key={s.value} value={s.value}>{s.label}</option>
+                        <option key={s.value} value={s.value}>{s.emoji} {s.label}</option>
                       ))}
                     </select>
                   </td>
