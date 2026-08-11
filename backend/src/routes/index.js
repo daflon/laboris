@@ -46,7 +46,8 @@ router.use('/pdf', authenticate, pdfRoutes);
 router.use('/admin', authenticate, adminRoutes);
 router.use('/search', authenticate, searchRoutes);
 router.use('/financeiro', authenticate, financeiroRoutes);
-router.use('/faturamento', authenticate, faturamentoRoutes);
+// Faturamento tem seu próprio middleware de auth que aceita token via query (para PDFs)
+router.use('/faturamento', faturamentoRoutes);
 
 // Rotas aninhadas
 router.get('/clients/:id/equipment', authenticate, equipmentController.findByClientId);
