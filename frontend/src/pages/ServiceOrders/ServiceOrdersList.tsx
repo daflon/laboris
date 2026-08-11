@@ -10,7 +10,7 @@ import api from '../../services/api';
 
 function getStatusLabel(status: string) {
   const s = STATUSES.find((s) => s.value === status);
-  return s ? `${s.emoji} ${s.label}` : status;
+  return s?.label || status;
 }
 
 function getStatusStyle(status: string) {

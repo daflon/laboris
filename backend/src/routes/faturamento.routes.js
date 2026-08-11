@@ -494,7 +494,10 @@ async function generateFaturamentoPDF(res, data) {
   doc.rect(40, yPos, 515, 18).fill('#1e40af');
   doc.fontSize(7).font('Helvetica-Bold').fillColor('#fff').text('TOTAL DO PERIODO', 50, yPos + 5).text(formatCurrency(totalFaturado), 480, yPos + 5, { width: 70, align: 'right' });
   
-  doc.fontSize(6).font('Helvetica').fillColor('#94a3b8').text('OS Laboris - Sistema de Gestao de Ordens de Servico', 40, 810).text('Pagina 1', 480, 810, { width: 70, align: 'right' });
+  // Rodapé - posicionar logo após o total, não em posição fixa
+  yPos += 30;
+  doc.fontSize(6).font('Helvetica').fillColor('#94a3b8').text('OS Laboris - Sistema de Gestao de Ordens de Servico', 40, yPos);
+  
   doc.end();
 }
 

@@ -82,7 +82,15 @@ export function getStatusEmoji(status: string): string {
 }
 
 /**
- * Retorna o label com emoji para um status
+ * Retorna o label SEM emoji (para usar em selects que já mostram emoji na option)
+ */
+export function getStatusLabel(status: string): string {
+  const found = STATUSES.find(s => s.value === status);
+  return found?.label || status;
+}
+
+/**
+ * Retorna o label COM emoji para badges e textos
  */
 export function getStatusLabelWithEmoji(status: string): string {
   const found = STATUSES.find(s => s.value === status);
