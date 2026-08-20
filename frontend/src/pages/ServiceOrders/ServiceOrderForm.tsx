@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FiPlus, FiTrash2, FiSave } from 'react-icons/fi';
 import toast from 'react-hot-toast';
@@ -58,6 +58,11 @@ export default function ServiceOrderForm() {
   const [showEquipmentModal, setShowEquipmentModal] = useState(false);
   const [showDraftBanner, setShowDraftBanner] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
+  
+  // Flag para controlar se estamos no carregamento inicial da edição
+  const isInitialLoadRef = useRef(isEditing);
+  // Guarda o equipment_id original para não perder durante troca de cliente
+  const originalEquipmentIdRef = useRef<string>('');
 
   // Carregar dados auxiliares
   useEffect(() => {
@@ -108,10 +113,23 @@ export default function ServiceOrderForm() {
   }, [clearDraft]);
 
   // Carregar equipamentos ao selecionar cliente
+  // CORREÇÃO: Não limpar equipment_id durante carregamento inicial da edição
   useEffect(() => {
     if (form.client_id) {
       equipmentService.getByClientId(form.client_id)
-        .then((res) => setEquipmentList(res.data))
+        .then((res) => {
+          setEquipmentList(res.data);
+          
+          // Se estamos no carregamento inicial e temos um equipment_id salvo,
+          // garantir que ele seja preservado
+          if (isInitialLoadRef.current && originalEquipmentIdRef.current) {
+            const equipmentExists = res.data.some((eq: Equipment) => eq.id === originalEquipmentIdRef.current);
+            if (equipmentExists) {
+              setForm(prev => ({ ...prev, equipment_id: originalEquipmentIdRef.current }));
+            }
+            isInitialLoadRef.current = false;
+          }
+        })
         .catch(() => setEquipmentList([]));
     } else {
       setEquipmentList([]);
@@ -119,12 +137,28 @@ export default function ServiceOrderForm() {
   }, [form.client_id]);
 
   // Carregar OS existente
+  // CORREÇÃO: Carregar equipamentos junto com a OS para evitar race condition
   useEffect(() => {
     if (isEditing) {
       setLoading(true);
       serviceOrdersService.getById(id!)
-        .then((response) => {
+        .then(async (response) => {
           const os = response.data;
+          
+          // Guardar equipment_id original
+          originalEquipmentIdRef.current = os.equipment_id;
+          
+          // Carregar equipamentos do cliente ANTES de setar o form
+          if (os.client_id) {
+            try {
+              const eqRes = await equipmentService.getByClientId(os.client_id);
+              setEquipmentList(eqRes.data);
+            } catch {
+              setEquipmentList([]);
+            }
+          }
+          
+          // Agora setar o form com todos os dados
           setForm({
             client_id: os.client_id,
             equipment_id: os.equipment_id,
@@ -141,7 +175,13 @@ export default function ServiceOrderForm() {
           });
         })
         .catch(() => toast.error('Erro ao carregar OS'))
-        .finally(() => setLoading(false));
+        .finally(() => {
+          setLoading(false);
+          // Marcar que carregamento inicial terminou (após um tick para garantir render)
+          setTimeout(() => {
+            isInitialLoadRef.current = false;
+          }, 100);
+        });
     }
   }, [id, isEditing]);
 
@@ -448,7 +488,12 @@ export default function ServiceOrderForm() {
         onClose={() => setShowClientModal(false)}
         onCreated={(newClient) => {
           setClients((prev) => [...prev, newClient as Client]);
-          setForm((prev) => ({ ...prev, client_id: newClient.id }));
+          // CORREÇÃO: Guardar equipment_id antes de trocar cliente
+          // Se o usuário está criando um novo cliente, provavelmente quer trocar
+          // então limpamos o equipamento (comportamento correto)
+          setForm((prev) => ({ ...prev, client_id: newClient.id, equipment_id: '' }));
+          // Limpar lista de equipamentos pois novo cliente não tem equipamentos
+          setEquipmentList([]);
         }}
       />
       <QuickEquipmentModal
