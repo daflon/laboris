@@ -29,7 +29,7 @@ export default function AddToLote() {
       setLoading(true);
       const [orderRes, techRes] = await Promise.all([
         serviceOrdersService.getById(id!),
-        techniciansService.list({ limit: 100 }),
+        techniciansService.list({ limit: 9999 }),
       ]);
       setOriginalOrder(orderRes.data);
       setTechnicians(techRes.data);
@@ -38,7 +38,7 @@ export default function AddToLote() {
       // Buscar equipamentos do mesmo cliente
       const eqRes = await equipmentService.list({ 
         client_id: orderRes.data.client_id, 
-        limit: 100 
+        limit: 9999 
       });
       // Filtrar equipamentos que já estão neste lote
       const usedEquipmentIds = [orderRes.data.equipment_id];

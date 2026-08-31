@@ -64,11 +64,11 @@ export default function ServiceOrderForm() {
   // Guarda o equipment_id original para não perder durante troca de cliente
   const originalEquipmentIdRef = useRef<string>('');
 
-  // Carregar dados auxiliares
+  // Carregar dados auxiliares (sem limite para selects)
   useEffect(() => {
     Promise.all([
-      clientsService.list({ limit: 200 }),
-      techniciansService.list({ status: 'active', limit: 200 }),
+      clientsService.list({ limit: 9999 }),
+      techniciansService.list({ status: 'active', limit: 9999 }),
     ]).then(([clientsRes, techRes]) => {
       setClients(clientsRes.data);
       setTechnicians(techRes.data);

@@ -27,7 +27,7 @@ export default function EquipmentForm() {
 
   useEffect(() => {
     // Carregar lista de clientes para o select
-    clientsService.list({ limit: 100 })
+    clientsService.list({ limit: 9999 })
       .then((response) => setClients(response.data))
       .catch(() => toast.error('Erro ao carregar clientes'));
 
