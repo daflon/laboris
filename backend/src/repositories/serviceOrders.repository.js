@@ -279,7 +279,15 @@ const serviceOrdersRepository = {
 
   async updateStatus(tenantId, id, status) {
     const updateData = { status, updated_at: new Date().toISOString() };
-    if (status === 'concluida') updateData.completion_date = new Date().toISOString().split('T')[0];
+    
+    // Auto-preencher completion_date quando status for concluida ou entregue
+    if (status === 'concluida' || status === 'entregue') {
+      // Verificar se já tem completion_date preenchido
+      const current = await db(TABLE).where({ id, tenant_id: tenantId }).first();
+      if (!current.completion_date) {
+        updateData.completion_date = new Date().toISOString().split('T')[0];
+      }
+    }
 
     await db(TABLE).where({ id, tenant_id: tenantId }).whereNull('deleted_at').update(updateData);
     return this.findById(tenantId, id);
