@@ -393,6 +393,20 @@ body {
   color: #991b1b;
 }
 
+.badge-gray {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.btn-icon-warning {
+  color: #d97706;
+}
+
+.btn-icon-warning:hover {
+  color: #b45309;
+  background: rgba(217, 119, 6, 0.1);
+}
+
 /* ===========================================
    PAGINATION
    =========================================== */

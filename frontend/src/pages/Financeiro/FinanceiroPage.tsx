@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FiPlus, FiCheck, FiTrash2, FiDollarSign, FiTrendingUp, FiTrendingDown, FiLink } from 'react-icons/fi';
+import { FiPlus, FiCheck, FiTrash2, FiDollarSign, FiTrendingUp, FiTrendingDown, FiLink, FiXCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { financeiroService, FinancialEntry, FinancialSummary } from '../../services/financeiro.service';
 import { serviceOrdersService, ServiceOrder, formatOrderNumber } from '../../services/serviceOrders.service';
@@ -68,20 +68,43 @@ export default function FinanceiroPage() {
     }
   };
 
-  const handlePay = async (id: string) => {
+  const handlePay = async (id: string, type: string) => {
     try {
       await financeiroService.markAsPaid(id);
-      toast.success('Marcado como pago');
+      toast.success(type === 'receita' ? 'Marcado como recebido' : 'Marcado como pago');
       loadData();
     } catch { toast.error('Erro'); }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleCancel = async (id: string) => {
+    if (!confirm('Tem certeza que deseja cancelar este lançamento? O registro será mantido para histórico.')) return;
     try {
-      await financeiroService.remove(id);
-      toast.success('Removido');
+      await financeiroService.cancel(id);
+      toast.success('Lançamento cancelado');
       loadData();
-    } catch { toast.error('Erro'); }
+    } catch { toast.error('Erro ao cancelar'); }
+  };
+
+  const handleDelete = async (entry: FinancialEntry) => {
+    // Se está vinculado a OS, não pode excluir - só cancelar
+    if (entry.service_order_id) {
+      toast.error('Lançamentos vinculados a OS não podem ser excluídos. Use cancelar.');
+      return;
+    }
+    
+    if (!confirm('Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita.')) return;
+    
+    try {
+      await financeiroService.remove(entry.id);
+      toast.success('Lançamento removido');
+      loadData();
+    } catch (error: any) {
+      if (error.response?.data?.error?.linked) {
+        toast.error('Lançamentos vinculados a OS não podem ser excluídos');
+      } else {
+        toast.error('Erro ao excluir');
+      }
+    }
   };
 
   return (
@@ -216,8 +239,13 @@ export default function FinanceiroPage() {
           <tbody>
             {entries.map((entry) => {
               const linkedOs = entry.service_order_id ? osMap.get(entry.service_order_id) : null;
+              const isCanceled = entry.status === 'cancelado';
+              const isPaid = entry.status === 'pago' || entry.status === 'recebido';
+              const statusLabel = entry.status === 'recebido' ? 'recebido' : entry.status === 'pago' ? 'pago' : entry.status;
+              const statusClass = isCanceled ? 'badge-gray' : isPaid ? 'badge-success' : 'badge-danger';
+              
               return (
-                <tr key={entry.id}>
+                <tr key={entry.id} style={{ opacity: isCanceled ? 0.5 : 1 }}>
                   <td>
                     <span style={{ color: entry.type === 'receita' ? '#10b981' : '#ef4444', fontWeight: 600 }}>
                       {entry.type === 'receita' ? '↑' : '↓'} {entry.type}
@@ -237,19 +265,30 @@ export default function FinanceiroPage() {
                   <td style={{ fontWeight: 600 }}>{formatCurrency(Number(entry.amount))}</td>
                   <td>{entry.due_date ? new Date(entry.due_date.split('T')[0] + 'T12:00:00').toLocaleDateString('pt-BR') : '—'}</td>
                   <td>
-                    <span className={`badge ${entry.status === 'pago' ? 'badge-success' : 'badge-danger'}`}>
-                      {entry.status}
+                    <span className={`badge ${statusClass}`}>
+                      {statusLabel}
                     </span>
                   </td>
                   <td className="actions-cell">
                     {entry.status === 'pendente' && (
-                      <button className="btn-icon" title="Marcar como pago" onClick={() => handlePay(entry.id)}>
+                      <button 
+                        className="btn-icon" 
+                        title={entry.type === 'receita' ? 'Marcar como recebido' : 'Marcar como pago'} 
+                        onClick={() => handlePay(entry.id, entry.type)}
+                      >
                         <FiCheck />
                       </button>
                     )}
-                    <button className="btn-icon btn-icon-danger" title="Excluir" onClick={() => handleDelete(entry.id)}>
-                      <FiTrash2 />
-                    </button>
+                    {!isCanceled && entry.service_order_id && (
+                      <button className="btn-icon btn-icon-warning" title="Cancelar (manter histórico)" onClick={() => handleCancel(entry.id)}>
+                        <FiXCircle />
+                      </button>
+                    )}
+                    {!entry.service_order_id && !isCanceled && (
+                      <button className="btn-icon btn-icon-danger" title="Excluir" onClick={() => handleDelete(entry)}>
+                        <FiTrash2 />
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

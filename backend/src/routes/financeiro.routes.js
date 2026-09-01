@@ -37,11 +37,12 @@ router.get('/resumo', async (req, res, next) => {
     const entries = await db('financial_entries')
       .where({ tenant_id: req.tenantId })
       .where('due_date', '>=', firstDay)
-      .where('due_date', '<=', lastDay);
+      .where('due_date', '<=', lastDay)
+      .whereNot('status', 'cancelado'); // Ignorar cancelados no resumo
 
     const totalReceitas = entries.filter((e) => e.type === 'receita').reduce((s, e) => s + parseFloat(e.amount), 0);
     const totalDespesas = entries.filter((e) => e.type === 'despesa').reduce((s, e) => s + parseFloat(e.amount), 0);
-    const totalPago = entries.filter((e) => e.status === 'pago').reduce((s, e) => s + parseFloat(e.amount) * (e.type === 'receita' ? 1 : -1), 0);
+    const totalPago = entries.filter((e) => e.status === 'pago' || e.status === 'recebido').reduce((s, e) => s + parseFloat(e.amount) * (e.type === 'receita' ? 1 : -1), 0);
     const totalPendente = entries.filter((e) => e.status === 'pendente').reduce((s, e) => s + parseFloat(e.amount), 0);
 
     res.json({
@@ -131,12 +132,34 @@ router.put('/:id', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-// Marcar como pago
+// Marcar como pago/recebido (dependendo do tipo)
 router.patch('/:id/pay', async (req, res, next) => {
+  try {
+    // Buscar o lançamento primeiro para saber o tipo
+    const existing = await db('financial_entries')
+      .where({ id: req.params.id, tenant_id: req.tenantId })
+      .first();
+    
+    if (!existing) return res.status(404).json({ success: false, error: { message: 'Lançamento não encontrado' } });
+    
+    // Status correto baseado no tipo: receita = recebido, despesa = pago
+    const newStatus = existing.type === 'receita' ? 'recebido' : 'pago';
+    
+    const [entry] = await db('financial_entries')
+      .where({ id: req.params.id, tenant_id: req.tenantId })
+      .update({ status: newStatus, paid_date: new Date().toISOString().split('T')[0], updated_at: new Date().toISOString() })
+      .returning('*');
+
+    res.json({ success: true, data: entry });
+  } catch (error) { next(error); }
+});
+
+// Cancelar lançamento (soft delete para lançamentos vinculados a OS)
+router.patch('/:id/cancel', async (req, res, next) => {
   try {
     const [entry] = await db('financial_entries')
       .where({ id: req.params.id, tenant_id: req.tenantId })
-      .update({ status: 'pago', paid_date: new Date().toISOString().split('T')[0], updated_at: new Date().toISOString() })
+      .update({ status: 'cancelado', updated_at: new Date().toISOString() })
       .returning('*');
 
     if (!entry) return res.status(404).json({ success: false, error: { message: 'Lançamento não encontrado' } });
@@ -144,14 +167,31 @@ router.patch('/:id/pay', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-// Excluir lançamento
+// Excluir lançamento (apenas lançamentos manuais sem vínculo com OS)
 router.delete('/:id', async (req, res, next) => {
   try {
-    const deleted = await db('financial_entries')
+    // Verificar se o lançamento existe e se está vinculado a uma OS
+    const entry = await db('financial_entries')
+      .where({ id: req.params.id, tenant_id: req.tenantId })
+      .first();
+    
+    if (!entry) return res.status(404).json({ success: false, error: { message: 'Lançamento não encontrado' } });
+    
+    // Bloquear exclusão de lançamentos vinculados a OS
+    if (entry.service_order_id) {
+      return res.status(400).json({ 
+        success: false, 
+        error: { 
+          message: 'Lançamentos vinculados a OS não podem ser excluídos. Use a opção de cancelar para manter o histórico.',
+          linked: true
+        } 
+      });
+    }
+    
+    await db('financial_entries')
       .where({ id: req.params.id, tenant_id: req.tenantId })
       .del();
 
-    if (!deleted) return res.status(404).json({ success: false, error: { message: 'Lançamento não encontrado' } });
     res.json({ success: true, data: { message: 'Lançamento removido' } });
   } catch (error) { next(error); }
 });

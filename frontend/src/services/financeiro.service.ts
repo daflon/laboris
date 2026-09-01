@@ -48,6 +48,11 @@ export const financeiroService = {
     return response.data;
   },
 
+  async cancel(id: string) {
+    const response = await api.patch(`/financeiro/${id}/cancel`);
+    return response.data;
+  },
+
   async remove(id: string) {
     const response = await api.delete(`/financeiro/${id}`);
     return response.data;
