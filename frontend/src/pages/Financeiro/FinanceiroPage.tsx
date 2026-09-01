@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { FiPlus, FiCheck, FiTrash2, FiDollarSign, FiTrendingUp, FiTrendingDown } from 'react-icons/fi';
+import { FiPlus, FiCheck, FiTrash2, FiDollarSign, FiTrendingUp, FiTrendingDown, FiLink } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { financeiroService, FinancialEntry, FinancialSummary } from '../../services/financeiro.service';
+import { serviceOrdersService, ServiceOrder, formatOrderNumber } from '../../services/serviceOrders.service';
 import PageHeader from '../../components/PageHeader';
 
 const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -18,17 +19,27 @@ export default function FinanceiroPage() {
   const [summary, setSummary] = useState<FinancialSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ type: 'receita', description: '', amount: '', due_date: now.toISOString().split('T')[0] });
+  const [form, setForm] = useState({ type: 'receita', description: '', amount: '', due_date: now.toISOString().split('T')[0], service_order_id: '' });
+  const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>([]);
+  const [osMap, setOsMap] = useState<Map<string, ServiceOrder>>(new Map());
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const [entriesRes, summaryRes] = await Promise.all([
+      const [entriesRes, summaryRes, osRes] = await Promise.all([
         financeiroService.list({ month, year }),
         financeiroService.getSummary({ month, year }),
+        serviceOrdersService.list({ limit: 10000 }),
       ]);
       setEntries(entriesRes.data);
       setSummary(summaryRes.data);
+      
+      // Criar mapa de OS para lookup rápido
+      const orders = osRes.data.data || osRes.data || [];
+      setServiceOrders(orders);
+      const map = new Map<string, ServiceOrder>();
+      orders.forEach((os: ServiceOrder) => map.set(os.id, os));
+      setOsMap(map);
     } catch {
       toast.error('Erro ao carregar financeiro');
     } finally {
@@ -46,10 +57,11 @@ export default function FinanceiroPage() {
         description: form.description,
         amount: parseFloat(form.amount),
         due_date: form.due_date,
+        service_order_id: form.service_order_id || undefined,
       });
       toast.success('Lançamento criado');
       setShowForm(false);
-      setForm({ type: 'receita', description: '', amount: '', due_date: now.toISOString().split('T')[0] });
+      setForm({ type: 'receita', description: '', amount: '', due_date: now.toISOString().split('T')[0], service_order_id: '' });
       loadData();
     } catch (error: any) {
       toast.error(error.response?.data?.error?.message || 'Erro ao criar lançamento');
@@ -133,7 +145,7 @@ export default function FinanceiroPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
                 <div className="form-group">
                   <label>Tipo</label>
-                  <select value={form.type} onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}>
+                  <select value={form.type} onChange={(e) => setForm((p) => ({ ...p, type: e.target.value, service_order_id: e.target.value === 'receita' ? '' : p.service_order_id }))}>
                     <option value="receita">Receita</option>
                     <option value="despesa">Despesa</option>
                   </select>
@@ -150,6 +162,29 @@ export default function FinanceiroPage() {
                   <label>Data de Vencimento</label>
                   <input type="date" value={form.due_date} onChange={(e) => setForm((p) => ({ ...p, due_date: e.target.value }))} />
                 </div>
+                {form.type === 'despesa' && (
+                  <div className="form-group">
+                    <label>OS Relacionada (opcional)</label>
+                    <select 
+                      value={form.service_order_id} 
+                      onChange={(e) => setForm((p) => ({ ...p, service_order_id: e.target.value }))}
+                    >
+                      <option value="">Nenhuma (despesa avulsa)</option>
+                      {serviceOrders
+                        .filter(os => os.status !== 'cancelada')
+                        .sort((a, b) => b.order_number - a.order_number)
+                        .map(os => (
+                          <option key={os.id} value={os.id}>
+                            OS #{formatOrderNumber(os)} - {os.client_name} ({os.equipment_type})
+                          </option>
+                        ))
+                      }
+                    </select>
+                    <small style={{ color: '#6b7280', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
+                      Vincule a despesa a uma OS para calcular o lucro real
+                    </small>
+                  </div>
+                )}
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancelar</button>
@@ -171,6 +206,7 @@ export default function FinanceiroPage() {
             <tr>
               <th>Tipo</th>
               <th>Descrição</th>
+              <th>OS</th>
               <th>Valor</th>
               <th>Vencimento</th>
               <th>Status</th>
@@ -178,33 +214,46 @@ export default function FinanceiroPage() {
             </tr>
           </thead>
           <tbody>
-            {entries.map((entry) => (
-              <tr key={entry.id}>
-                <td>
-                  <span style={{ color: entry.type === 'receita' ? '#10b981' : '#ef4444', fontWeight: 600 }}>
-                    {entry.type === 'receita' ? '↑' : '↓'} {entry.type}
-                  </span>
-                </td>
-                <td>{entry.description}</td>
-                <td style={{ fontWeight: 600 }}>{formatCurrency(Number(entry.amount))}</td>
-                <td>{entry.due_date ? new Date(entry.due_date.split('T')[0] + 'T12:00:00').toLocaleDateString('pt-BR') : '—'}</td>
-                <td>
-                  <span className={`badge ${entry.status === 'pago' ? 'badge-success' : 'badge-danger'}`}>
-                    {entry.status}
-                  </span>
-                </td>
-                <td className="actions-cell">
-                  {entry.status === 'pendente' && (
-                    <button className="btn-icon" title="Marcar como pago" onClick={() => handlePay(entry.id)}>
-                      <FiCheck />
+            {entries.map((entry) => {
+              const linkedOs = entry.service_order_id ? osMap.get(entry.service_order_id) : null;
+              return (
+                <tr key={entry.id}>
+                  <td>
+                    <span style={{ color: entry.type === 'receita' ? '#10b981' : '#ef4444', fontWeight: 600 }}>
+                      {entry.type === 'receita' ? '↑' : '↓'} {entry.type}
+                    </span>
+                  </td>
+                  <td>{entry.description}</td>
+                  <td>
+                    {linkedOs ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#6366f1', fontWeight: 500 }}>
+                        <FiLink size={12} />
+                        #{formatOrderNumber(linkedOs)}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#9ca3af' }}>—</span>
+                    )}
+                  </td>
+                  <td style={{ fontWeight: 600 }}>{formatCurrency(Number(entry.amount))}</td>
+                  <td>{entry.due_date ? new Date(entry.due_date.split('T')[0] + 'T12:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+                  <td>
+                    <span className={`badge ${entry.status === 'pago' ? 'badge-success' : 'badge-danger'}`}>
+                      {entry.status}
+                    </span>
+                  </td>
+                  <td className="actions-cell">
+                    {entry.status === 'pendente' && (
+                      <button className="btn-icon" title="Marcar como pago" onClick={() => handlePay(entry.id)}>
+                        <FiCheck />
+                      </button>
+                    )}
+                    <button className="btn-icon btn-icon-danger" title="Excluir" onClick={() => handleDelete(entry.id)}>
+                      <FiTrash2 />
                     </button>
-                  )}
-                  <button className="btn-icon btn-icon-danger" title="Excluir" onClick={() => handleDelete(entry.id)}>
-                    <FiTrash2 />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

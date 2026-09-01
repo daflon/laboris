@@ -112,10 +112,18 @@ router.post('/', async (req, res, next) => {
 // Editar lançamento
 router.put('/:id', async (req, res, next) => {
   try {
-    const { type, description, amount, due_date, status } = req.body;
+    const { type, description, amount, due_date, status, service_order_id } = req.body;
     const [entry] = await db('financial_entries')
       .where({ id: req.params.id, tenant_id: req.tenantId })
-      .update({ type, description, amount, due_date, status, updated_at: new Date().toISOString() })
+      .update({ 
+        type, 
+        description, 
+        amount, 
+        due_date, 
+        status, 
+        service_order_id: service_order_id || null,
+        updated_at: new Date().toISOString() 
+      })
       .returning('*');
 
     if (!entry) return res.status(404).json({ success: false, error: { message: 'Lançamento não encontrado' } });
