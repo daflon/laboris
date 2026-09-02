@@ -23,6 +23,112 @@ async function checkFinanceiroModule(req, res, next) {
 
 router.use(checkFinanceiroModule);
 
+// Relatório financeiro (semanal ou mensal)
+router.get('/relatorio', async (req, res, next) => {
+  try {
+    const { startDate, endDate } = req.query;
+    
+    if (!startDate || !endDate) {
+      return res.status(400).json({ success: false, error: { message: 'startDate e endDate são obrigatórios' } });
+    }
+
+    // Buscar lançamentos do período (exceto cancelados)
+    const entries = await db('financial_entries')
+      .where({ tenant_id: req.tenantId })
+      .where('due_date', '>=', startDate)
+      .where('due_date', '<=', endDate)
+      .whereNot('status', 'cancelado')
+      .orderBy('due_date', 'asc');
+
+    // Calcular totais
+    const receitas = entries.filter(e => e.type === 'receita');
+    const despesas = entries.filter(e => e.type === 'despesa');
+    
+    const totalReceitas = receitas.reduce((s, e) => s + parseFloat(e.amount), 0);
+    const totalDespesas = despesas.reduce((s, e) => s + parseFloat(e.amount), 0);
+    
+    const receitasRecebidas = receitas.filter(e => e.status === 'recebido').reduce((s, e) => s + parseFloat(e.amount), 0);
+    const receitasPendentes = receitas.filter(e => e.status === 'pendente').reduce((s, e) => s + parseFloat(e.amount), 0);
+    const despesasPagas = despesas.filter(e => e.status === 'pago').reduce((s, e) => s + parseFloat(e.amount), 0);
+    const despesasPendentes = despesas.filter(e => e.status === 'pendente').reduce((s, e) => s + parseFloat(e.amount), 0);
+
+    // Agrupar por dia para o gráfico
+    const dailyData = {};
+    entries.forEach(entry => {
+      const day = entry.due_date.toISOString().split('T')[0];
+      if (!dailyData[day]) {
+        dailyData[day] = { date: day, entradas: 0, saidas: 0 };
+      }
+      if (entry.type === 'receita') {
+        dailyData[day].entradas += parseFloat(entry.amount);
+      } else {
+        dailyData[day].saidas += parseFloat(entry.amount);
+      }
+    });
+
+    // Buscar período anterior para comparativo
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+    
+    const prevEnd = new Date(start);
+    prevEnd.setDate(prevEnd.getDate() - 1);
+    const prevStart = new Date(prevEnd);
+    prevStart.setDate(prevStart.getDate() - diffDays + 1);
+
+    const prevEntries = await db('financial_entries')
+      .where({ tenant_id: req.tenantId })
+      .where('due_date', '>=', prevStart.toISOString().split('T')[0])
+      .where('due_date', '<=', prevEnd.toISOString().split('T')[0])
+      .whereNot('status', 'cancelado');
+
+    const prevReceitas = prevEntries.filter(e => e.type === 'receita').reduce((s, e) => s + parseFloat(e.amount), 0);
+    const prevDespesas = prevEntries.filter(e => e.type === 'despesa').reduce((s, e) => s + parseFloat(e.amount), 0);
+    const prevSaldo = prevReceitas - prevDespesas;
+
+    // Calcular variação percentual
+    const saldo = totalReceitas - totalDespesas;
+    const variacaoReceitas = prevReceitas > 0 ? ((totalReceitas - prevReceitas) / prevReceitas * 100) : 0;
+    const variacaoDespesas = prevDespesas > 0 ? ((totalDespesas - prevDespesas) / prevDespesas * 100) : 0;
+    const variacaoSaldo = prevSaldo > 0 ? ((saldo - prevSaldo) / prevSaldo * 100) : 0;
+
+    res.json({
+      success: true,
+      data: {
+        periodo: { startDate, endDate },
+        resumo: {
+          totalReceitas,
+          totalDespesas,
+          saldo,
+          receitasRecebidas,
+          receitasPendentes,
+          despesasPagas,
+          despesasPendentes,
+        },
+        comparativo: {
+          variacaoReceitas: Math.round(variacaoReceitas),
+          variacaoDespesas: Math.round(variacaoDespesas),
+          variacaoSaldo: Math.round(variacaoSaldo),
+          periodoAnterior: {
+            startDate: prevStart.toISOString().split('T')[0],
+            endDate: prevEnd.toISOString().split('T')[0],
+          }
+        },
+        graficoDiario: Object.values(dailyData).sort((a, b) => a.date.localeCompare(b.date)),
+        lancamentos: entries.map(e => ({
+          id: e.id,
+          date: e.due_date,
+          type: e.type,
+          description: e.description,
+          status: e.status,
+          amount: parseFloat(e.amount),
+          service_order_id: e.service_order_id,
+        })),
+      },
+    });
+  } catch (error) { next(error); }
+});
+
 // Resumo (totais do mês)
 router.get('/resumo', async (req, res, next) => {
   try {

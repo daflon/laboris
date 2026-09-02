@@ -33,6 +33,11 @@ export const financeiroService = {
     return response.data;
   },
 
+  async getRelatorio(params: { startDate: string; endDate: string }) {
+    const response = await api.get('/financeiro/relatorio', { params });
+    return response.data;
+  },
+
   async create(data: { type: string; description: string; amount: number; due_date?: string; service_order_id?: string }) {
     const response = await api.post('/financeiro', data);
     return response.data;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { FiPlus, FiCheck, FiTrash2, FiDollarSign, FiTrendingUp, FiTrendingDown, FiLink, FiXCircle } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { FiPlus, FiCheck, FiTrash2, FiDollarSign, FiTrendingUp, FiTrendingDown, FiLink, FiXCircle, FiFileText } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { financeiroService, FinancialEntry, FinancialSummary } from '../../services/financeiro.service';
 import { serviceOrdersService, ServiceOrder, formatOrderNumber } from '../../services/serviceOrders.service';
@@ -12,6 +13,7 @@ function formatCurrency(value: number) {
 }
 
 export default function FinanceiroPage() {
+  const navigate = useNavigate();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -110,6 +112,9 @@ export default function FinanceiroPage() {
   return (
     <div>
       <PageHeader title="Financeiro">
+        <button className="btn btn-secondary" onClick={() => navigate('/financeiro/relatorio')}>
+          <FiFileText /> Relatório
+        </button>
         <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
           <FiPlus /> Novo Lançamento
         </button>
