@@ -27,6 +27,7 @@ export interface ServiceOrder {
   diagnosis?: string;
   notes?: string;
   payment_method?: string;
+  deposit_amount?: number;
   warranty_days: number;
   entry_date: string;
   completion_date?: string;
@@ -58,6 +59,7 @@ export interface ServiceOrderFormData {
   diagnosis?: string;
   notes?: string;
   payment_method?: string;
+  deposit_amount?: number;
   warranty_days?: number;
   entry_date?: string;
   completion_date?: string;

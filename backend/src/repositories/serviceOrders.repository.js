@@ -46,6 +46,7 @@ const serviceOrdersRepository = {
       diagnosis: data.diagnosis || null,
       notes: data.notes || null,
       payment_method: data.payment_method || null,
+      deposit_amount: data.deposit_amount || null,
       warranty_days: data.warranty_days ?? 90,
       entry_date: data.entry_date || new Date().toISOString().split('T')[0],
       completion_date: data.completion_date || null,
@@ -91,6 +92,7 @@ const serviceOrdersRepository = {
       diagnosis: data.diagnosis || null,
       notes: data.notes || null,
       payment_method: data.payment_method || null,
+      deposit_amount: data.deposit_amount || null,
       warranty_days: data.warranty_days ?? 90,
       entry_date: data.entry_date || new Date().toISOString().split('T')[0],
       completion_date: data.completion_date || null,
@@ -256,7 +258,7 @@ const serviceOrdersRepository = {
 
   async update(tenantId, id, data, items) {
     const updateData = { updated_at: new Date().toISOString() };
-    const fields = ['client_id', 'equipment_id', 'technician_id', 'status', 'reported_defect', 'diagnosis', 'notes', 'payment_method', 'warranty_days', 'entry_date', 'completion_date'];
+    const fields = ['client_id', 'equipment_id', 'technician_id', 'status', 'reported_defect', 'diagnosis', 'notes', 'payment_method', 'deposit_amount', 'warranty_days', 'entry_date', 'completion_date'];
     fields.forEach((f) => { if (data[f] !== undefined) updateData[f] = data[f] || null; });
 
     await db(TABLE).where({ id, tenant_id: tenantId }).whereNull('deleted_at').update(updateData);

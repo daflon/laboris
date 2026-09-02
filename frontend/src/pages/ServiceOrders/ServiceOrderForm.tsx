@@ -29,6 +29,7 @@ const emptyForm: ServiceOrderFormData = {
   diagnosis: '',
   notes: '',
   payment_method: '',
+  deposit_amount: undefined,
   warranty_days: 90,
   entry_date: new Date().toISOString().split('T')[0],
   completion_date: '',
@@ -168,6 +169,7 @@ export default function ServiceOrderForm() {
             diagnosis: os.diagnosis || '',
             notes: os.notes || '',
             payment_method: os.payment_method || '',
+            deposit_amount: os.deposit_amount || undefined,
             warranty_days: os.warranty_days ?? 90,
             entry_date: os.entry_date || '',
             completion_date: os.completion_date || '',
@@ -189,7 +191,11 @@ export default function ServiceOrderForm() {
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: name === 'warranty_days' ? parseInt(value) || 0 : value,
+      [name]: name === 'warranty_days' 
+        ? parseInt(value) || 0 
+        : name === 'deposit_amount'
+          ? (value === '' ? undefined : parseFloat(value) || 0)
+          : value,
     }));
   };
 
@@ -456,6 +462,23 @@ export default function ServiceOrderForm() {
         <div className="form-section">
           <h3>Pagamento e Garantia</h3>
           <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="deposit_amount">Sinal (R$)</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ color: '#64748b', fontSize: '0.9rem' }}>R$</span>
+                <input 
+                  id="deposit_amount" 
+                  name="deposit_amount" 
+                  type="number" 
+                  min="0" 
+                  step="0.01" 
+                  value={form.deposit_amount ?? ''} 
+                  onChange={handleChange} 
+                  placeholder="0,00"
+                  style={{ flex: 1 }}
+                />
+              </div>
+            </div>
             <div className="form-group">
               <label htmlFor="payment_method">Forma de Pagamento</label>
               <select id="payment_method" name="payment_method" value={form.payment_method} onChange={handleChange}>

@@ -84,6 +84,10 @@ export default function ServiceOrderDetails() {
       message += `\n💰 *VALOR TOTAL: R$ ${totalValue.toFixed(2)}*\n`;
     }
 
+    if (order.deposit_amount && order.deposit_amount > 0) {
+      message += `\n💵 *Sinal para realização do serviço: R$ ${Number(order.deposit_amount).toFixed(2)}*`;
+    }
+
     if (order.payment_method) {
       message += `\n💳 Pagamento: ${order.payment_method}`;
     }
@@ -391,6 +395,9 @@ export default function ServiceOrderDetails() {
         <div className="detail-section">
           <h3>Pagamento e Garantia</h3>
           <div className="detail-grid">
+            {order.deposit_amount && order.deposit_amount > 0 && (
+              <div><strong>Sinal:</strong> <span style={{ color: '#059669', fontWeight: 600 }}>R$ {Number(order.deposit_amount).toFixed(2)}</span></div>
+            )}
             <div><strong>Forma de Pagamento:</strong> {order.payment_method || 'A combinar'}</div>
             <div><strong>Garantia:</strong> {order.warranty_days} dias</div>
           </div>
