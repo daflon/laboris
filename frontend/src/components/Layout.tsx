@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign, FiAlertTriangle, FiBarChart2 } from 'react-icons/fi';
+import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign, FiAlertTriangle, FiBarChart2, FiMoreHorizontal, FiX } from 'react-icons/fi';
 import api from '../services/api';
 import { authService } from '../services/auth.service';
 import GlobalSearch from './GlobalSearch';
@@ -13,6 +13,7 @@ export default function Layout() {
   const [companyName, setCompanyName] = useState('');
   const [companyLogo, setCompanyLogo] = useState('');
   const [impersonatingTenant, setImpersonatingTenant] = useState<string | null>(null);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const isMasterImpersonating = !!localStorage.getItem('master_token');
 
   useEffect(() => {
@@ -215,22 +216,78 @@ export default function Layout() {
           <FiUsers />
           <span>Clientes</span>
         </NavLink>
-        {modules.includes('faturamento') ? (
-          <NavLink to="/faturamento" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
-            <FiBarChart2 />
-            <span>Fatur.</span>
-          </NavLink>
-        ) : (
-          <NavLink to="/tecnicos" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
-            <FiTool />
-            <span>Técnicos</span>
+        {modules.includes('financeiro') && (
+          <NavLink to="/financeiro" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
+            <FiDollarSign />
+            <span>Financ.</span>
           </NavLink>
         )}
-        <NavLink to="/configuracoes" className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}>
-          <FiSettings />
-          <span>Config</span>
-        </NavLink>
+        <button 
+          className={`mobile-nav-link ${showMobileMenu ? 'active' : ''}`}
+          onClick={() => setShowMobileMenu(true)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+        >
+          <FiMoreHorizontal />
+          <span>Mais</span>
+        </button>
       </nav>
+
+      {/* Mobile menu drawer */}
+      {showMobileMenu && (
+        <>
+          <div 
+            className="mobile-menu-overlay"
+            onClick={() => setShowMobileMenu(false)}
+          />
+          <div className="mobile-menu-drawer">
+            <div className="mobile-menu-header">
+              <h3>Menu</h3>
+              <button onClick={() => setShowMobileMenu(false)} className="mobile-menu-close">
+                <FiX />
+              </button>
+            </div>
+            <div className="mobile-menu-items">
+              {modules.includes('faturamento') && (
+                <NavLink 
+                  to="/faturamento" 
+                  className="mobile-menu-item"
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  <FiBarChart2 /> Faturamento
+                </NavLink>
+              )}
+              <NavLink 
+                to="/tecnicos" 
+                className="mobile-menu-item"
+                onClick={() => setShowMobileMenu(false)}
+              >
+                <FiTool /> Técnicos
+              </NavLink>
+              <NavLink 
+                to="/equipamentos" 
+                className="mobile-menu-item"
+                onClick={() => setShowMobileMenu(false)}
+              >
+                <FiMonitor /> Equipamentos
+              </NavLink>
+              <NavLink 
+                to="/configuracoes" 
+                className="mobile-menu-item"
+                onClick={() => setShowMobileMenu(false)}
+              >
+                <FiSettings /> Configurações
+              </NavLink>
+              <button 
+                onClick={() => { setShowMobileMenu(false); handleLogout(); }} 
+                className="mobile-menu-item"
+                style={{ color: '#dc2626' }}
+              >
+                <FiLogOut /> Sair
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
