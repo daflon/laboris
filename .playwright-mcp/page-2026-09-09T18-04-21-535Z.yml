@@ -1,0 +1,84 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Laboris Global home" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "Laboris Global" [ref=e6]
+      - navigation "Primary" [ref=e7]:
+        - link "About Us" [ref=e9] [cursor=pointer]:
+          - /url: /about-us
+        - link "Partners" [ref=e12] [cursor=pointer]:
+          - /url: /partners
+        - link "Learners" [ref=e15] [cursor=pointer]:
+          - /url: /learners
+        - link "Our Solutions" [ref=e18] [cursor=pointer]:
+          - /url: /our-solutions
+        - link "Contact Us" [ref=e21] [cursor=pointer]:
+          - /url: /contact-us
+      - generic [ref=e23]:
+        - link "Login" [ref=e24] [cursor=pointer]:
+          - /url: https://lms.laborisglobal.com/login
+        - link "Register" [ref=e25] [cursor=pointer]:
+          - /url: https://lms.laborisglobal.com/login
+  - main [ref=e26]:
+    - generic [ref=e28]:
+      - heading "404" [level=1] [ref=e29]
+      - heading "This page could not be found." [level=2] [ref=e31]
+  - contentinfo [ref=e32]:
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - img "Laboris Global" [ref=e36]
+        - paragraph [ref=e37]: We're on a mission to deliver engaging, curated courses that bridge the gap between education and employment.
+        - generic [ref=e38]:
+          - link "Facebook" [ref=e39] [cursor=pointer]:
+            - /url: https://www.facebook.com/people/Laboris-Global/61556463772092/
+          - link "Twitter" [ref=e42] [cursor=pointer]:
+            - /url: https://twitter.com/LaborisGlobal
+          - link "Instagram" [ref=e45] [cursor=pointer]:
+            - /url: https://www.instagram.com/laborisglobal/
+          - link "LinkedIn" [ref=e48] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/laboris-global/
+      - generic [ref=e51]:
+        - heading "Our Links" [level=3] [ref=e52]
+        - list [ref=e53]:
+          - listitem [ref=e54]:
+            - link "Our Approach" [ref=e55] [cursor=pointer]:
+              - /url: /our-approach
+          - listitem [ref=e56]:
+            - link "Our Team" [ref=e57] [cursor=pointer]:
+              - /url: /our-team
+          - listitem [ref=e58]:
+            - link "Our Methodology" [ref=e59] [cursor=pointer]:
+              - /url: /methodology
+          - listitem [ref=e60]:
+            - link "Contact Us" [ref=e61] [cursor=pointer]:
+              - /url: /contact-us
+      - generic [ref=e62]:
+        - heading "Explore" [level=3] [ref=e63]
+        - list [ref=e64]:
+          - listitem [ref=e65]:
+            - link "All Courses" [ref=e66] [cursor=pointer]:
+              - /url: /courses
+          - listitem [ref=e67]:
+            - link "Partners" [ref=e68] [cursor=pointer]:
+              - /url: /partners
+          - listitem [ref=e69]:
+            - link "Our Solutions" [ref=e70] [cursor=pointer]:
+              - /url: /our-solutions
+          - listitem [ref=e71]:
+            - link "About Us" [ref=e72] [cursor=pointer]:
+              - /url: /about-us
+      - generic [ref=e73]:
+        - heading "Get in Touch" [level=3] [ref=e74]
+        - generic [ref=e75]:
+          - paragraph [ref=e76]: 2727 Steeles Ave West, Unit 103-739Toronto, Ontario, M3J 3G9Canada
+          - paragraph [ref=e77]:
+            - link "info@laborisglobal.com" [ref=e78] [cursor=pointer]:
+              - /url: mailto:info@laborisglobal.com
+          - paragraph [ref=e79]:
+            - link "+1 613 416 3458" [ref=e80] [cursor=pointer]:
+              - /url: tel:+16134163458
+    - paragraph [ref=e82]: © 2026 Laboris Global. All Rights Reserved.
+  - alert [ref=e83]

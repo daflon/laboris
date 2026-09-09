@@ -1,0 +1,18 @@
+- generic [ref=f1e2]:
+  - status [ref=f1e21]: Email ou senha incorretos
+  - generic [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - heading "OS Laboris" [level=1] [ref=f1e6]
+      - paragraph [ref=f1e7]: Sistema de Ordem de Serviço
+    - generic [ref=f1e8]:
+      - generic [ref=f1e9]:
+        - generic [ref=f1e10]: Email
+        - textbox "Email" [ref=f1e11]:
+          - /placeholder: seu@email.com
+          - text: master@oslaboris.com
+      - generic [ref=f1e12]:
+        - generic [ref=f1e13]: Senha
+        - textbox "Senha" [ref=f1e14]:
+          - /placeholder: ••••••••
+          - text: M@ster2024!
+      - button "Entrar" [ref=f1e15] [cursor=pointer]
