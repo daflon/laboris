@@ -22,6 +22,22 @@ app.get('/health', publicLimiter, (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Diagnóstico temporário - verificar estrutura do banco
+app.get('/api/v1/debug/columns', async (req, res) => {
+  try {
+    const db = require('./database/connection');
+    const columns = await db.raw(`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'service_orders' 
+      ORDER BY ordinal_position
+    `);
+    res.json({ columns: columns.rows });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Servir frontend em produção
 if (process.env.NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '..', '..', 'frontend', 'dist');
