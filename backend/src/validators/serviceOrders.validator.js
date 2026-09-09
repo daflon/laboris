@@ -19,6 +19,9 @@ const createServiceOrderSchema = z.object({
   diagnosis: z.string().optional().or(z.literal('')),
   notes: z.string().optional().or(z.literal('')),
   payment_method: z.enum(VALID_PAYMENTS).optional().or(z.literal('')),
+  deposit_amount: z.union([z.number(), z.string(), z.null()])
+    .optional()
+    .transform((val) => (val === '' || val === null || val === undefined) ? null : Number(val)),
   warranty_days: z.number().int().min(0).optional().default(90),
   entry_date: z.string().optional(),
   completion_date: z.string().optional().or(z.literal('')),
