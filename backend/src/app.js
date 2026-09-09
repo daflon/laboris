@@ -38,6 +38,21 @@ app.get('/api/v1/debug/columns', async (req, res) => {
   }
 });
 
+// Diagnóstico - ver dados de uma OS específica
+app.get('/api/v1/debug/os/:id', async (req, res) => {
+  try {
+    const db = require('./database/connection');
+    const os = await db('service_orders').where({ id: req.params.id }).first();
+    res.json({ 
+      os,
+      deposit_amount_value: os?.deposit_amount,
+      deposit_amount_type: typeof os?.deposit_amount
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Servir frontend em produção
 if (process.env.NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '..', '..', 'frontend', 'dist');
