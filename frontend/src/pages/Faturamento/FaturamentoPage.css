@@ -63,10 +63,10 @@
 
 /* Seções */
 .faturamento-section {
-  background: var(--bg-card, #fff);
+  background: var(--color-bg-card);
   border-radius: 12px;
   padding: 1.25rem;
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
+  box-shadow: var(--shadow-card);
 }
 
 .faturamento-lista {
@@ -76,7 +76,7 @@
 .section-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-primary, #1e293b);
+  color: var(--color-text);
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
@@ -84,7 +84,7 @@
 }
 
 .section-title svg {
-  color: var(--primary, #2563eb);
+  color: var(--color-primary);
 }
 
 /* Gráfico de barras */
@@ -103,7 +103,7 @@
 .chart-label {
   width: 35px;
   font-size: 0.75rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--color-text-muted);
   flex-shrink: 0;
   text-align: right;
 }
@@ -111,7 +111,7 @@
 .chart-bar-bg {
   flex: 1;
   height: 24px;
-  background: var(--bg-muted, #f1f5f9);
+  background: var(--color-bg-hover);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -146,7 +146,7 @@
   display: flex;
   align-items: center;
   padding: 0.75rem;
-  background: var(--bg-muted, #f8fafc);
+  background: var(--color-bg-hover);
   border-radius: 8px;
   gap: 0.5rem;
 }
@@ -160,13 +160,13 @@
 .tech-name {
   flex: 1;
   font-weight: 500;
-  color: var(--text-primary, #1e293b);
+  color: var(--color-text);
   font-size: 0.9rem;
 }
 
 .tech-os {
   font-size: 0.8rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--color-text-muted);
   margin-right: 0.75rem;
 }
 
@@ -180,7 +180,7 @@
 .faturamento-section .empty-text {
   text-align: center;
   padding: 2rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--color-text-muted);
   font-style: italic;
 }
 
@@ -208,7 +208,7 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: var(--bg-muted, #f8fafc);
+  background: var(--color-bg-hover);
   border: 2px solid transparent;
   border-radius: 10px;
   cursor: pointer;
@@ -217,8 +217,8 @@
 }
 
 .pdf-option:hover {
-  border-color: var(--primary, #2563eb);
-  background: #eff6ff;
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
 }
 
 .pdf-option-icon {
@@ -233,12 +233,12 @@
 
 .pdf-option-info strong {
   font-size: 0.95rem;
-  color: var(--text-primary, #1e293b);
+  color: var(--color-text);
 }
 
 .pdf-option-info span {
   font-size: 0.8rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--color-text-muted);
 }
 
 /* Responsividade */
