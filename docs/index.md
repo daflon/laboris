@@ -3,7 +3,7 @@ layout: default
 title: Home
 ---
 
-_Última sincronização: 03/08/2026_
+_Última sincronização: 19/08/2026_
 
 # OS Laboris
 
@@ -40,9 +40,10 @@ O OS Laboris é um sistema **SaaS (Software as a Service)** onde cada empresa (t
 - Numeração sequencial automática (#0001, #0002...)
 - Vinculação: Cliente → Equipamento → Técnico
 - Tabela de itens com cálculo automático de valores
+- **Campo Sinal:** valor de entrada/depósito separado da forma de pagamento
 - 6 status: Aberta, Avisada, Aguardando Peça, Concluída, Entregue, Cancelada
 - Geração de PDF profissional (2 vias em A4)
-- Integração WhatsApp com mensagem pré-formatada
+- Integração WhatsApp com mensagem pré-formatada (inclui sinal quando informado)
 - Botão "Duplicar OS"
 - Indicador visual ⏰ para OS antigas
 
@@ -68,8 +69,12 @@ O OS Laboris é um sistema **SaaS (Software as a Service)** onde cada empresa (t
 - Ranking de produtividade no dashboard
 
 ### 💰 Módulo Financeiro
-- Lançamentos automáticos quando OS é concluída/entregue
-- Resumo mensal de faturamento
+- Lançamentos como **pendente** quando OS é concluída (não soma no saldo até baixa manual)
+- Resumo financeiro inteligente:
+  - **Saldo Real:** dinheiro efetivamente em caixa (recebido - pago)
+  - **A Receber:** OS concluídas com pagamento pendente
+  - **A Pagar:** despesas pendentes
+  - **Saldo Previsto:** projeção incluindo pendentes
 - Status: pendente, pago
 - Controle por tenant
 
@@ -150,6 +155,7 @@ O sistema é um **Progressive Web App** completo:
 - ✅ Abre em tela cheia (sem barra do navegador)
 - ✅ Responsivo para tablet e celular
 - ✅ Bottom tab bar fixa no mobile
+- ✅ Menu mobile com acesso a Financeiro, Faturamento, Técnicos e Equipamentos
 
 **Como instalar:**
 1. Acesse o sistema pelo Chrome no celular
@@ -164,7 +170,7 @@ O sistema é um **Progressive Web App** completo:
 - [API Reference](api)
 - [Arquitetura](arquitetura)
 - [Roadmap](roadmap)
-- [Manual Completo](manual-completo)
+- [Playbook de Desenvolvimento](playbook)
 
 ---
 

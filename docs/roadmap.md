@@ -3,7 +3,7 @@ layout: default
 title: Roadmap
 ---
 
-_Última sincronização: 03/08/2026_
+_Última sincronização: 19/08/2026_
 
 # 🗺️ Roadmap — OS Laboris
 
@@ -95,9 +95,7 @@ Acompanhe a evolução do sistema.
 
 ---
 
-## 📋 Etapa 7 — Melhorias Pós-deploy
-
-Em andamento e planejadas:
+## ✅ Etapa 7 — Melhorias Pós-deploy
 
 - [x] UI Polish (design tokens CSS, tipografia Inter, badges pill)
 - [x] Upload de logo da empresa (Base64, até 200KB)
@@ -113,9 +111,7 @@ Em andamento e planejadas:
 
 ---
 
-## ☁️ Etapa 8 — Segurança e Acessibilidade
-
-Melhorias de segurança e conformidade WCAG:
+## ✅ Etapa 8 — Segurança e Acessibilidade
 
 - [x] Backup automático do banco com retenção (GitHub Actions, 30 dias)
 - [x] Rate limiting no PIN (5 tentativas, cooldown 5 min, por tenant+IP)
@@ -131,31 +127,46 @@ Melhorias de segurança e conformidade WCAG:
 - [x] Monitoramento de uptime (integração com UptimeRobot API)
 - [x] Logs centralizados (UptimeRobot + Audit Log interno)
 - [x] Rate limiting global na API (proteção contra DDoS)
-- [ ] CDN para assets estáticos
+
+---
+
+## ✅ Etapa 9 — Financeiro Inteligente e Mobile
+
+- [x] Campo "Sinal" (deposit_amount) na OS para valor de entrada/depósito
+- [x] Sinal exibido nos detalhes da OS e na mensagem do WhatsApp
+- [x] Lançamento financeiro como "pendente" (não soma no saldo até baixa manual)
+- [x] Resumo financeiro com 4 indicadores:
+  - Saldo Real (dinheiro efetivo em caixa)
+  - A Receber (OS concluídas pendentes de pagamento)
+  - A Pagar (despesas pendentes)
+  - Saldo Previsto (projeção incluindo pendentes)
+- [x] Menu mobile PWA com acesso a Financeiro
+- [x] Drawer "Mais" no mobile com Faturamento, Técnicos e Equipamentos
 
 ---
 
 ## 💡 Ideias Futuras (v2)
 
-- Controle de pagamentos na OS (parcelas, status pago/pendente)
-- Relatório de OS por técnico (produtividade)
-- Relatório mensal de faturamento por tenant (Master)
-- Financeiro expandido: despesas, categorias, fluxo de caixa
-- Exportação de relatórios (PDF ou CSV)
-- QR Code para consulta de status da OS
-- Tema escuro (dark mode total)
-- Identidade visual Amber (cor da marca, migração de tema)
-- Logo em storage externo (S3/Cloudinary) em vez de Base64
-- Planos pagos / cobrança automática (Stripe/Mercado Pago)
-- Cadastro self-service (cliente cria conta sozinho)
-- Foto do equipamento na entrada
-- Notificação por email quando OS muda de status
-- Integração com gateway de pagamento
-- Controle de estoque de peças
-- Agenda de atendimento por técnico
-- Backup com restauração pelo painel master
-- Refresh token para sessões longas (alternativa ao localStorage draft)
-- Compartilhar PDF via celular (Web Share API - já funciona em alguns dispositivos)
+- [ ] CDN para assets estáticos
+- [ ] Controle de pagamentos na OS (parcelas, status pago/pendente)
+- [ ] Relatório de OS por técnico (produtividade)
+- [ ] Relatório mensal de faturamento por tenant (Master)
+- [ ] Financeiro expandido: despesas, categorias, fluxo de caixa
+- [ ] Exportação de relatórios (PDF ou CSV)
+- [ ] QR Code para consulta de status da OS
+- [ ] Tema escuro (dark mode total)
+- [ ] Identidade visual Amber (cor da marca, migração de tema)
+- [ ] Logo em storage externo (S3/Cloudinary) em vez de Base64
+- [ ] Planos pagos / cobrança automática (Stripe/Mercado Pago)
+- [ ] Cadastro self-service (cliente cria conta sozinho)
+- [ ] Foto do equipamento na entrada
+- [ ] Notificação por email quando OS muda de status
+- [ ] Integração com gateway de pagamento
+- [ ] Controle de estoque de peças
+- [ ] Agenda de atendimento por técnico
+- [ ] Backup com restauração pelo painel master
+- [ ] Refresh token para sessões longas (alternativa ao localStorage draft)
+- [ ] Compartilhar PDF via celular (Web Share API - já funciona em alguns dispositivos)
 
 ---
 
@@ -164,8 +175,6 @@ Melhorias de segurança e conformidade WCAG:
 | Ícone | Significado |
 |-------|-------------|
 | ✅ | Concluída |
-| 📋 | Em andamento / Planejada |
-| ☁️ | Infraestrutura futura |
 | 💡 | Ideias para o futuro |
 
 ---

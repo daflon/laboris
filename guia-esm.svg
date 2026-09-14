@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 900" width="400" height="900">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 960" width="400" height="960">
   <defs>
     <style>
       .bg { fill: #1e293b; }
@@ -11,6 +11,7 @@
       .text-sm { font-family: Arial, sans-serif; font-size: 11px; fill: #64748b; }
       .accent { fill: #3b82f6; }
       .green { fill: #10b981; }
+      .amber { fill: #f59e0b; }
       .badge { font-family: Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #ffffff; }
       .step-num { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #ffffff; }
       .code { font-family: monospace; font-size: 13px; fill: #1e293b; font-weight: bold; }
@@ -19,7 +20,7 @@
   </defs>
 
   <!-- Background -->
-  <rect width="400" height="900" class="bg"/>
+  <rect width="400" height="960" class="bg"/>
 
   <!-- Header -->
   <text x="200" y="40" text-anchor="middle" class="title">OS Laboris</text>
@@ -48,7 +49,7 @@
   <text x="40" y="344" class="text">3. Pronto! Abre como app, sem barra do Chrome</text>
 
   <!-- Card: Fluxo -->
-  <rect x="20" y="366" width="360" height="340" class="card"/>
+  <rect x="20" y="366" width="360" height="380" class="card"/>
   <text x="40" y="394" class="heading">📋 Fluxo de Trabalho</text>
   <line x1="40" y1="404" x2="360" y2="404" class="divider"/>
 
@@ -62,40 +63,48 @@
   <circle cx="50" cy="478" r="12" class="accent"/>
   <text x="50" y="483" text-anchor="middle" class="step-num">2</text>
   <text x="70" y="483" class="text">Descrever defeito + adicionar itens/valores</text>
+  <text x="70" y="498" class="text-sm">Campo "Sinal" para valor de entrada (opcional)</text>
 
   <!-- Step 3 -->
-  <circle cx="50" cy="518" r="12" class="accent"/>
-  <text x="50" y="523" text-anchor="middle" class="step-num">3</text>
-  <text x="70" y="523" class="text">Mudar status conforme andamento:</text>
-  <text x="70" y="540" class="text-sm">Aberta → Aprovada → Aguardando Peça → Concluída → Entregue</text>
+  <circle cx="50" cy="526" r="12" class="accent"/>
+  <text x="50" y="531" text-anchor="middle" class="step-num">3</text>
+  <text x="70" y="531" class="text">Mudar status conforme andamento:</text>
+  <text x="70" y="548" class="text-sm">Aberta → Avisada → Aguardando Peça → Concluída → Entregue</text>
 
   <!-- Step 4 -->
-  <circle cx="50" cy="568" r="12" class="accent"/>
-  <text x="50" y="573" text-anchor="middle" class="step-num">4</text>
-  <text x="70" y="573" class="text">Gerar PDF para impressão</text>
-  <text x="70" y="588" class="text-sm">Botão "Gerar PDF" na tela de detalhes da OS</text>
+  <circle cx="50" cy="576" r="12" class="accent"/>
+  <text x="50" y="581" text-anchor="middle" class="step-num">4</text>
+  <text x="70" y="581" class="text">Gerar PDF para impressão</text>
+  <text x="70" y="596" class="text-sm">Botão "Gerar PDF" na tela de detalhes da OS</text>
 
   <!-- Step 5 -->
-  <circle cx="50" cy="616" r="12" class="green"/>
-  <text x="50" y="621" text-anchor="middle" class="step-num">5</text>
-  <text x="70" y="621" class="text">Enviar WhatsApp para o cliente</text>
-  <text x="70" y="636" class="text-sm">Botão verde "WhatsApp" envia resumo automático</text>
+  <circle cx="50" cy="624" r="12" class="green"/>
+  <text x="50" y="629" text-anchor="middle" class="step-num">5</text>
+  <text x="70" y="629" class="text">Enviar WhatsApp para o cliente</text>
+  <text x="70" y="644" class="text-sm">Botão verde "WhatsApp" envia resumo (inclui sinal)</text>
 
   <!-- Step 6 -->
-  <circle cx="50" cy="664" r="12" class="green"/>
-  <text x="50" y="669" text-anchor="middle" class="step-num">6</text>
-  <text x="70" y="669" class="text">OS concluída → Lançamento financeiro</text>
-  <text x="70" y="684" class="text-sm">Receita gerada automaticamente ao concluir/entregar</text>
+  <circle cx="50" cy="672" r="12" class="amber"/>
+  <text x="50" y="677" text-anchor="middle" class="step-num">6</text>
+  <text x="70" y="677" class="text">OS concluída → Lançamento PENDENTE</text>
+  <text x="70" y="692" class="text-sm">Receita só entra no saldo após baixa manual</text>
+
+  <!-- Step 7 -->
+  <circle cx="50" cy="720" r="12" class="green"/>
+  <text x="50" y="725" text-anchor="middle" class="step-num">7</text>
+  <text x="70" y="725" class="text">Financeiro → Marcar como "Pago"</text>
+  <text x="70" y="740" class="text-sm">Saldo Real atualiza quando cliente pagar</text>
 
   <!-- Card: Dicas -->
-  <rect x="20" y="724" width="360" height="140" class="card"/>
-  <text x="40" y="752" class="heading">💡 Dicas</text>
-  <line x1="40" y1="762" x2="360" y2="762" class="divider"/>
-  <text x="40" y="784" class="text">• Cliente novo? Use o botão "+" na tela de Nova OS</text>
-  <text x="40" y="804" class="text">• Histórico: ícone 🕐 no equipamento</text>
-  <text x="40" y="824" class="text">• Duplicar OS: botão na tela de detalhes</text>
-  <text x="40" y="844" class="text">• Busca: campo no topo acha tudo (OS, cliente, etc)</text>
+  <rect x="20" y="764" width="360" height="160" class="card"/>
+  <text x="40" y="792" class="heading">💡 Dicas</text>
+  <line x1="40" y1="802" x2="360" y2="802" class="divider"/>
+  <text x="40" y="824" class="text">• Cliente novo? Use o botão "+" na tela de Nova OS</text>
+  <text x="40" y="844" class="text">• Histórico: ícone 🕐 no equipamento</text>
+  <text x="40" y="864" class="text">• Duplicar OS: botão na tela de detalhes</text>
+  <text x="40" y="884" class="text">• Busca: campo no topo acha tudo (OS, cliente, etc)</text>
+  <text x="40" y="904" class="text">• Mobile: menu "Mais" acessa Técnicos e Equipamentos</text>
 
   <!-- Footer -->
-  <text x="200" y="886" text-anchor="middle" class="subtitle">Suporte: (21) 97430-3932 (WhatsApp)</text>
+  <text x="200" y="946" text-anchor="middle" class="subtitle">Suporte: (21) 97430-3932 (WhatsApp)</text>
 </svg>

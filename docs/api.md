@@ -3,7 +3,7 @@ layout: default
 title: API Reference
 ---
 
-_Última sincronização: 03/08/2026_
+_Última sincronização: 19/08/2026_
 
 # 🔌 API Reference
 
@@ -123,6 +123,37 @@ Lista ordens de serviço com paginação e filtros.
 
 Retorna OS específica com itens, cliente, equipamento e dados do lote.
 
+**Response inclui:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "order_number": 177,
+    "status": "concluida",
+    "reported_defect": "Não liga",
+    "diagnosis": "Capacitor queimado",
+    "payment_method": "PIX",
+    "deposit_amount": 150.00,
+    "warranty_days": 90,
+    "entry_date": "2026-08-01",
+    "completion_date": "2026-08-05",
+    "lote_numero": 25,
+    "lote_sufixo": "A",
+    "client": { "id": "uuid", "name": "João Silva", "phone": "..." },
+    "equipment": { "id": "uuid", "type": "Furadeira", "brand": "Bosch" },
+    "technician": { "id": "uuid", "name": "Fernando" },
+    "items": [
+      { "description": "Capacitor", "quantity": 1, "unit_price": 45 },
+      { "description": "Mão de obra", "quantity": 1, "unit_price": 80 }
+    ],
+    "total": 125.00
+  }
+}
+```
+
+**Nota:** O campo `deposit_amount` (Sinal) é exibido nos detalhes da OS e incluído na mensagem do WhatsApp quando preenchido.
+
 ### POST /service-orders
 
 Cria nova ordem de serviço.
@@ -136,6 +167,7 @@ Cria nova ordem de serviço.
   "status": "aberta",
   "reported_defect": "Não liga",
   "payment_method": "PIX",
+  "deposit_amount": 150.00,
   "warranty_days": 90,
   "entry_date": "2026-07-29",
   "items": [
@@ -462,7 +494,29 @@ Lista logs de auditoria do tenant.
 
 ### GET /financeiro/resumo
 
-Retorna resumo financeiro do mês.
+Retorna resumo financeiro do mês com indicadores de caixa.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "saldoReal": 2500.00,
+    "aReceber": 1200.00,
+    "aPagar": 350.00,
+    "saldoPrevisto": 3350.00
+  }
+}
+```
+
+| Campo | Descrição |
+|-------|-----------|
+| `saldoReal` | Dinheiro efetivamente em caixa (recebido - pago) |
+| `aReceber` | Valor de OS concluídas com pagamento pendente |
+| `aPagar` | Despesas pendentes de pagamento |
+| `saldoPrevisto` | Projeção: saldoReal + aReceber - aPagar |
+
+**Nota:** Quando uma OS é concluída/entregue, o lançamento financeiro é criado com status `pendente`. O valor só entra no `saldoReal` quando o usuário marca como `pago` (baixa manual).
 
 ### GET /financeiro/lancamentos
 
