@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OS Laboris - Comparação de Temas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: #0f172a; 
+      color: #f8fafc;
+      padding: 2rem;
+    }
+    
+    .page-title {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .page-title h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .page-title p { color: #94a3b8; }
+    
+    .themes-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .theme-card {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    
+    .theme-label {
+      padding: 1rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    
+    .theme-label.current { background: #3b82f6; color: white; }
+    .theme-label.amber { background: #f59e0b; color: #1e293b; }
+    .theme-label.dark { background: #1e293b; color: #f8fafc; border: 1px solid #334155; }
+    
+    /* ========================================
+       TEMA 1: LIGHT BLUE (ATUAL)
+       ======================================== */
+    .theme-light {
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-sidebar: #1e293b;
+      --bg-hover: #f1f5f9;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --text-sidebar: #f8fafc;
+      --border: #e2e8f0;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+    }
+    
+    /* ========================================
+       TEMA 2: AMBER (IDENTIDADE VISUAL)
+       ======================================== */
+    .theme-amber {
+      --bg: #fffbeb;
+      --bg-card: #ffffff;
+      --bg-sidebar: #78350f;
+      --bg-hover: #fef3c7;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --text-sidebar: #fef3c7;
+      --border: #fde68a;
+      --primary: #d97706;
+      --primary-hover: #b45309;
+      --success: #16a34a;
+      --warning: #ea580c;
+      --danger: #dc2626;
+    }
+    
+    /* ========================================
+       TEMA 3: DARK MODE
+       ======================================== */
+    .theme-dark {
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --bg-sidebar: #0f172a;
+      --bg-hover: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-sidebar: #f8fafc;
+      --border: #334155;
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    
+    /* ========================================
+       COMPONENTES DO MOCK
+       ======================================== */
+    .mock-app {
+      display: flex;
+      height: 600px;
+      background: var(--bg);
+      border-radius: 0 0 12px 12px;
+      overflow: hidden;
+    }
+    
+    .mock-sidebar {
+      width: 200px;
+      background: var(--bg-sidebar);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    
+    .mock-logo {
+      color: var(--text-sidebar);
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .mock-logo-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+    
+    .theme-light .mock-logo-icon { background: #3b82f6; }
+    .theme-amber .mock-logo-icon { background: #f59e0b; color: #1e293b; }
+    .theme-dark .mock-logo-icon { background: #3b82f6; }
+    
+    .mock-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 6px;
+      color: var(--text-sidebar);
+      opacity: 0.7;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .mock-nav-item:hover { opacity: 0.9; }
+    .mock-nav-item.active { 
+      opacity: 1; 
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .theme-amber .mock-nav-item.active { background: rgba(254,243,199,0.2); }
+    
+    .mock-main {
+      flex: 1;
+      padding: 1.25rem;
+      overflow-y: auto;
+    }
+    
+    .mock-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    
+    .mock-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .mock-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+    }
+    
+    .mock-btn:hover { background: var(--primary-hover); }
+    
+    /* Dashboard Cards */
+    .mock-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    
+    .mock-card {
+      background: var(--bg-card);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    
+    .theme-dark .mock-card { box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+    
+    .mock-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .mock-card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    
+    .mock-card-icon.blue { background: #dbeafe; color: #2563eb; }
+    .mock-card-icon.yellow { background: #fef3c7; color: #d97706; }
+    .mock-card-icon.purple { background: #ede9fe; color: #7c3aed; }
+    .mock-card-icon.green { background: #dcfce7; color: #16a34a; }
+    
+    .theme-dark .mock-card-icon.blue { background: #1e3a5f; color: #60a5fa; }
+    .theme-dark .mock-card-icon.yellow { background: #422006; color: #fbbf24; }
+    .theme-dark .mock-card-icon.purple { background: #2e1065; color: #a78bfa; }
+    .theme-dark .mock-card-icon.green { background: #052e16; color: #4ade80; }
+    
+    .mock-card-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+    }
+    
+    .mock-card-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 500;
+    }
+    
+    /* Table */
+    .mock-table-wrapper {
+      background: var(--bg-card);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    
+    .theme-dark .mock-table-wrapper { box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+    
+    .mock-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    
+    .mock-table th {
+      background: var(--bg-hover);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    
+    .mock-table td {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+    }
+    
+    .mock-table tr:hover td {
+      background: var(--bg-hover);
+    }
+    
+    /* Status Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    
+    .status-aberta { background: #dbeafe; color: #1e40af; }
+    .status-avisada { background: #fef3c7; color: #78350f; }
+    .status-aguardando { background: #ede9fe; color: #5b21b6; }
+    .status-concluida { background: #d1fae5; color: #064e3b; }
+    .status-entregue { background: #e0f2fe; color: #0c4a6e; }
+    
+    .theme-dark .status-aberta { background: #1e3a5f; color: #93c5fd; }
+    .theme-dark .status-avisada { background: #422006; color: #fcd34d; }
+    .theme-dark .status-aguardando { background: #2e1065; color: #c4b5fd; }
+    .theme-dark .status-concluida { background: #052e16; color: #86efac; }
+    .theme-dark .status-entregue { background: #0c4a6e; color: #7dd3fc; }
+    
+    /* Action buttons */
+    .mock-actions {
+      display: flex;
+      gap: 0.25rem;
+    }
+    
+    .mock-action-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      background: transparent;
+      transition: all 0.15s;
+    }
+    
+    .mock-action-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+    }
+    
+    /* Comparison footer */
+    .comparison-footer {
+      max-width: 900px;
+      margin: 3rem auto 0;
+      padding: 2rem;
+      background: #1e293b;
+      border-radius: 12px;
+    }
+    
+    .comparison-footer h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    
+    .comparison-table th,
+    .comparison-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #334155;
+    }
+    
+    .comparison-table th {
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    
+    .comparison-table td:first-child {
+      color: #94a3b8;
+    }
+    
+    .check { color: #22c55e; }
+    .cross { color: #ef4444; }
+    .partial { color: #f59e0b; }
+  </style>
+</head>
+<body>
+  <div class="page-title">
+    <h1>🎨 OS Laboris — Comparação de Temas</h1>
+    <p>Visualize como o sistema ficaria com diferentes identidades visuais</p>
+  </div>
+
+  <div class="themes-grid">
+    <!-- TEMA 1: LIGHT BLUE (ATUAL) -->
+    <div class="theme-card theme-light">
+      <div class="theme-label current">✓ Tema Atual — Light Blue</div>
+      <div class="mock-app">
+        <div class="mock-sidebar">
+          <div class="mock-logo">
+            <div class="mock-logo-icon">🔧</div>
+            OS Laboris
+          </div>
+          <div class="mock-nav-item active">📊 Dashboard</div>
+          <div class="mock-nav-item">📋 Ordens de Serviço</div>
+          <div class="mock-nav-item">👥 Clientes</div>
+          <div class="mock-nav-item">🔧 Equipamentos</div>
+          <div class="mock-nav-item">💰 Financeiro</div>
+          <div class="mock-nav-item">⚙️ Configurações</div>
+        </div>
+        <div class="mock-main">
+          <div class="mock-header">
+            <div class="mock-title">Dashboard</div>
+            <button class="mock-btn">+ Nova OS</button>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card">
+              <div class="mock-card-icon blue">📋</div>
+              <div>
+                <div class="mock-card-value">12</div>
+                <div class="mock-card-label">Abertas</div>
+              </div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon yellow">⏳</div>
+              <div>
+                <div class="mock-card-value">5</div>
+                <div class="mock-card-label">Aguardando</div>
+              </div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon green">✓</div>
+              <div>
+                <div class="mock-card-value">8</div>
+                <div class="mock-card-label">Concluídas</div>
+              </div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon purple">📦</div>
+              <div>
+                <div class="mock-card-value">3</div>
+                <div class="mock-card-label">Entregues</div>
+              </div>
+            </div>
+          </div>
+          <div class="mock-table-wrapper">
+            <table class="mock-table">
+              <thead>
+                <tr>
+                  <th>Nº OS</th>
+                  <th>Cliente</th>
+                  <th>Equipamento</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>#0185</strong></td>
+                  <td>João Silva</td>
+                  <td>Furadeira Bosch</td>
+                  <td><span class="status-badge status-aberta">○ Aberta</span></td>
+                  <td class="mock-actions">
+                    <span class="mock-action-btn">👁</span>
+                    <span class="mock-action-btn">✏️</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>#0184</strong></td>
+                  <td>Maria Santos</td>
+                  <td>Esmerilhadeira DeWalt</td>
+                  <td><span class="status-badge status-avisada">✓ Avisada</span></td>
+                  <td class="mock-actions">
+                    <span class="mock-action-btn">👁</span>
+                    <span class="mock-action-btn">✏️</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>#0183</strong></td>
+                  <td>Carlos Ferreira</td>
+                  <td>Serra Circular Makita</td>
+                  <td><span class="status-badge status-concluida">✓✓ Concluída</span></td>
+                  <td class="mock-actions">
+                    <span class="mock-action-btn">👁</span>
+                    <span class="mock-action-btn">✏️</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEMA 2: AMBER -->
+    <div class="theme-card theme-amber">
+      <div class="theme-label amber">🔶 Identidade Amber</div>
+      <div class="mock-app">
+        <div class="mock-sidebar">
+          <div class="mock-logo">
+            <div class="mock-logo-icon">🔧</div>
+            OS Laboris
+          </div>
+          <div class="mock-nav-item active">📊 Dashboard</div>
+          <div class="mock-nav-item">📋 Ordens de Serviço</div>
+          <div class="mock-nav-item">👥 Clientes</div>
+          <div class="mock-nav-item">🔧 Equipamentos</div>
+          <div class="mock-nav-item">💰 Financeiro</div>
+          <div class="mock-nav-item">⚙️ Configurações</div>
+        </div>
+        <div class="mock-main">
+          <div class="mock-header">
+            <div class="mock-title">Dashboard</div>
+            <button class="mock-btn">+ Nova OS</button>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card">
+              <div class="mock-card-icon blue">📋</div>
+              <div>
+                <div class="mock-card-value">12</div>
+                <div class="mock-card-label">Abertas</div>
+              </div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon yellow">⏳</div>
+              <div>
+                <div class="mock-card-value">5</div>
+                <div class="mock-card-label">Aguardando</div>
+              </div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon green">✓</div>
+              <div>
+                <div class="mock-card-value">8</div>
+                <div class="mock-card-label">Concluídas</div>
+              </div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon purple">📦</div>
+              <div>
+                <div class="mock-card-value">3</div>
+                <div class="mock-card-label">Entregues</div>
+              </div>
+            </div>
+          </div>
+          <div class="mock-table-wrapper">
+            <table class="mock-table">
+              <thead>
+                <tr>
+                  <th>Nº OS</th>
+                  <th>Cliente</th>
+                  <th>Equipamento</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>#0185</strong></td>
+                  <td>João Silva</td>
+                  <td>Furadeira Bosch</td>
+                  <td><span class="status-badge status-aberta">○ Aberta</span></td>
+                  <td class="mock-actions">
+                    <span class="mock-action-btn">👁</span>
+                    <span class="mock-action-btn">✏️</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>#0184</strong></td>
+                  <td>Maria Santos</td>
+                  <td>Esmerilhadeira DeWalt</td>
+                  <td><span class="status-badge status-avisada">✓ Avisada</span></td>
+                  <td class="mock-actions">
+                    <span class="mock-action-btn">👁</span>
+                    <span class="mock-action-btn">✏️</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>#0183</strong></td>
+                  <td>Carlos Ferreira</td>
+                  <td>Serra Circular Makita</td>
+                  <td><span class="status-badge status-concluida">✓✓ Concluída</span></td>
+                  <td class="mock-actions">
+                    <span class="mock-action-btn">👁</span>
+                    <span class="mock-action-btn">✏️</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEMA 3: DARK MODE -->
+    <div class="theme-card theme-dark">
+      <div class="theme-label dark">🌙 Dark Mode</div>
+      <div class="mock-app">
+        <div class="mock-sidebar">
+          <div class="mock-logo">
+            <div class="mock-logo-icon">🔧</div>
+            OS Laboris
+          </div>
+          <div class="mock-nav-item active">📊 Dashboard</div>
+          <div class="mock-nav-item">📋 Ordens de Serviço</div>
+          <div class="mock-nav-item">👥 Clientes</div>
+          <div class="mock-nav-item">🔧 Equipamentos</div>
+          <div class="mock-nav-item">💰 Financeiro</div>
+          <div class="mock-nav-item">⚙️ Configurações</div>
+        </div>
+        <div class="mock-main">
+          <div class="mock-header">
+            <div class="mock-title">Dashboard</div>
+            <button class="mock-btn">+ Nova OS</button>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card">
+              <div class="mock-card-icon blue">📋</div>
+              <div>
+                <div class="mock-card-value">12</div>
+                <div class="mock-card-label">Abertas</div>
+              </div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon yellow">⏳</div>
+              <div>
+                <div class="mock-card-value">5</div>
+                <div class="mock-card-label">Aguardando</div>
+              </div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon green">✓</div>
+              <div>
+                <div class="mock-card-value">8</div>
+                <div class="mock-card-label">Concluídas</div>
+              </div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-icon purple">📦</div>
+              <div>
+                <div class="mock-card-value">3</div>
+                <div class="mock-card-label">Entregues</div>
+              </div>
+            </div>
+          </div>
+          <div class="mock-table-wrapper">
+            <table class="mock-table">
+              <thead>
+                <tr>
+                  <th>Nº OS</th>
+                  <th>Cliente</th>
+                  <th>Equipamento</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>#0185</strong></td>
+                  <td>João Silva</td>
+                  <td>Furadeira Bosch</td>
+                  <td><span class="status-badge status-aberta">○ Aberta</span></td>
+                  <td class="mock-actions">
+                    <span class="mock-action-btn">👁</span>
+                    <span class="mock-action-btn">✏️</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>#0184</strong></td>
+                  <td>Maria Santos</td>
+                  <td>Esmerilhadeira DeWalt</td>
+                  <td><span class="status-badge status-avisada">✓ Avisada</span></td>
+                  <td class="mock-actions">
+                    <span class="mock-action-btn">👁</span>
+                    <span class="mock-action-btn">✏️</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>#0183</strong></td>
+                  <td>Carlos Ferreira</td>
+                  <td>Serra Circular Makita</td>
+                  <td><span class="status-badge status-concluida">✓✓ Concluída</span></td>
+                  <td class="mock-actions">
+                    <span class="mock-action-btn">👁</span>
+                    <span class="mock-action-btn">✏️</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="comparison-footer">
+    <h2>📊 Comparação Rápida</h2>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Característica</th>
+          <th>Light Blue (Atual)</th>
+          <th>Amber</th>
+          <th>Dark Mode</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Identidade visual</td>
+          <td>Genérica (azul padrão)</td>
+          <td><span class="check">✓ Forte e diferenciada</span></td>
+          <td>Moderna</td>
+        </tr>
+        <tr>
+          <td>Conforto visual (uso prolongado)</td>
+          <td>Médio</td>
+          <td>Médio</td>
+          <td><span class="check">✓ Excelente</span></td>
+        </tr>
+        <tr>
+          <td>Legibilidade em luz forte</td>
+          <td><span class="check">✓ Boa</span></td>
+          <td><span class="check">✓ Boa</span></td>
+          <td><span class="cross">Ruim</span></td>
+        </tr>
+        <tr>
+          <td>Economia de bateria (celular OLED)</td>
+          <td>Não</td>
+          <td>Não</td>
+          <td><span class="check">✓ Sim</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
