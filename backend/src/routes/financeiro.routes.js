@@ -146,19 +146,50 @@ router.get('/resumo', async (req, res, next) => {
       .where('due_date', '<=', lastDay)
       .whereNot('status', 'cancelado'); // Ignorar cancelados no resumo
 
-    const totalReceitas = entries.filter((e) => e.type === 'receita').reduce((s, e) => s + parseFloat(e.amount), 0);
-    const totalDespesas = entries.filter((e) => e.type === 'despesa').reduce((s, e) => s + parseFloat(e.amount), 0);
-    const totalPago = entries.filter((e) => e.status === 'pago' || e.status === 'recebido').reduce((s, e) => s + parseFloat(e.amount) * (e.type === 'receita' ? 1 : -1), 0);
-    const totalPendente = entries.filter((e) => e.status === 'pendente').reduce((s, e) => s + parseFloat(e.amount), 0);
+    // Separar por tipo
+    const receitas = entries.filter((e) => e.type === 'receita');
+    const despesas = entries.filter((e) => e.type === 'despesa');
+
+    // Totais gerais (para manter compatibilidade)
+    const totalReceitas = receitas.reduce((s, e) => s + parseFloat(e.amount), 0);
+    const totalDespesas = despesas.reduce((s, e) => s + parseFloat(e.amount), 0);
+
+    // NOVO: Valores REAIS (já recebido / já pago)
+    const receitasRecebidas = receitas.filter((e) => e.status === 'recebido').reduce((s, e) => s + parseFloat(e.amount), 0);
+    const despesasPagas = despesas.filter((e) => e.status === 'pago').reduce((s, e) => s + parseFloat(e.amount), 0);
+    
+    // NOVO: Valores PENDENTES (a receber / a pagar)
+    const aReceber = receitas.filter((e) => e.status === 'pendente').reduce((s, e) => s + parseFloat(e.amount), 0);
+    const aPagar = despesas.filter((e) => e.status === 'pendente').reduce((s, e) => s + parseFloat(e.amount), 0);
+
+    // NOVO: Saldo REAL (dinheiro que efetivamente entrou/saiu)
+    const saldoReal = receitasRecebidas - despesasPagas;
+    
+    // NOVO: Saldo PREVISTO (se todos pendentes forem pagos/recebidos)
+    const saldoPrevisto = saldoReal + aReceber - aPagar;
+
+    // Manter campos antigos para compatibilidade
+    const totalPago = receitasRecebidas - despesasPagas; // mesmo que saldoReal
+    const totalPendente = aReceber + aPagar; // soma de todos pendentes
 
     res.json({
       success: true,
       data: {
+        // Campos originais (compatibilidade)
         receitas: totalReceitas,
         despesas: totalDespesas,
         pago: totalPago,
         pendente: totalPendente,
-        saldo: totalReceitas - totalDespesas,
+        saldo: totalReceitas - totalDespesas, // saldo "teórico" antigo
+        
+        // NOVOS campos (visão real do caixa)
+        saldoReal,
+        saldoPrevisto,
+        receitasRecebidas,
+        despesasPagas,
+        aReceber,
+        aPagar,
+        
         month: m,
         year: y,
       },

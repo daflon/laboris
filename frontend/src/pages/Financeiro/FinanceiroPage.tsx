@@ -133,32 +133,36 @@ export default function FinanceiroPage() {
       {/* Resumo */}
       {summary && (
         <div className="dashboard-cards" style={{ marginBottom: '1.5rem' }}>
+          <div className="dash-card dash-card-blue">
+            <div className="dash-card-icon"><FiDollarSign /></div>
+            <div className="dash-card-content">
+              <span className="dash-card-value">{formatCurrency(summary.saldoReal)}</span>
+              <span className="dash-card-label">Saldo Real</span>
+              <span style={{ fontSize: '0.65rem', color: '#64748b', marginTop: '2px' }}>Dinheiro em caixa</span>
+            </div>
+          </div>
           <div className="dash-card dash-card-green">
             <div className="dash-card-icon"><FiTrendingUp /></div>
             <div className="dash-card-content">
-              <span className="dash-card-value">{formatCurrency(summary.receitas)}</span>
-              <span className="dash-card-label">Receitas</span>
+              <span className="dash-card-value">{formatCurrency(summary.aReceber)}</span>
+              <span className="dash-card-label">A Receber</span>
+              <span style={{ fontSize: '0.65rem', color: '#64748b', marginTop: '2px' }}>OS concluídas</span>
             </div>
           </div>
           <div className="dash-card dash-card-yellow">
             <div className="dash-card-icon"><FiTrendingDown /></div>
             <div className="dash-card-content">
-              <span className="dash-card-value">{formatCurrency(summary.despesas)}</span>
-              <span className="dash-card-label">Despesas</span>
-            </div>
-          </div>
-          <div className="dash-card dash-card-blue">
-            <div className="dash-card-icon"><FiDollarSign /></div>
-            <div className="dash-card-content">
-              <span className="dash-card-value">{formatCurrency(summary.saldo)}</span>
-              <span className="dash-card-label">Saldo</span>
+              <span className="dash-card-value">{formatCurrency(summary.aPagar)}</span>
+              <span className="dash-card-label">A Pagar</span>
+              <span style={{ fontSize: '0.65rem', color: '#64748b', marginTop: '2px' }}>Despesas pendentes</span>
             </div>
           </div>
           <div className="dash-card dash-card-gray">
             <div className="dash-card-icon"><FiDollarSign /></div>
             <div className="dash-card-content">
-              <span className="dash-card-value">{formatCurrency(summary.pendente)}</span>
-              <span className="dash-card-label">Pendente</span>
+              <span className="dash-card-value">{formatCurrency(summary.saldoPrevisto)}</span>
+              <span className="dash-card-label">Saldo Previsto</span>
+              <span style={{ fontSize: '0.65rem', color: '#64748b', marginTop: '2px' }}>Se tudo for quitado</span>
             </div>
           </div>
         </div>

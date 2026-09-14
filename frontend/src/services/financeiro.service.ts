@@ -18,6 +18,13 @@ export interface FinancialSummary {
   pago: number;
   pendente: number;
   saldo: number;
+  // Novos campos para visão real do caixa
+  saldoReal: number;
+  saldoPrevisto: number;
+  receitasRecebidas: number;
+  despesasPagas: number;
+  aReceber: number;
+  aPagar: number;
   month: number;
   year: number;
 }
