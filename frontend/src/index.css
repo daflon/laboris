@@ -1,6 +1,8 @@
 /* ===========================================
    DESIGN TOKENS
    =========================================== */
+
+/* Light Theme (fallback) */
 :root {
   /* Escala de espaçamento */
   --space-xs: 4px;
@@ -67,6 +69,91 @@
 }
 
 /* ===========================================
+   DARK THEME (default)
+   =========================================== */
+:root,
+[data-theme="dark"] {
+  /* Cores - Paleta Principal */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #60a5fa;
+  --color-primary-light: rgba(59, 130, 246, 0.15);
+
+  /* Cores - Texto */
+  --color-text: #f1f5f9;
+  --color-text-heading: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+
+  /* Cores - Backgrounds */
+  --color-bg: #0f172a;
+  --color-bg-card: #1e293b;
+  --color-bg-hover: #334155;
+  --color-bg-table-header: #1e293b;
+
+  /* Cores - Bordas */
+  --color-border: #334155;
+  --color-border-light: #1e293b;
+
+  /* Cores - Status (ajustadas para dark) */
+  --color-success: #22c55e;
+  --color-success-bg: #052e16;
+  --color-danger: #ef4444;
+  --color-danger-bg: #450a0a;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #422006;
+
+  /* Sombras (mais sutis no dark) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-dropdown: 0 8px 25px rgba(0, 0, 0, 0.5);
+  --shadow-focus: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  --shadow-focus-strong: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* ===========================================
+   LIGHT THEME (opt-in)
+   =========================================== */
+[data-theme="light"] {
+  /* Cores - Paleta Principal */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: rgba(59, 130, 246, 0.1);
+
+  /* Cores - Texto */
+  --color-text: #1e293b;
+  --color-text-heading: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-subtle: #94a3b8;
+
+  /* Cores - Backgrounds */
+  --color-bg: #f8fafc;
+  --color-bg-card: #ffffff;
+  --color-bg-hover: #f1f5f9;
+  --color-bg-table-header: #f1f5f9;
+
+  /* Cores - Bordas */
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+
+  /* Cores - Status */
+  --color-success: #16a34a;
+  --color-success-bg: #dcfce7;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fee2e2;
+  --color-warning: #d97706;
+  --color-warning-bg: #fef3c7;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-dropdown: 0 8px 25px rgba(0, 0, 0, 0.12);
+  --shadow-focus: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  --shadow-focus-strong: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ===========================================
    RESET E BASE
    =========================================== */
 *, *::before, *::after {
@@ -94,7 +181,7 @@ body {
 .page-header h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-text-heading);
 }
 
 .page-header-actions {
@@ -134,12 +221,12 @@ body {
 }
 
 .btn-secondary {
-  background: var(--color-border);
+  background: var(--color-bg-hover);
   color: var(--color-text-muted);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #cbd5e1;
+  background: var(--color-border);
 }
 
 .btn-danger {
@@ -189,6 +276,7 @@ body {
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   background: var(--color-bg-card);
+  color: var(--color-text);
   height: 38px;
 }
 
@@ -222,6 +310,7 @@ body {
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   background: var(--color-bg-card);
+  color: var(--color-text);
   height: 38px;
 }
 
@@ -352,6 +441,37 @@ body {
   content: "✕";
 }
 
+/* Status badges - Dark Mode */
+[data-theme="dark"] .status-aberta {
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .status-aprovada {
+  background: #422006;
+  color: #fcd34d;
+}
+
+[data-theme="dark"] .status-aguardando_peca {
+  background: #2e1065;
+  color: #c4b5fd;
+}
+
+[data-theme="dark"] .status-concluida {
+  background: #052e16;
+  color: #86efac;
+}
+
+[data-theme="dark"] .status-entregue {
+  background: #0c4a6e;
+  color: #7dd3fc;
+}
+
+[data-theme="dark"] .status-cancelada {
+  background: #450a0a;
+  color: #fca5a5;
+}
+
 /* Status select (inline na tabela) */
 .status-select {
   border-radius: var(--radius-sm);
@@ -385,17 +505,17 @@ body {
 
 .badge-success {
   background: var(--color-success-bg);
-  color: #166534;
+  color: var(--color-success);
 }
 
 .badge-danger {
   background: var(--color-danger-bg);
-  color: #991b1b;
+  color: var(--color-danger);
 }
 
 .badge-gray {
-  background: #e5e7eb;
-  color: #4b5563;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
 .btn-icon-warning {
@@ -455,7 +575,7 @@ body {
   font-size: var(--font-size-lg);
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #334155;
+  color: var(--color-text-muted);
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--color-border-light);
 }
@@ -490,6 +610,8 @@ body {
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   transition: border-color var(--transition-normal);
+  background: var(--color-bg-card);
+  color: var(--color-text);
 }
 
 .form-group input:focus,
@@ -543,7 +665,7 @@ body {
   font-size: var(--font-size-lg);
   font-weight: 600;
   margin-bottom: 0.75rem;
-  color: #334155;
+  color: var(--color-text-muted);
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--color-border-light);
 }
@@ -1056,6 +1178,7 @@ body {
   margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
+  gap: 0.75rem;
 }
 
 
@@ -1067,7 +1190,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-text);
+  background: #0f172a;
   padding: 1rem;
 }
 
@@ -1094,6 +1217,22 @@ body {
 
 .login-header p {
   font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.login-form .form-group input {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.login-card .form-group input {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.login-card .form-group label {
   color: var(--color-text-muted);
 }
 

@@ -4,6 +4,7 @@ import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, 
 import api from '../services/api';
 import { authService } from '../services/auth.service';
 import GlobalSearch from './GlobalSearch';
+import { ThemeToggle } from './ThemeToggle';
 import './Layout.css';
 
 export default function Layout() {
@@ -198,6 +199,7 @@ export default function Layout() {
         
         <div className="top-bar">
           <GlobalSearch />
+          <ThemeToggle />
         </div>
         <Outlet />
       </main>
