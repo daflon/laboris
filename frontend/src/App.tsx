@@ -24,6 +24,7 @@ import FinanceiroPage from './pages/Financeiro/FinanceiroPage';
 import RelatorioFinanceiro from './pages/Financeiro/RelatorioFinanceiro';
 import FaturamentoPage from './pages/Faturamento/FaturamentoPage';
 import MockSatisfacao from './pages/Mock/MockSatisfacao';
+import MockLandingPage from './pages/Mock/MockLandingPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!authService.isAuthenticated()) {
@@ -54,6 +55,7 @@ export default function App() {
         {/* Public */}
         <Route path="/login" element={<Login />} />
         <Route path="/mock/satisfacao" element={<MockSatisfacao />} />
+        <Route path="/mock/landing" element={<MockLandingPage />} />
 
         {/* Super Admin */}
         <Route path="/master" element={<SuperAdminRoute><MasterDashboard /></SuperAdminRoute>} />
