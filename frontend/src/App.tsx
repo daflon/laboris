@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { authService } from './services/auth.service';
 import Layout from './components/Layout';
+import LandingPage from './pages/Landing/LandingPage';
 import Login from './pages/Login/Login';
 import MasterDashboard from './pages/Master/MasterDashboard';
 import CreateTenant from './pages/Master/CreateTenant';
@@ -23,8 +24,6 @@ import CompanySettingsPage from './pages/Settings/CompanySettings';
 import FinanceiroPage from './pages/Financeiro/FinanceiroPage';
 import RelatorioFinanceiro from './pages/Financeiro/RelatorioFinanceiro';
 import FaturamentoPage from './pages/Faturamento/FaturamentoPage';
-import MockSatisfacao from './pages/Mock/MockSatisfacao';
-import MockLandingPage from './pages/Mock/MockLandingPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!authService.isAuthenticated()) {
@@ -53,44 +52,42 @@ export default function App() {
       <Toaster position="top-right" />
       <Routes>
         {/* Public */}
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/mock/satisfacao" element={<MockSatisfacao />} />
-        <Route path="/mock/landing" element={<MockLandingPage />} />
 
         {/* Super Admin */}
         <Route path="/master" element={<SuperAdminRoute><MasterDashboard /></SuperAdminRoute>} />
         <Route path="/master/tenants/novo" element={<SuperAdminRoute><CreateTenant /></SuperAdminRoute>} />
         <Route path="/master/tenants/:id/editar" element={<SuperAdminRoute><EditTenant /></SuperAdminRoute>} />
 
-        {/* Tenant routes */}
-        <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
+        {/* Tenant routes - wrapped in Layout */}
+        <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+          <Route path="/dashboard" element={<Dashboard />} />
 
-          <Route path="os" element={<ServiceOrdersList />} />
-          <Route path="os/nova" element={<ServiceOrderForm />} />
-          <Route path="os/:id" element={<ServiceOrderDetails />} />
-          <Route path="os/:id/editar" element={<ServiceOrderForm />} />
-          <Route path="os/:id/adicionar-lote" element={<AddToLote />} />
+          <Route path="/os" element={<ServiceOrdersList />} />
+          <Route path="/os/nova" element={<ServiceOrderForm />} />
+          <Route path="/os/:id" element={<ServiceOrderDetails />} />
+          <Route path="/os/:id/editar" element={<ServiceOrderForm />} />
+          <Route path="/os/:id/adicionar-lote" element={<AddToLote />} />
 
-          <Route path="clientes" element={<ClientsList />} />
-          <Route path="clientes/novo" element={<ClientForm />} />
-          <Route path="clientes/:id" element={<ClientDetails />} />
-          <Route path="clientes/:id/editar" element={<ClientForm />} />
+          <Route path="/clientes" element={<ClientsList />} />
+          <Route path="/clientes/novo" element={<ClientForm />} />
+          <Route path="/clientes/:id" element={<ClientDetails />} />
+          <Route path="/clientes/:id/editar" element={<ClientForm />} />
 
-          <Route path="tecnicos" element={<TechniciansList />} />
-          <Route path="tecnicos/novo" element={<TechnicianForm />} />
-          <Route path="tecnicos/:id/editar" element={<TechnicianForm />} />
+          <Route path="/tecnicos" element={<TechniciansList />} />
+          <Route path="/tecnicos/novo" element={<TechnicianForm />} />
+          <Route path="/tecnicos/:id/editar" element={<TechnicianForm />} />
 
-          <Route path="equipamentos" element={<EquipmentList />} />
-          <Route path="equipamentos/novo" element={<EquipmentForm />} />
-          <Route path="equipamentos/:id/editar" element={<EquipmentForm />} />
-          <Route path="equipamentos/:id/historico" element={<EquipmentHistory />} />
+          <Route path="/equipamentos" element={<EquipmentList />} />
+          <Route path="/equipamentos/novo" element={<EquipmentForm />} />
+          <Route path="/equipamentos/:id/editar" element={<EquipmentForm />} />
+          <Route path="/equipamentos/:id/historico" element={<EquipmentHistory />} />
 
-          <Route path="configuracoes" element={<CompanySettingsPage />} />
-          <Route path="financeiro" element={<FinanceiroPage />} />
-          <Route path="financeiro/relatorio" element={<RelatorioFinanceiro />} />
-          <Route path="faturamento" element={<FaturamentoPage />} />
+          <Route path="/configuracoes" element={<CompanySettingsPage />} />
+          <Route path="/financeiro" element={<FinanceiroPage />} />
+          <Route path="/financeiro/relatorio" element={<RelatorioFinanceiro />} />
+          <Route path="/faturamento" element={<FaturamentoPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,9 +1,23 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiCheck, FiClipboard, FiDollarSign, FiSmartphone, FiTool, FiBarChart2, FiUsers, FiArrowRight, FiPlay } from 'react-icons/fi';
-import './MockLandingPage.css';
+import { authService } from '../../services/auth.service';
+import './LandingPage.css';
 
-export default function MockLandingPage() {
-  const [planHover, setPlanHover] = useState<string | null>(null);
+export default function LandingPage() {
+  const navigate = useNavigate();
+
+  // Se já estiver logado, redireciona pro dashboard
+  useEffect(() => {
+    if (authService.isAuthenticated()) {
+      const user = authService.getUser();
+      if (user?.role === 'super_admin' && !localStorage.getItem('master_token')) {
+        navigate('/master', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [navigate]);
 
   const features = [
     {
@@ -107,12 +121,12 @@ export default function MockLandingPage() {
         <div className="landing-container">
           <div className="landing-logo">
             <span className="logo-icon">⚙️</span>
-            <span className="logo-text">OS Laboris</span>
+            <span className="logo-text">Laboris</span>
           </div>
           <nav className="landing-nav">
             <a href="#features">Recursos</a>
             <a href="#pricing">Preços</a>
-            <a href="/login" className="btn-login">Entrar</a>
+            <Link to="/login" className="btn-login">Entrar</Link>
           </nav>
         </div>
       </header>
@@ -130,12 +144,12 @@ export default function MockLandingPage() {
               Sem complicação. Sem mensalidade cara. Comece grátis.
             </p>
             <div className="hero-cta">
-              <button className="btn-primary btn-lg">
+              <Link to="/login" className="btn-primary btn-lg">
                 Criar conta grátis <FiArrowRight />
-              </button>
-              <button className="btn-secondary btn-lg">
-                <FiPlay /> Ver demonstração
-              </button>
+              </Link>
+              <a href="#features" className="btn-secondary btn-lg">
+                <FiPlay /> Ver recursos
+              </a>
             </div>
             <p className="hero-note">✓ Não precisa de cartão &nbsp;&nbsp; ✓ Cancele quando quiser</p>
           </div>
@@ -145,7 +159,7 @@ export default function MockLandingPage() {
                 <div className="mockup-dots">
                   <span></span><span></span><span></span>
                 </div>
-                <span className="mockup-title">OS Laboris</span>
+                <span className="mockup-title">Laboris</span>
               </div>
               <div className="mockup-body">
                 <div className="mockup-sidebar">
@@ -201,13 +215,13 @@ export default function MockLandingPage() {
             </div>
             <div className="proof-divider"></div>
             <div className="proof-stat">
-              <span className="stat-number">50+</span>
-              <span className="stat-label">Assistências usando</span>
+              <span className="stat-number">100%</span>
+              <span className="stat-label">Online e seguro</span>
             </div>
             <div className="proof-divider"></div>
             <div className="proof-stat">
-              <span className="stat-number">4.9</span>
-              <span className="stat-label">Avaliação média</span>
+              <span className="stat-number">24/7</span>
+              <span className="stat-label">Disponível sempre</span>
             </div>
           </div>
         </div>
@@ -224,9 +238,7 @@ export default function MockLandingPage() {
             {plans.map((plan) => (
               <div 
                 key={plan.id} 
-                className={`pricing-card ${plan.popular ? 'popular' : ''} ${planHover === plan.id ? 'hover' : ''}`}
-                onMouseEnter={() => setPlanHover(plan.id)}
-                onMouseLeave={() => setPlanHover(null)}
+                className={`pricing-card ${plan.popular ? 'popular' : ''}`}
               >
                 {plan.popular && <div className="popular-badge">Mais popular</div>}
                 <div className="pricing-header">
@@ -251,9 +263,12 @@ export default function MockLandingPage() {
                     ))}
                   </ul>
                 </div>
-                <button className={`btn-pricing ${plan.popular ? 'btn-primary' : 'btn-secondary'}`}>
+                <Link 
+                  to="/login" 
+                  className={`btn-pricing ${plan.popular ? 'btn-primary' : 'btn-secondary'}`}
+                >
                   {plan.cta}
-                </button>
+                </Link>
               </div>
             ))}
           </div>
@@ -266,9 +281,9 @@ export default function MockLandingPage() {
           <div className="cta-content">
             <h2>Pronto para organizar sua assistência?</h2>
             <p>Crie sua conta em menos de 1 minuto. Sem cartão de crédito.</p>
-            <button className="btn-primary btn-lg">
+            <Link to="/login" className="btn-primary btn-lg">
               Começar grátis agora <FiArrowRight />
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -279,7 +294,7 @@ export default function MockLandingPage() {
           <div className="footer-content">
             <div className="footer-brand">
               <span className="logo-icon">⚙️</span>
-              <span className="logo-text">OS Laboris</span>
+              <span className="logo-text">Laboris</span>
               <p>Sistema de gestão para assistências técnicas</p>
             </div>
             <div className="footer-links">
@@ -287,13 +302,10 @@ export default function MockLandingPage() {
                 <h4>Produto</h4>
                 <a href="#features">Recursos</a>
                 <a href="#pricing">Preços</a>
-                <a href="#">Atualizações</a>
               </div>
               <div className="footer-column">
                 <h4>Suporte</h4>
-                <a href="#">Central de ajuda</a>
-                <a href="#">Tutoriais</a>
-                <a href="#">Contato</a>
+                <a href="mailto:suporte@laboris.com.br">Contato</a>
               </div>
               <div className="footer-column">
                 <h4>Legal</h4>
@@ -303,15 +315,10 @@ export default function MockLandingPage() {
             </div>
           </div>
           <div className="footer-bottom">
-            <p>© 2026 OS Laboris. Todos os direitos reservados.</p>
+            <p>© 2026 Laboris. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
-
-      {/* Mock Badge */}
-      <div className="mock-badge-fixed">
-        🧪 MOCK - Prévia da Landing Page
-      </div>
     </div>
   );
 }
