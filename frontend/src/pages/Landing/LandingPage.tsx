@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiCheck, FiClipboard, FiDollarSign, FiSmartphone, FiTool, FiBarChart2, FiUsers, FiArrowRight, FiPlay } from 'react-icons/fi';
+import { FiClipboard, FiDollarSign, FiSmartphone, FiTool, FiBarChart2, FiUsers, FiArrowRight, FiPlay, FiStar } from 'react-icons/fi';
 import { authService } from '../../services/auth.service';
 import './LandingPage.css';
 
@@ -52,68 +52,6 @@ export default function LandingPage() {
     }
   ];
 
-  const plans = [
-    {
-      id: 'free',
-      name: 'Grátis',
-      price: 'R$ 0',
-      period: 'para sempre',
-      description: 'Para começar a organizar',
-      features: [
-        'Até 30 OS por mês',
-        '1 usuário',
-        'Clientes e equipamentos',
-        'PDF básico',
-        'Suporte por email'
-      ],
-      notIncluded: [
-        'Módulo financeiro',
-        'Logo no PDF',
-        'Relatórios'
-      ],
-      cta: 'Começar grátis',
-      popular: false
-    },
-    {
-      id: 'pro',
-      name: 'Pro',
-      price: 'R$ 49,90',
-      period: '/mês',
-      description: 'Para quem quer crescer',
-      features: [
-        'OS ilimitadas',
-        'Até 3 usuários',
-        'Módulo financeiro completo',
-        'PDF com sua logo',
-        'Faturamento por técnico',
-        'Suporte por WhatsApp'
-      ],
-      notIncluded: [
-        'API para integrações'
-      ],
-      cta: 'Assinar Pro',
-      popular: true
-    },
-    {
-      id: 'business',
-      name: 'Business',
-      price: 'R$ 99,90',
-      period: '/mês',
-      description: 'Para equipes maiores',
-      features: [
-        'Tudo do Pro',
-        'Usuários ilimitados',
-        'Múltiplas filiais',
-        'Relatórios avançados',
-        'API para integrações',
-        'Suporte prioritário'
-      ],
-      notIncluded: [],
-      cta: 'Assinar Business',
-      popular: false
-    }
-  ];
-
   return (
     <div className="landing-page">
       {/* Header */}
@@ -125,7 +63,6 @@ export default function LandingPage() {
           </div>
           <nav className="landing-nav">
             <a href="#features">Recursos</a>
-            <a href="#pricing">Preços</a>
             <Link to="/login" className="btn-login">Entrar</Link>
           </nav>
         </div>
@@ -141,17 +78,16 @@ export default function LandingPage() {
             </h1>
             <p className="hero-subtitle">
               Sistema simples para gestão de ordens de serviço. 
-              Sem complicação. Sem mensalidade cara. Comece grátis.
+              Sem complicação. Feito para assistências técnicas.
             </p>
             <div className="hero-cta">
               <Link to="/login" className="btn-primary btn-lg">
-                Criar conta grátis <FiArrowRight />
+                Acessar sistema <FiArrowRight />
               </Link>
               <a href="#features" className="btn-secondary btn-lg">
                 <FiPlay /> Ver recursos
               </a>
             </div>
-            <p className="hero-note">✓ Não precisa de cartão &nbsp;&nbsp; ✓ Cancele quando quiser</p>
           </div>
           <div className="hero-image">
             <div className="hero-mockup">
@@ -205,7 +141,32 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Social Proof */}
+      {/* Testimonial */}
+      <section className="landing-testimonial">
+        <div className="landing-container">
+          <div className="testimonial-card">
+            <div className="testimonial-stars">
+              <FiStar className="star-filled" />
+              <FiStar className="star-filled" />
+              <FiStar className="star-filled" />
+              <FiStar className="star-filled" />
+              <FiStar className="star-filled" />
+            </div>
+            <blockquote className="testimonial-quote">
+              "Controlar o que tenho que pagar ficou muito fácil. Sempre que olho aqui consigo ver quanto tenho pendente. Tá ficando muito bom!"
+            </blockquote>
+            <div className="testimonial-author">
+              <div className="author-avatar">FQ</div>
+              <div className="author-info">
+                <strong>Felipe Queiroz</strong>
+                <span>Eletrotécnica São Miguel - RJ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
       <section className="landing-proof">
         <div className="landing-container">
           <div className="proof-stats">
@@ -227,62 +188,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="landing-pricing">
-        <div className="landing-container">
-          <div className="section-header">
-            <h2>Planos que cabem no seu bolso</h2>
-            <p>Comece grátis e faça upgrade quando precisar</p>
-          </div>
-          <div className="pricing-grid">
-            {plans.map((plan) => (
-              <div 
-                key={plan.id} 
-                className={`pricing-card ${plan.popular ? 'popular' : ''}`}
-              >
-                {plan.popular && <div className="popular-badge">Mais popular</div>}
-                <div className="pricing-header">
-                  <h3>{plan.name}</h3>
-                  <p className="pricing-description">{plan.description}</p>
-                  <div className="pricing-price">
-                    <span className="price-value">{plan.price}</span>
-                    <span className="price-period">{plan.period}</span>
-                  </div>
-                </div>
-                <div className="pricing-features">
-                  <ul>
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="included">
-                        <FiCheck /> {feature}
-                      </li>
-                    ))}
-                    {plan.notIncluded.map((feature, index) => (
-                      <li key={index} className="not-included">
-                        <span className="x-mark">✕</span> {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <Link 
-                  to="/login" 
-                  className={`btn-pricing ${plan.popular ? 'btn-primary' : 'btn-secondary'}`}
-                >
-                  {plan.cta}
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA Final */}
       <section className="landing-cta">
         <div className="landing-container">
           <div className="cta-content">
             <h2>Pronto para organizar sua assistência?</h2>
-            <p>Crie sua conta em menos de 1 minuto. Sem cartão de crédito.</p>
+            <p>Acesse o sistema e comece a usar agora mesmo.</p>
             <Link to="/login" className="btn-primary btn-lg">
-              Começar grátis agora <FiArrowRight />
+              Acessar sistema <FiArrowRight />
             </Link>
           </div>
         </div>
@@ -301,16 +214,10 @@ export default function LandingPage() {
               <div className="footer-column">
                 <h4>Produto</h4>
                 <a href="#features">Recursos</a>
-                <a href="#pricing">Preços</a>
               </div>
               <div className="footer-column">
                 <h4>Suporte</h4>
                 <a href="mailto:suporte@laboris.com.br">Contato</a>
-              </div>
-              <div className="footer-column">
-                <h4>Legal</h4>
-                <a href="#">Termos de uso</a>
-                <a href="#">Privacidade</a>
               </div>
             </div>
           </div>
