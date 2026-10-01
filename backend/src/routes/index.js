@@ -20,7 +20,6 @@ const adminRoutes = require('./admin.routes');
 const searchRoutes = require('./search.routes');
 const financeiroRoutes = require('./financeiro.routes');
 const faturamentoRoutes = require('./faturamento.routes');
-const attachmentsRoutes = require('./attachments.routes');
 
 const equipmentController = require('../controllers/equipment.controller');
 const serviceOrdersController = require('../controllers/serviceOrders.controller');
@@ -53,8 +52,5 @@ router.use('/faturamento', faturamentoRoutes);
 // Rotas aninhadas
 router.get('/clients/:id/equipment', authenticate, equipmentController.findByClientId);
 router.get('/equipment/:id/history', authenticate, serviceOrdersController.findByEquipmentId);
-
-// Rotas de anexos (fotos) - montadas sob /service-orders
-router.use('/service-orders', authenticate, attachmentsRoutes);
 
 module.exports = router;
