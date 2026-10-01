@@ -33,7 +33,7 @@ router.delete('/:id', serviceOrdersController.delete);
 router.get('/:id/attachments', async (req, res) => {
   try {
     const { id: osId } = req.params;
-    const tenantId = req.user.tenant_id;
+    const tenantId = req.tenantId; // Vem do middleware authenticate
 
     const attachments = await db('os_attachments')
       .where({ service_order_id: osId, tenant_id: tenantId })
@@ -54,7 +54,7 @@ router.get('/:id/attachments', async (req, res) => {
 router.get('/:id/attachments-images', async (req, res) => {
   try {
     const { id: osId } = req.params;
-    const tenantId = req.user.tenant_id;
+    const tenantId = req.tenantId; // Vem do middleware authenticate
 
     const attachments = await db('os_attachments')
       .where({ service_order_id: osId, tenant_id: tenantId })
@@ -75,7 +75,7 @@ router.get('/:id/attachments-images', async (req, res) => {
 router.get('/:id/attachments/:attachmentId', async (req, res) => {
   try {
     const { id: osId, attachmentId } = req.params;
-    const tenantId = req.user.tenant_id;
+    const tenantId = req.tenantId; // Vem do middleware authenticate
 
     const attachment = await db('os_attachments')
       .where({ 
@@ -103,14 +103,15 @@ router.get('/:id/attachments/:attachmentId', async (req, res) => {
 router.post('/:id/attachments', async (req, res) => {
   console.log('=== UPLOAD ANEXO ===');
   console.log('OS ID:', req.params.id);
-  console.log('Tenant ID:', req.user?.tenant_id);
+  console.log('Tenant ID:', req.tenantId);
+  console.log('User ID:', req.user?.userId);
   console.log('Body keys:', Object.keys(req.body || {}));
   console.log('image_data length:', req.body?.image_data?.length || 0);
   
   try {
     const { id: osId } = req.params;
-    const tenantId = req.user.tenant_id;
-    const userId = req.user.id;
+    const tenantId = req.tenantId; // Vem do middleware authenticate
+    const userId = req.user.userId; // userId, não id
     const { image_data, caption, filename } = req.body;
 
     // Validações
@@ -184,7 +185,7 @@ router.post('/:id/attachments', async (req, res) => {
 router.delete('/:id/attachments/:attachmentId', async (req, res) => {
   try {
     const { id: osId, attachmentId } = req.params;
-    const tenantId = req.user.tenant_id;
+    const tenantId = req.tenantId; // Vem do middleware authenticate
 
     const deleted = await db('os_attachments')
       .where({ 
