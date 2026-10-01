@@ -101,6 +101,12 @@ router.get('/:id/attachments/:attachmentId', async (req, res) => {
  * Upload de um novo anexo (foto em Base64)
  */
 router.post('/:id/attachments', async (req, res) => {
+  console.log('=== UPLOAD ANEXO ===');
+  console.log('OS ID:', req.params.id);
+  console.log('Tenant ID:', req.user?.tenant_id);
+  console.log('Body keys:', Object.keys(req.body || {}));
+  console.log('image_data length:', req.body?.image_data?.length || 0);
+  
   try {
     const { id: osId } = req.params;
     const tenantId = req.user.tenant_id;
@@ -166,7 +172,8 @@ router.post('/:id/attachments', async (req, res) => {
     res.status(201).json(attachment);
   } catch (error) {
     console.error('Erro ao criar anexo:', error);
-    res.status(500).json({ error: 'Erro ao fazer upload da foto' });
+    console.error('Stack:', error.stack);
+    res.status(500).json({ error: 'Erro ao fazer upload da foto', details: error.message });
   }
 });
 
