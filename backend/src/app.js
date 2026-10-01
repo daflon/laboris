@@ -53,6 +53,35 @@ app.get('/api/v1/debug/os/:id', async (req, res) => {
   }
 });
 
+// Diagnóstico - verificar se tabela os_attachments existe
+app.get('/api/v1/debug/attachments-table', async (req, res) => {
+  try {
+    const db = require('./database/connection');
+    
+    // Verifica se a tabela existe
+    const tableExists = await db.schema.hasTable('os_attachments');
+    
+    let columns = [];
+    if (tableExists) {
+      const result = await db.raw(`
+        SELECT column_name, data_type 
+        FROM information_schema.columns 
+        WHERE table_name = 'os_attachments' 
+        ORDER BY ordinal_position
+      `);
+      columns = result.rows;
+    }
+    
+    res.json({ 
+      tableExists,
+      columns,
+      message: tableExists ? 'Tabela existe!' : 'TABELA NÃO EXISTE - precisa rodar migration'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message, stack: error.stack });
+  }
+});
+
 // Servir frontend em produção
 if (process.env.NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '..', '..', 'frontend', 'dist');
