@@ -12,9 +12,11 @@ import {
 import { clientsService, Client } from '../../services/clients.service';
 import { equipmentService, Equipment } from '../../services/equipment.service';
 import { techniciansService, Technician } from '../../services/technicians.service';
+import attachmentsService, { Attachment } from '../../services/attachments.service';
 import PageHeader from '../../components/PageHeader';
 import QuickClientModal from '../../components/QuickClientModal';
 import QuickEquipmentModal from '../../components/QuickEquipmentModal';
+import PhotoCapture from '../../components/PhotoCapture';
 import { formatDocument } from '../../utils/masks';
 import { useFormDraft } from '../../hooks/useFormDraft';
 
@@ -59,6 +61,10 @@ export default function ServiceOrderForm() {
   const [showEquipmentModal, setShowEquipmentModal] = useState(false);
   const [showDraftBanner, setShowDraftBanner] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
+  
+  // Estado para anexos (fotos)
+  const [attachments, setAttachments] = useState<(Attachment & { isNew?: boolean })[]>([]);
+  const [pendingAttachments, setPendingAttachments] = useState<{ imageData: string; filename: string }[]>([]);
   
   // Flag para controlar se estamos no carregamento inicial da edição
   const isInitialLoadRef = useRef(isEditing);
@@ -175,6 +181,14 @@ export default function ServiceOrderForm() {
             completion_date: os.completion_date || '',
             items: os.items || [],
           });
+          
+          // Carregar anexos existentes
+          try {
+            const existingAttachments = await attachmentsService.listWithImages(id!);
+            setAttachments(existingAttachments);
+          } catch (error) {
+            console.error('Erro ao carregar anexos:', error);
+          }
         })
         .catch(() => toast.error('Erro ao carregar OS'))
         .finally(() => {
@@ -222,18 +236,95 @@ export default function ServiceOrderForm() {
 
   const totalValue = form.items.reduce((sum, item) => sum + item.quantity * item.unit_price, 0);
 
+  // Handlers para fotos
+  const handleAddPhoto = (imageData: string, filename: string) => {
+    if (isEditing) {
+      // Se editando, adicionar à lista de anexos com flag isNew
+      const tempId = `temp_${Date.now()}`;
+      setAttachments(prev => [...prev, { 
+        id: tempId, 
+        image_data: imageData, 
+        filename, 
+        isNew: true 
+      }]);
+      setPendingAttachments(prev => [...prev, { imageData, filename }]);
+    } else {
+      // Se criando nova OS, guardar para upload após criação
+      const tempId = `temp_${Date.now()}`;
+      setAttachments(prev => [...prev, { 
+        id: tempId, 
+        image_data: imageData, 
+        filename, 
+        isNew: true 
+      }]);
+      setPendingAttachments(prev => [...prev, { imageData, filename }]);
+    }
+  };
+
+  const handleRemovePhoto = async (photoId: string) => {
+    // Se é um anexo novo (ainda não salvo), apenas remove do estado
+    const attachment = attachments.find(a => a.id === photoId);
+    if (attachment?.isNew) {
+      setAttachments(prev => prev.filter(a => a.id !== photoId));
+      // Também remove dos pendentes pelo índice
+      const index = attachments.filter(a => a.isNew).findIndex(a => a.id === photoId);
+      if (index >= 0) {
+        setPendingAttachments(prev => prev.filter((_, i) => i !== index));
+      }
+      return;
+    }
+
+    // Se é anexo existente e estamos editando, deletar do servidor
+    if (isEditing && id) {
+      try {
+        await attachmentsService.remove(id, photoId);
+        setAttachments(prev => prev.filter(a => a.id !== photoId));
+        toast.success('Foto removida');
+      } catch (error) {
+        toast.error('Erro ao remover foto');
+      }
+    }
+  };
+
+  const uploadPendingAttachments = async (osId: string) => {
+    for (const pending of pendingAttachments) {
+      try {
+        await attachmentsService.upload(osId, {
+          image_data: pending.imageData,
+          filename: pending.filename
+        });
+      } catch (error) {
+        console.error('Erro ao fazer upload de foto:', error);
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
 
     try {
+      let osId = id;
+      
       if (isEditing) {
         await serviceOrdersService.update(id!, form);
         toast.success('OS atualizada com sucesso');
       } else {
-        await serviceOrdersService.create(form);
+        const response = await serviceOrdersService.create(form);
+        osId = response.data.id;
         toast.success('OS criada com sucesso');
       }
+      
+      // Upload de fotos pendentes
+      if (pendingAttachments.length > 0 && osId) {
+        toast.loading('Salvando fotos...', { id: 'photos-upload' });
+        await uploadPendingAttachments(osId);
+        toast.dismiss('photos-upload');
+        if (pendingAttachments.length > 0) {
+          toast.success(`${pendingAttachments.length} foto(s) salva(s)`);
+        }
+      }
+      
       // Limpar rascunho após salvar com sucesso
       clearDraft();
       navigate('/os');
@@ -493,6 +584,21 @@ export default function ServiceOrderForm() {
               <input id="warranty_days" name="warranty_days" type="number" min="0" value={form.warranty_days} onChange={handleChange} />
             </div>
           </div>
+        </div>
+
+        {/* Registro Fotográfico */}
+        <div className="form-section">
+          <h3>Registro Fotográfico</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+            Tire fotos do equipamento, peças ou defeitos encontrados. As fotos aparecerão no PDF da OS.
+          </p>
+          <PhotoCapture
+            attachments={attachments}
+            onAdd={handleAddPhoto}
+            onRemove={handleRemovePhoto}
+            maxPhotos={5}
+            disabled={saving}
+          />
         </div>
 
         <div className="form-actions">

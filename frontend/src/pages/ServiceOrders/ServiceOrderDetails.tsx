@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers } from 'react-icons/fi';
+import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers, FiCamera, FiMaximize2, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { serviceOrdersService, ServiceOrder, STATUSES, formatOrderNumber } from '../../services/serviceOrders.service';
+import attachmentsService, { Attachment } from '../../services/attachments.service';
 import PageHeader from '../../components/PageHeader';
 import { formatDocument, formatPhone } from '../../utils/masks';
 import LotePdfModal from '../../components/LotePdfModal';
@@ -22,6 +23,9 @@ export default function ServiceOrderDetails() {
   const [order, setOrder] = useState<ServiceOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [showLoteModal, setShowLoteModal] = useState(false);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [loadingAttachments, setLoadingAttachments] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const loadOrder = () => {
     serviceOrdersService.getById(id!)
@@ -30,7 +34,23 @@ export default function ServiceOrderDetails() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { loadOrder(); }, [id]);
+  const loadAttachments = async () => {
+    if (!id) return;
+    setLoadingAttachments(true);
+    try {
+      const data = await attachmentsService.listWithImages(id);
+      setAttachments(data);
+    } catch (error) {
+      console.error('Erro ao carregar anexos:', error);
+    } finally {
+      setLoadingAttachments(false);
+    }
+  };
+
+  useEffect(() => { 
+    loadOrder(); 
+    loadAttachments();
+  }, [id]);
 
   const handleStatusChange = async (newStatus: string) => {
     try {
@@ -403,6 +423,112 @@ export default function ServiceOrderDetails() {
           </div>
         </div>
 
+        {/* Registro Fotográfico */}
+        <div className="detail-section">
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <FiCamera /> Registro Fotográfico
+            {attachments.length > 0 && (
+              <span style={{ 
+                fontSize: '0.75rem', 
+                background: '#dbeafe', 
+                color: '#1e40af',
+                padding: '0.15rem 0.5rem',
+                borderRadius: '10px',
+                fontWeight: 500
+              }}>
+                {attachments.length} foto{attachments.length > 1 ? 's' : ''}
+              </span>
+            )}
+          </h3>
+          
+          {loadingAttachments ? (
+            <p className="loading-text">Carregando fotos...</p>
+          ) : attachments.length > 0 ? (
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
+              gap: '0.75rem',
+              marginTop: '0.5rem'
+            }}>
+              {attachments.map((attachment) => (
+                <div 
+                  key={attachment.id} 
+                  style={{ 
+                    position: 'relative',
+                    aspectRatio: '1',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    border: '1px solid var(--border-color)',
+                    background: 'var(--bg-secondary)'
+                  }}
+                  onClick={() => setPreviewImage(attachment.image_data || null)}
+                >
+                  {attachment.image_data ? (
+                    <img 
+                      src={attachment.image_data} 
+                      alt={attachment.caption || 'Foto'} 
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover' 
+                      }} 
+                    />
+                  ) : (
+                    <div style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      color: 'var(--text-muted)'
+                    }}>
+                      <FiCamera size={24} />
+                    </div>
+                  )}
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: 0,
+                    transition: 'opacity 0.2s',
+                    color: 'white'
+                  }}
+                  className="photo-hover-overlay"
+                  >
+                    <FiMaximize2 size={20} />
+                  </div>
+                  {attachment.caption && (
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      background: 'rgba(0,0,0,0.6)',
+                      color: 'white',
+                      fontSize: '0.65rem',
+                      padding: '0.25rem 0.4rem',
+                      textAlign: 'center',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {attachment.caption}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="empty-text" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+              <FiCamera style={{ opacity: 0.5 }} /> Nenhuma foto anexada
+            </p>
+          )}
+        </div>
+
         {/* Aviso legal */}
         <div style={{ marginTop: '1.5rem', padding: '0.75rem', background: '#fef3c7', borderRadius: '6px', fontSize: '0.8rem', color: '#92400e' }}>
           <strong>Aviso:</strong> Mediante a realização ou não do serviço, a máquina deverá ser retirada no prazo de 180 dias conforme a PL 2545/22. Contados a partir da autorização ou não do serviço.
@@ -417,6 +543,56 @@ export default function ServiceOrderDetails() {
           order={order}
           onPrint={handleLotePrint}
         />
+      )}
+
+      {/* Modal Preview de Foto */}
+      {previewImage && (
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.9)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem'
+          }}
+          onClick={() => setPreviewImage(null)}
+        >
+          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }} onClick={(e) => e.stopPropagation()}>
+            <button 
+              style={{
+                position: 'absolute',
+                top: '-40px',
+                right: 0,
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.1)',
+                color: 'white',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              onClick={() => setPreviewImage(null)}
+            >
+              <FiX size={20} />
+            </button>
+            <img 
+              src={previewImage} 
+              alt="Preview" 
+              style={{ 
+                maxWidth: '100%', 
+                maxHeight: '85vh', 
+                borderRadius: '8px',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
+              }} 
+            />
+          </div>
+        </div>
       )}
     </div>
   );

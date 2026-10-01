@@ -20,13 +20,22 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
 
     const company = await companySettingsRepository.get(tenantId);
     
+    // Buscar anexos/fotos da OS
+    const attachments = await db('os_attachments')
+      .where({ service_order_id: req.params.id, tenant_id: tenantId })
+      .select('id', 'image_data', 'caption', 'mime_type')
+      .orderBy('created_at', 'asc');
+    
     // Parâmetros de lote
     const printFullLote = req.query.lote === 'true' && order.lote_numero;
     const formato = req.query.formato || 'individual'; // 'individual' ou 'resumo'
     const statusFilter = req.query.status ? req.query.status.split(',') : null; // ex: 'concluida,entregue'
     const selectedIds = req.query.ids ? req.query.ids.split(',') : null; // IDs específicos selecionados
     
-    let ordersToRender = [order];
+    // Flag para incluir fotos no PDF (padrão: true se houver fotos)
+    const includePhotos = req.query.photos !== 'false' && attachments.length > 0;
+    
+    let ordersToRender = [{ ...order, attachments: includePhotos ? attachments : [] }];
     
     if (printFullLote) {
       // Buscar todas as OS do lote
@@ -61,9 +70,17 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
       
       const loteOrders = await query;
       
-      // Adicionar itens a cada OS
+      // Adicionar itens e anexos a cada OS
       for (const o of loteOrders) {
         o.items = await db('service_order_items').where({ service_order_id: o.id });
+        if (includePhotos) {
+          o.attachments = await db('os_attachments')
+            .where({ service_order_id: o.id, tenant_id: tenantId })
+            .select('id', 'image_data', 'caption', 'mime_type')
+            .orderBy('created_at', 'asc');
+        } else {
+          o.attachments = [];
+        }
       }
       
       ordersToRender = loteOrders;
@@ -102,19 +119,25 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
       const entryDate = orderToRender.entry_date ? formatDate(orderToRender.entry_date) : '___/___/______';
       const items = orderToRender.items || [];
       const totalValue = items.reduce((sum, item) => sum + parseFloat(item.quantity) * parseFloat(item.unit_price), 0);
+      const osAttachments = orderToRender.attachments || [];
 
-      // Renderiza a OS duas vezes (metade superior e metade inferior)
-      renderOS(doc, orderToRender, company, osNumber, entryDate, items, totalValue, footerText, 25);
+      // Se tem fotos, renderiza OS completa em página única
+      if (osAttachments.length > 0) {
+        renderOSWithPhotos(doc, orderToRender, company, osNumber, entryDate, items, totalValue, footerText, osAttachments);
+      } else {
+        // Renderiza a OS duas vezes (metade superior e metade inferior)
+        renderOS(doc, orderToRender, company, osNumber, entryDate, items, totalValue, footerText, 25);
 
-      // Linha tracejada de corte no meio
-      const halfPage = doc.page.height / 2;
-      doc.save();
-      doc.moveTo(25, halfPage).lineTo(doc.page.width - 25, halfPage).dash(5, { space: 3 }).stroke('#999');
-      doc.undash();
-      doc.restore();
+        // Linha tracejada de corte no meio
+        const halfPage = doc.page.height / 2;
+        doc.save();
+        doc.moveTo(25, halfPage).lineTo(doc.page.width - 25, halfPage).dash(5, { space: 3 }).stroke('#999');
+        doc.undash();
+        doc.restore();
 
-      // Segunda via (metade inferior)
-      renderOS(doc, orderToRender, company, osNumber, entryDate, items, totalValue, footerText, halfPage + 15);
+        // Segunda via (metade inferior)
+        renderOS(doc, orderToRender, company, osNumber, entryDate, items, totalValue, footerText, halfPage + 15);
+      }
     });
 
     doc.end();
@@ -122,6 +145,256 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
     next(error);
   }
 });
+
+function renderOSWithPhotos(doc, order, company, osNumber, entryDate, items, totalValue, footerText, attachments) {
+  const leftMargin = 30;
+  const pageWidth = doc.page.width - 60;
+  const rightCol = 370;
+  let y = 25;
+
+  // Logo da empresa (se existir)
+  const hasLogo = company && company.logo_url && company.logo_url.startsWith('data:image');
+  let textStartX = leftMargin;
+  
+  if (hasLogo) {
+    try {
+      doc.image(company.logo_url, leftMargin, y, { 
+        width: 70,
+        height: 45,
+        fit: [70, 45],
+        align: 'center',
+        valign: 'center'
+      });
+      textStartX = leftMargin + 80;
+    } catch (e) {
+      console.error('Erro ao carregar logo:', e.message);
+    }
+  }
+
+  // Cabeçalho empresa
+  if (hasLogo) {
+    doc.fontSize(11).font('Helvetica-Bold');
+    doc.text(company.name || 'OS Laboris', textStartX, y + 3, { width: pageWidth - 90 });
+    
+    doc.fontSize(7).font('Helvetica');
+    const phones = [company.phone, company.phone2].filter(Boolean).map(formatPhone).join(' | ');
+    if (phones) {
+      doc.text(phones, textStartX, y + 16, { width: pageWidth - 90 });
+    }
+    const address = buildAddress(company);
+    if (address) {
+      doc.text(address, textStartX, y + 25, { width: pageWidth - 90 });
+    }
+    y += 50;
+  } else {
+    doc.fontSize(13).font('Helvetica-Bold');
+    doc.text(company && company.name ? company.name : 'OS Laboris', leftMargin, y, { width: pageWidth, align: 'center' });
+    y += 15;
+
+    doc.fontSize(7).font('Helvetica');
+    if (company) {
+      const phones = [company.phone, company.phone2].filter(Boolean).map(formatPhone).join(' | ');
+      if (phones) {
+        doc.text(phones, leftMargin, y, { width: pageWidth, align: 'center' });
+        y += 9;
+      }
+      const address = buildAddress(company);
+      if (address) {
+        doc.text(address, leftMargin, y, { width: pageWidth, align: 'center' });
+        y += 9;
+      }
+    }
+  }
+
+  // Linha
+  doc.moveTo(leftMargin, y).lineTo(doc.page.width - 30, y).lineWidth(0.5).stroke('#333');
+  y += 6;
+
+  // Nº OS e Data
+  doc.fontSize(8).font('Helvetica-Bold');
+  doc.text('ORÇAMENTO Nº', leftMargin, y);
+  doc.fontSize(12).fillColor('#e11d48');
+  doc.text(osNumber, leftMargin + 75, y - 1);
+  doc.fillColor('#000');
+  doc.fontSize(8).font('Helvetica');
+  doc.text(`DATA: ${entryDate}`, rightCol, y);
+  y += 14;
+
+  // Cliente
+  doc.font('Helvetica-Bold').fontSize(7);
+  doc.text('CLIENTE: ', leftMargin, y, { continued: true });
+  doc.font('Helvetica').text(order.client_name || '');
+  doc.font('Helvetica-Bold').text('TEL: ', rightCol, y, { continued: true });
+  doc.font('Helvetica').text(formatPhone(order.client_phone || ''));
+  y += 10;
+
+  // Máquina
+  doc.font('Helvetica-Bold').text('MÁQUINA: ', leftMargin, y, { continued: true });
+  doc.font('Helvetica').text(`${order.equipment_type} - ${order.equipment_brand} ${order.equipment_model}`);
+  y += 10;
+
+  // Situação
+  doc.font('Helvetica-Bold').text('SITUAÇÃO: ', leftMargin, y, { continued: true });
+  doc.font('Helvetica').text(order.reported_defect || '', { width: pageWidth - 60 });
+  y += 10;
+
+  if (order.diagnosis) {
+    doc.font('Helvetica-Bold').text('DIAGNÓSTICO: ', leftMargin, y, { continued: true });
+    doc.font('Helvetica').text(order.diagnosis, { width: pageWidth - 80 });
+    y += 10;
+  }
+
+  // Linha antes tabela
+  y += 2;
+  doc.moveTo(leftMargin, y).lineTo(doc.page.width - 30, y).lineWidth(0.5).stroke('#333');
+  y += 3;
+
+  // Tabela de itens (compacta)
+  const colQtd = leftMargin;
+  const colDesc = leftMargin + 50;
+  const colValor = doc.page.width - 90;
+  const tableRight = doc.page.width - 30;
+  const rowHeight = 12;
+
+  // Header
+  doc.rect(colQtd, y, tableRight - colQtd, 12).fill('#f1f5f9').stroke('#ccc');
+  doc.fillColor('#333').fontSize(6).font('Helvetica-Bold');
+  doc.text('QTD', colQtd + 4, y + 3);
+  doc.text('PARECER TÉCNICO', colDesc + 4, y + 3);
+  doc.text('VALOR', colValor + 4, y + 3);
+  doc.fillColor('#000');
+  y += 12;
+
+  doc.font('Helvetica').fontSize(7);
+  const maxItems = Math.min(items.length, 5); // Máximo 5 itens para caber
+  for (let i = 0; i < maxItems; i++) {
+    doc.rect(colQtd, y, tableRight - colQtd, rowHeight).stroke('#ddd');
+    if (items[i]) {
+      doc.text(String(items[i].quantity), colQtd + 4, y + 2, { width: 40 });
+      doc.text(items[i].description, colDesc + 4, y + 2, { width: 300 });
+      doc.text(`R$ ${Number(items[i].unit_price).toFixed(2)}`, colValor + 4, y + 2);
+    }
+    y += rowHeight;
+  }
+  
+  if (items.length > 5) {
+    doc.fontSize(6).fillColor('#666');
+    doc.text(`... e mais ${items.length - 5} item(ns)`, colDesc + 4, y + 2);
+    doc.fillColor('#000');
+    y += 10;
+  }
+
+  // Total
+  y += 2;
+  doc.fontSize(8).font('Helvetica-Bold');
+  doc.text(`VALOR TOTAL:  R$ ${totalValue.toFixed(2)}`, colValor - 70, y);
+  y += 12;
+
+  // Pagamento e garantia
+  doc.fontSize(6).font('Helvetica');
+  doc.text(`Pagamento: ${order.payment_method || 'A combinar'}  |  Garantia: ${order.warranty_days || 90} dias  |  Técnico: ${order.technician_name || ''}`, leftMargin, y);
+  y += 10;
+
+  // Aviso legal (compacto)
+  doc.fontSize(5).font('Helvetica-Oblique').fillColor('#666');
+  doc.text(footerText, leftMargin, y, { width: pageWidth, align: 'center' });
+  doc.fillColor('#000');
+  y += 12;
+
+  // === SEÇÃO DE FOTOS ===
+  if (attachments.length > 0) {
+    doc.moveTo(leftMargin, y).lineTo(doc.page.width - 30, y).lineWidth(0.5).stroke('#333');
+    y += 8;
+    
+    doc.fontSize(9).font('Helvetica-Bold').fillColor('#1e40af');
+    doc.text('REGISTRO FOTOGRÁFICO', leftMargin, y, { width: pageWidth, align: 'center' });
+    doc.fillColor('#000');
+    y += 15;
+
+    // Calcular tamanho das fotos baseado na quantidade
+    const photoMargin = 10;
+    const availableWidth = pageWidth - (photoMargin * 2);
+    const availableHeight = doc.page.height - y - 80; // Espaço para assinaturas
+    
+    let photoWidth, photoHeight, cols;
+    
+    if (attachments.length === 1) {
+      cols = 1;
+      photoWidth = Math.min(300, availableWidth);
+      photoHeight = Math.min(200, availableHeight);
+    } else if (attachments.length === 2) {
+      cols = 2;
+      photoWidth = (availableWidth - photoMargin) / 2;
+      photoHeight = Math.min(180, availableHeight);
+    } else {
+      cols = 2;
+      photoWidth = (availableWidth - photoMargin) / 2;
+      photoHeight = Math.min(150, (availableHeight - photoMargin) / 2);
+    }
+
+    // Renderizar fotos em grid
+    attachments.slice(0, 4).forEach((attachment, index) => {
+      const col = index % cols;
+      const row = Math.floor(index / cols);
+      
+      const x = leftMargin + photoMargin + col * (photoWidth + photoMargin);
+      const photoY = y + row * (photoHeight + 20);
+      
+      try {
+        // Desenhar borda
+        doc.rect(x - 2, photoY - 2, photoWidth + 4, photoHeight + 4).stroke('#ddd');
+        
+        // Renderizar imagem
+        doc.image(attachment.image_data, x, photoY, {
+          fit: [photoWidth, photoHeight],
+          align: 'center',
+          valign: 'center'
+        });
+        
+        // Legenda
+        if (attachment.caption) {
+          doc.fontSize(6).font('Helvetica-Oblique').fillColor('#666');
+          doc.text(attachment.caption, x, photoY + photoHeight + 3, { 
+            width: photoWidth, 
+            align: 'center' 
+          });
+          doc.fillColor('#000');
+        }
+      } catch (e) {
+        console.error('Erro ao renderizar foto no PDF:', e.message);
+        doc.rect(x, photoY, photoWidth, photoHeight).fill('#f1f5f9').stroke('#ddd');
+        doc.fontSize(8).fillColor('#999');
+        doc.text('Erro ao carregar imagem', x, photoY + photoHeight / 2 - 5, { 
+          width: photoWidth, 
+          align: 'center' 
+        });
+        doc.fillColor('#000');
+      }
+    });
+
+    // Calcular posição Y final após as fotos
+    const rows = Math.ceil(Math.min(attachments.length, 4) / cols);
+    y += rows * (photoHeight + 25);
+    
+    if (attachments.length > 4) {
+      doc.fontSize(6).fillColor('#666');
+      doc.text(`+ ${attachments.length - 4} foto(s) adicional(is) disponível(is) no sistema`, leftMargin, y, { 
+        width: pageWidth, 
+        align: 'center' 
+      });
+      doc.fillColor('#000');
+      y += 10;
+    }
+  }
+
+  // Assinaturas (no final da página)
+  const signatureY = Math.max(y + 15, doc.page.height - 60);
+  doc.moveTo(leftMargin, signatureY).lineTo(200, signatureY).lineWidth(0.5).stroke('#333');
+  doc.moveTo(310, signatureY).lineTo(doc.page.width - 30, signatureY).stroke('#333');
+  doc.fontSize(6);
+  doc.text('Assinatura do Cliente', leftMargin, signatureY + 3, { width: 170, align: 'center' });
+  doc.text('Assinatura do Técnico', 310, signatureY + 3, { width: 220, align: 'center' });
+}
 
 function renderOS(doc, order, company, osNumber, entryDate, items, totalValue, footerText, startY) {
   const leftMargin = 30;

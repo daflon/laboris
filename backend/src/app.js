@@ -11,8 +11,8 @@ const app = express();
 // Middlewares globais
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
-app.use(express.json({ limit: '500kb' })); // Aumentado para suportar logo em Base64
-app.use(express.urlencoded({ limit: '500kb', extended: true }));
+app.use(express.json({ limit: '5mb' })); // Aumentado para suportar fotos em Base64
+app.use(express.urlencoded({ limit: '5mb', extended: true }));
 
 // Rotas da API (rate limiting aplicado nas rotas individuais)
 app.use('/api/v1', routes);
