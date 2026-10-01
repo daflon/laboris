@@ -57,42 +57,42 @@ export default function ServiceOrderDetails() {
     const statusLabel = getStatusLabel(order.status);
     const osNumber = formatOrderNumber(order);
 
-    let message = `Olá, *${order.client_name}*! 👋\n\n`;
+    let message = `Olá, *${order.client_name}*!\n\n`;
     message += `Segue informação sobre sua OS:\n\n`;
-    message += `📋 *OS #${osNumber}*\n`;
-    message += `🔧 Equipamento: ${order.equipment_type} ${order.equipment_brand} ${order.equipment_model}\n`;
-    message += `📌 Status: *${statusLabel}*\n`;
+    message += `• *OS #${osNumber}*\n`;
+    message += `• Equipamento: ${order.equipment_type} ${order.equipment_brand} ${order.equipment_model}\n`;
+    message += `• Status: *${statusLabel}*\n`;
 
     if (order.reported_defect) {
-      message += `\n❌ *Defeito Relatado:*\n${order.reported_defect}\n`;
+      message += `\n*Defeito Relatado:*\n${order.reported_defect}\n`;
     }
     if (order.diagnosis) {
-      message += `\n✅ *Diagnóstico:*\n${order.diagnosis}\n`;
+      message += `\n*Diagnóstico:*\n${order.diagnosis}\n`;
     }
 
     // Lista detalhada de itens com valores individuais
     if (order.items && order.items.length > 0) {
-      message += `\n📝 *Orçamento Detalhado:*\n`;
+      message += `\n*Orçamento Detalhado:*\n`;
       order.items.forEach((item) => {
         const subtotal = item.quantity * item.unit_price;
         if (item.quantity > 1) {
-          message += `• ${item.quantity}x ${item.description} - R$ ${Number(item.unit_price).toFixed(2)} (cada) = *R$ ${subtotal.toFixed(2)}*\n`;
+          message += `  - ${item.quantity}x ${item.description} - R$ ${Number(item.unit_price).toFixed(2)} (cada) = *R$ ${subtotal.toFixed(2)}*\n`;
         } else {
-          message += `• ${item.description} - *R$ ${subtotal.toFixed(2)}*\n`;
+          message += `  - ${item.description} - *R$ ${subtotal.toFixed(2)}*\n`;
         }
       });
-      message += `\n💰 *VALOR TOTAL: R$ ${totalValue.toFixed(2)}*\n`;
+      message += `\n*VALOR TOTAL: R$ ${totalValue.toFixed(2)}*\n`;
     }
 
     if (order.deposit_amount && order.deposit_amount > 0) {
-      message += `\n💵 *Sinal para realização do serviço: R$ ${Number(order.deposit_amount).toFixed(2)}*`;
+      message += `\n*Sinal para realização do serviço: R$ ${Number(order.deposit_amount).toFixed(2)}*`;
     }
 
     if (order.payment_method) {
-      message += `\n💳 Pagamento: ${order.payment_method}`;
+      message += `\nPagamento: ${order.payment_method}`;
     }
     if (order.warranty_days) {
-      message += `\n🛡️ Garantia: ${order.warranty_days} dias`;
+      message += `\nGarantia: ${order.warranty_days} dias`;
     }
 
     message += `\n\n_Mediante a realização ou não do serviço, a máquina deverá ser retirada no prazo de 180 dias (PL 2545/22)._`;
