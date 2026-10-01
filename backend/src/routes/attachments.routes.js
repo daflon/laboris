@@ -6,7 +6,6 @@
 
 const { Router } = require('express');
 const db = require('../database/connection');
-const { authenticate } = require('../middlewares/auth');
 
 const router = Router();
 
@@ -19,7 +18,7 @@ const MAX_BASE64_SIZE = 3 * 1024 * 1024; // 3MB
  * GET /api/v1/service-orders/:osId/attachments
  * Lista todos os anexos de uma OS
  */
-router.get('/service-orders/:osId/attachments', authenticate, async (req, res) => {
+router.get('/:osId/attachments', async (req, res) => {
   try {
     const { osId } = req.params;
     const tenantId = req.user.tenant_id;
@@ -49,7 +48,7 @@ router.get('/service-orders/:osId/attachments', authenticate, async (req, res) =
  * GET /api/v1/service-orders/:osId/attachments/:attachmentId
  * Retorna um anexo específico com a imagem em Base64
  */
-router.get('/service-orders/:osId/attachments/:attachmentId', authenticate, async (req, res) => {
+router.get('/:osId/attachments/:attachmentId', async (req, res) => {
   try {
     const { osId, attachmentId } = req.params;
     const tenantId = req.user.tenant_id;
@@ -78,7 +77,7 @@ router.get('/service-orders/:osId/attachments/:attachmentId', authenticate, asyn
  * Upload de um novo anexo (foto em Base64)
  * Body: { image_data: "data:image/jpeg;base64,...", caption?: "Legenda", filename?: "foto.jpg" }
  */
-router.post('/service-orders/:osId/attachments', authenticate, async (req, res) => {
+router.post('/:osId/attachments', async (req, res) => {
   try {
     const { osId } = req.params;
     const tenantId = req.user.tenant_id;
@@ -152,7 +151,7 @@ router.post('/service-orders/:osId/attachments', authenticate, async (req, res) 
  * DELETE /api/v1/service-orders/:osId/attachments/:attachmentId
  * Remove um anexo
  */
-router.delete('/service-orders/:osId/attachments/:attachmentId', authenticate, async (req, res) => {
+router.delete('/:osId/attachments/:attachmentId', async (req, res) => {
   try {
     const { osId, attachmentId } = req.params;
     const tenantId = req.user.tenant_id;
@@ -180,7 +179,7 @@ router.delete('/service-orders/:osId/attachments/:attachmentId', authenticate, a
  * GET /api/v1/service-orders/:osId/attachments-images
  * Retorna todos os anexos COM as imagens (para o PDF)
  */
-router.get('/service-orders/:osId/attachments-images', authenticate, async (req, res) => {
+router.get('/:osId/attachments-images', async (req, res) => {
   try {
     const { osId } = req.params;
     const tenantId = req.user.tenant_id;

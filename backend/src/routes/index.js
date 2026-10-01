@@ -54,7 +54,7 @@ router.use('/faturamento', faturamentoRoutes);
 router.get('/clients/:id/equipment', authenticate, equipmentController.findByClientId);
 router.get('/equipment/:id/history', authenticate, serviceOrdersController.findByEquipmentId);
 
-// Rotas de anexos (fotos) - usa o prefixo /service-orders internamente
-router.use('/', attachmentsRoutes);
+// Rotas de anexos (fotos) - montadas sob /service-orders
+router.use('/service-orders', authenticate, attachmentsRoutes);
 
 module.exports = router;
