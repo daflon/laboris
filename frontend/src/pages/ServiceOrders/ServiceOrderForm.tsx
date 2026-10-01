@@ -237,26 +237,41 @@ export default function ServiceOrderForm() {
   const totalValue = form.items.reduce((sum, item) => sum + item.quantity * item.unit_price, 0);
 
   // Handlers para fotos
-  const handleAddPhoto = (imageData: string, filename: string) => {
-    if (isEditing) {
-      // Se editando, adicionar à lista de anexos com flag isNew
-      const tempId = `temp_${Date.now()}`;
-      setAttachments(prev => [...prev, { 
-        id: tempId, 
-        image_data: imageData, 
-        filename, 
-        isNew: true 
-      }]);
-      setPendingAttachments(prev => [...prev, { imageData, filename }]);
+  const handleAddPhoto = async (imageData: string, filename: string) => {
+    const tempId = `temp_${Date.now()}`;
+    
+    // Adiciona à lista visual imediatamente
+    setAttachments(prev => [...prev, { 
+      id: tempId, 
+      image_data: imageData, 
+      filename, 
+      isNew: true 
+    }]);
+    
+    if (isEditing && id) {
+      // Se editando, fazer upload imediato
+      try {
+        toast.loading('Salvando foto...', { id: 'photo-upload' });
+        const result = await attachmentsService.upload(id, {
+          image_data: imageData,
+          filename: filename
+        });
+        // Atualiza o ID temporário pelo ID real
+        setAttachments(prev => prev.map(a => 
+          a.id === tempId ? { ...a, id: result.id, isNew: false } : a
+        ));
+        toast.dismiss('photo-upload');
+        toast.success('Foto salva!');
+      } catch (error: any) {
+        // Remove da lista se falhou
+        setAttachments(prev => prev.filter(a => a.id !== tempId));
+        toast.dismiss('photo-upload');
+        const msg = error.response?.data?.error || 'Erro ao salvar foto';
+        toast.error(msg);
+        console.error('Erro ao fazer upload:', error);
+      }
     } else {
       // Se criando nova OS, guardar para upload após criação
-      const tempId = `temp_${Date.now()}`;
-      setAttachments(prev => [...prev, { 
-        id: tempId, 
-        image_data: imageData, 
-        filename, 
-        isNew: true 
-      }]);
       setPendingAttachments(prev => [...prev, { imageData, filename }]);
     }
   };
@@ -287,16 +302,23 @@ export default function ServiceOrderForm() {
   };
 
   const uploadPendingAttachments = async (osId: string) => {
+    const errors: string[] = [];
     for (const pending of pendingAttachments) {
       try {
         await attachmentsService.upload(osId, {
           image_data: pending.imageData,
           filename: pending.filename
         });
-      } catch (error) {
+      } catch (error: any) {
         console.error('Erro ao fazer upload de foto:', error);
+        const msg = error.response?.data?.error || 'Erro ao salvar foto';
+        errors.push(msg);
       }
     }
+    if (errors.length > 0) {
+      errors.forEach(err => toast.error(err));
+    }
+    return errors.length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
