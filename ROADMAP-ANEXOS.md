@@ -1,6 +1,6 @@
 # Módulo de Anexos/Fotos na OS
 
-> **Status:** Planejado  
+> **Status:** ✅ Concluído (01/10/2026)  
 > **Origem:** Demanda ESM (cliente com lava-jato que precisa de prova fotográfica)  
 > **Data:** Agosto/2026
 
@@ -68,17 +68,17 @@ Técnicos precisam registrar fotos de peças, defeitos e condições do equipame
 ## Tarefas de Implementação
 
 ### Backend
-- [ ] Migration: criar tabela `os_attachments`
-- [ ] Endpoint POST `/api/v1/service-orders/:id/attachments` (upload)
-- [ ] Endpoint GET `/api/v1/service-orders/:id/attachments` (listar)
-- [ ] Endpoint DELETE `/api/v1/service-orders/:id/attachments/:attachmentId`
-- [ ] Atualizar geração de PDF para incluir fotos
+- [x] Migration: criar tabela `os_attachments`
+- [x] Endpoint POST `/api/v1/service-orders/:id/attachments` (upload)
+- [x] Endpoint GET `/api/v1/service-orders/:id/attachments` (listar)
+- [x] Endpoint DELETE `/api/v1/service-orders/:id/attachments/:attachmentId`
+- [x] Atualizar geração de PDF para incluir fotos
 
 ### Frontend
-- [ ] Componente `PhotoCapture` (câmera/galeria)
-- [ ] Compressão de imagem antes do upload (canvas resize + quality)
-- [ ] Galeria com lightbox na tela de detalhes
-- [ ] Integrar na tela de criação/edição de OS
+- [x] Componente `PhotoCapture` (câmera/galeria)
+- [x] Compressão de imagem antes do upload (canvas resize + quality)
+- [x] Galeria com lightbox na tela de detalhes
+- [x] Integrar na tela de criação/edição de OS
 
 ### Estimativa
 - MVP funcional: ~2-3 dias
