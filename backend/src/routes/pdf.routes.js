@@ -33,7 +33,7 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
     const selectedIds = req.query.ids ? req.query.ids.split(',') : null; // IDs específicos selecionados
     
     // Flag para incluir fotos no PDF (padrão: true se houver fotos)
-    const includePhotos = req.query.photos !== 'false' && attachments.length > 0;
+    const includePhotos = req.query.noPhotos !== 'true' && req.query.photos !== 'false' && attachments.length > 0;
     
     let ordersToRender = [{ ...order, attachments: includePhotos ? attachments : [] }];
     
@@ -71,9 +71,10 @@ router.get('/service-orders/:id/pdf', async (req, res, next) => {
       const loteOrders = await query;
       
       // Adicionar itens e anexos a cada OS
+      const shouldIncludePhotos = req.query.noPhotos !== 'true' && req.query.photos !== 'false';
       for (const o of loteOrders) {
         o.items = await db('service_order_items').where({ service_order_id: o.id });
-        if (includePhotos) {
+        if (shouldIncludePhotos) {
           o.attachments = await db('os_attachments')
             .where({ service_order_id: o.id, tenant_id: tenantId })
             .select('id', 'image_data', 'caption', 'mime_type')

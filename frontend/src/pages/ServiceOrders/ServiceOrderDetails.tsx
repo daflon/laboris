@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers, FiCamera, FiMaximize2, FiX } from 'react-icons/fi';
+import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers, FiCamera, FiMaximize2, FiX, FiImage } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { serviceOrdersService, ServiceOrder, STATUSES, formatOrderNumber } from '../../services/serviceOrders.service';
 import attachmentsService, { Attachment } from '../../services/attachments.service';
@@ -23,6 +23,7 @@ export default function ServiceOrderDetails() {
   const [order, setOrder] = useState<ServiceOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [showLoteModal, setShowLoteModal] = useState(false);
+  const [showPdfModal, setShowPdfModal] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [loadingAttachments, setLoadingAttachments] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -121,16 +122,23 @@ export default function ServiceOrderDetails() {
     window.open(url, '_blank');
   };
 
-  const handlePrint = async (printFullLote = false, loteOptions?: { formato: 'individual' | 'resumo'; selectedIds: string[] }) => {
+  const handlePrint = async (printFullLote = false, loteOptions?: { formato: 'individual' | 'resumo'; selectedIds: string[] }, includePhotos = true) => {
     let pdfEndpoint = `/api/v1/pdf/service-orders/${id}/pdf`;
+    const params = new URLSearchParams();
     
     if (printFullLote && order.lote_numero && loteOptions) {
-      const params = new URLSearchParams();
       params.append('lote', 'true');
       params.append('formato', loteOptions.formato);
       if (loteOptions.selectedIds.length > 0) {
         params.append('ids', loteOptions.selectedIds.join(','));
       }
+    }
+    
+    if (!includePhotos) {
+      params.append('noPhotos', 'true');
+    }
+    
+    if (params.toString()) {
       pdfEndpoint = `/api/v1/pdf/service-orders/${id}/pdf?${params.toString()}`;
     }
     
@@ -187,8 +195,8 @@ export default function ServiceOrderDetails() {
     }
   };
 
-  const handleLotePrint = (options: { formato: 'individual' | 'resumo'; selectedIds: string[] }) => {
-    handlePrint(true, options);
+  const handleLotePrint = (options: { formato: 'individual' | 'resumo'; selectedIds: string[] }, includePhotos = true) => {
+    handlePrint(true, options, includePhotos);
   };
 
   const handleDuplicate = async () => {
@@ -218,14 +226,14 @@ export default function ServiceOrderDetails() {
         <button className="btn btn-secondary" onClick={handleDuplicate}>
           <FiCopy /> Duplicar
         </button>
-        <button className="btn btn-secondary" onClick={handleAddToLote} style={{ background: '#dbeafe', color: '#1e40af' }}>
+        <button className="btn btn-secondary" onClick={handleAddToLote} style={{ background: '#8b5cf6', color: 'white' }}>
           <FiPlus /> Adicionar ao Lote
         </button>
         <button className="btn btn-success" onClick={handleWhatsApp} style={{ background: '#25d366', color: 'white' }}>
           <FiMessageCircle /> WhatsApp
         </button>
         {!order.lote_numero && (
-          <button className="btn btn-secondary" onClick={() => handlePrint(false)}>
+          <button className="btn btn-secondary" onClick={() => attachments.length > 0 ? setShowPdfModal(true) : handlePrint(false, undefined, false)}>
             <FiPrinter /> PDF
           </button>
         )}
@@ -543,6 +551,106 @@ export default function ServiceOrderDetails() {
           order={order}
           onPrint={handleLotePrint}
         />
+      )}
+
+      {/* Modal Opções de PDF */}
+      {showPdfModal && (
+        <div 
+          className="modal-overlay"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9998,
+            padding: '1rem'
+          }}
+          onClick={() => setShowPdfModal(false)}
+        >
+          <div 
+            style={{
+              background: 'var(--bg-primary)',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              width: '100%',
+              maxWidth: '360px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>
+              <FiPrinter style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+              Gerar PDF
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
+              Esta OS possui {attachments.length} foto{attachments.length > 1 ? 's' : ''}. Deseja incluir no PDF?
+            </p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <button
+                onClick={() => { setShowPdfModal(false); handlePrint(false, undefined, true); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.75rem',
+                  padding: '1rem',
+                  background: 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  minHeight: '56px'
+                }}
+              >
+                <FiImage size={20} />
+                Com Fotos
+              </button>
+              
+              <button
+                onClick={() => { setShowPdfModal(false); handlePrint(false, undefined, false); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.75rem',
+                  padding: '1rem',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  minHeight: '56px'
+                }}
+              >
+                <FiPrinter size={20} />
+                Sem Fotos
+              </button>
+            </div>
+            
+            <button
+              onClick={() => setShowPdfModal(false)}
+              style={{
+                width: '100%',
+                marginTop: '1rem',
+                padding: '0.75rem',
+                background: 'transparent',
+                color: 'var(--text-secondary)',
+                border: 'none',
+                fontSize: '0.9rem',
+                cursor: 'pointer'
+              }}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Modal Preview de Foto */}
