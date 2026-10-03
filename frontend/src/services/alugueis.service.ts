@@ -165,6 +165,11 @@ export const alugueisService = {
   }) {
     const response = await api.post(`/alugueis/${id}/pagamentos`, data);
     return response.data;
+  },
+
+  async gerarFatura(id: string, incluirPendente: boolean = true) {
+    const response = await api.post(`/alugueis/${id}/fatura`, { incluir_pendente: incluirPendente });
+    return response.data;
   }
 };
 

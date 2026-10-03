@@ -1,0 +1,30 @@
+- generic [ref=f4e3]:
+  - complementary [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - heading "OS Laboris" [level=1] [ref=f4e6]
+      - text: Assistência Técnica
+    - navigation [ref=f4e7]:
+      - link "Dashboard" [ref=f4e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Ordens de Serviço" [ref=f4e13] [cursor=pointer]:
+        - /url: /os
+      - link "Clientes" [ref=f4e18] [cursor=pointer]:
+        - /url: /clientes
+      - link "Técnicos" [ref=f4e25] [cursor=pointer]:
+        - /url: /tecnicos
+      - link "Equipamentos" [ref=f4e29] [cursor=pointer]:
+        - /url: /equipamentos
+    - generic [ref=f4e33]:
+      - button "Painel Master" [ref=f4e34] [cursor=pointer]
+      - link "Configurações" [ref=f4e38] [cursor=pointer]:
+        - /url: /configuracoes
+      - button "Sair" [ref=f4e43] [cursor=pointer]
+    - generic [ref=f4e48]:
+      - generic [ref=f4e49]: OS Laboris
+      - 'link "Suporte: (21) 97430-3932" [ref=f4e50] [cursor=pointer]':
+        - /url: https://wa.me/5521974303932
+  - main [ref=f4e51]:
+    - generic [ref=f4e52]:
+      - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=f4e58]
+      - button "Mudar para tema claro" [ref=f4e59] [cursor=pointer]: ☀️
+    - paragraph [ref=f4e60]: Carregando aluguéis...

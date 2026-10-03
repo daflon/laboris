@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiPlus, FiCheck, FiTrash2, FiDollarSign, FiTrendingUp, FiTrendingDown, FiLink, FiXCircle, FiFileText } from 'react-icons/fi';
+import { FiPlus, FiCheck, FiTrash2, FiDollarSign, FiTrendingUp, FiTrendingDown, FiLink, FiXCircle, FiFileText, FiPackage } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { financeiroService, FinancialEntry, FinancialSummary } from '../../services/financeiro.service';
 import { serviceOrdersService, ServiceOrder, formatOrderNumber } from '../../services/serviceOrders.service';
@@ -88,9 +88,9 @@ export default function FinanceiroPage() {
   };
 
   const handleDelete = async (entry: FinancialEntry) => {
-    // Se está vinculado a OS, não pode excluir - só cancelar
-    if (entry.service_order_id) {
-      toast.error('Lançamentos vinculados a OS não podem ser excluídos. Use cancelar.');
+    // Se está vinculado a OS ou Aluguel, não pode excluir - só cancelar
+    if (entry.service_order_id || entry.aluguel_id) {
+      toast.error('Lançamentos vinculados não podem ser excluídos. Use cancelar.');
       return;
     }
     
@@ -102,7 +102,7 @@ export default function FinanceiroPage() {
       loadData();
     } catch (error: any) {
       if (error.response?.data?.error?.linked) {
-        toast.error('Lançamentos vinculados a OS não podem ser excluídos');
+        toast.error('Lançamentos vinculados não podem ser excluídos');
       } else {
         toast.error('Erro ao excluir');
       }
@@ -164,6 +164,36 @@ export default function FinanceiroPage() {
               <span className="dash-card-label">Saldo Previsto</span>
               <span style={{ fontSize: '0.65rem', color: '#64748b', marginTop: '2px' }}>Se tudo for quitado</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Resumo de Aluguéis (se houver) */}
+      {summary && summary.qtdAlugueis > 0 && (
+        <div style={{ 
+          background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)', 
+          borderRadius: '12px', 
+          padding: '1rem 1.5rem', 
+          marginBottom: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          color: 'white'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <FiPackage size={24} />
+            <div>
+              <div style={{ fontWeight: 600 }}>Receita de Aluguéis</div>
+              <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>{summary.qtdAlugueis} pagamento{summary.qtdAlugueis > 1 ? 's' : ''} recebido{summary.qtdAlugueis > 1 ? 's' : ''}</div>
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{formatCurrency(summary.alugueisRecebidos)}</div>
+            {summary.totalAlugueis > summary.alugueisRecebidos && (
+              <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                {formatCurrency(summary.totalAlugueis - summary.alugueisRecebidos)} pendente
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -267,6 +297,15 @@ export default function FinanceiroPage() {
                         <FiLink size={12} />
                         #{formatOrderNumber(linkedOs)}
                       </span>
+                    ) : entry.aluguel_id ? (
+                      <span 
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#7c3aed', fontWeight: 500, cursor: 'pointer' }}
+                        onClick={() => navigate(`/alugueis/${entry.aluguel_id}`)}
+                        title="Ver aluguel"
+                      >
+                        <FiPackage size={12} />
+                        #{String(entry.aluguel_numero).padStart(4, '0')}
+                      </span>
                     ) : (
                       <span style={{ color: '#9ca3af' }}>—</span>
                     )}
@@ -288,12 +327,12 @@ export default function FinanceiroPage() {
                         <FiCheck />
                       </button>
                     )}
-                    {!isCanceled && entry.service_order_id && (
+                    {!isCanceled && (entry.service_order_id || entry.aluguel_id) && (
                       <button className="btn-icon btn-icon-warning" title="Cancelar (manter histórico)" onClick={() => handleCancel(entry.id)}>
                         <FiXCircle />
                       </button>
                     )}
-                    {!entry.service_order_id && !isCanceled && (
+                    {!entry.service_order_id && !entry.aluguel_id && !isCanceled && (
                       <button className="btn-icon btn-icon-danger" title="Excluir" onClick={() => handleDelete(entry)}>
                         <FiTrash2 />
                       </button>

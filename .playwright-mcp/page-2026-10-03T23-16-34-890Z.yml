@@ -1,0 +1,71 @@
+- generic [ref=f3e3]:
+  - complementary [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - heading "OS Laboris" [level=1] [ref=f3e6]
+      - text: Assistência Técnica
+    - navigation [ref=f3e7]:
+      - link "Dashboard" [ref=f3e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Ordens de Serviço" [ref=f3e13] [cursor=pointer]:
+        - /url: /os
+      - link "Clientes" [ref=f3e18] [cursor=pointer]:
+        - /url: /clientes
+      - link "Técnicos" [ref=f3e25] [cursor=pointer]:
+        - /url: /tecnicos
+      - link "Equipamentos" [ref=f3e29] [cursor=pointer]:
+        - /url: /equipamentos
+    - generic [ref=f3e33]:
+      - button "Painel Master" [ref=f3e34] [cursor=pointer]
+      - link "Configurações" [ref=f3e38] [cursor=pointer]:
+        - /url: /configuracoes
+      - button "Sair" [ref=f3e43] [cursor=pointer]
+    - generic [ref=f3e48]:
+      - generic [ref=f3e49]: OS Laboris
+      - 'link "Suporte: (21) 97430-3932" [ref=f3e50] [cursor=pointer]':
+        - /url: https://wa.me/5521974303932
+  - main [ref=f3e51]:
+    - generic [ref=f3e52]:
+      - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=f3e58]
+      - button "Mudar para tema claro" [ref=f3e59] [cursor=pointer]: ☀️
+    - generic [ref=f3e60]:
+      - generic [ref=f3e61]:
+        - heading "Novo Aluguel" [level=2] [ref=f3e62]
+        - button "Voltar" [ref=f3e64] [cursor=pointer]
+      - generic [ref=f3e67]:
+        - generic [ref=f3e68]:
+          - generic [ref=f3e69]:
+            - generic [ref=f3e70]: Equipamento *
+            - combobox "Equipamento *" [ref=f3e75]:
+              - option "Selecione o equipamento..." [selected]
+            - generic [ref=f3e76]: Nenhum equipamento disponível. Cadastre ou libere equipamentos primeiro.
+          - generic [ref=f3e77]:
+            - generic [ref=f3e78]: Cliente *
+            - combobox "Cliente *" [ref=f3e82]:
+              - option "Selecione o cliente..." [selected]
+          - generic [ref=f3e83]:
+            - generic [ref=f3e84]: Data de Início *
+            - textbox "Data de Início *" [ref=f3e85]: 2026-10-03
+          - generic [ref=f3e86]:
+            - generic [ref=f3e87]: Previsão de Devolução *
+            - textbox "Previsão de Devolução *" [ref=f3e88]
+          - generic [ref=f3e89]:
+            - generic [ref=f3e90]: Tipo de Cobrança
+            - combobox "Tipo de Cobrança" [ref=f3e91]:
+              - option "Diária" [selected]
+              - option "Semanal"
+              - option "Mensal"
+              - option "Valor Fixo"
+          - generic [ref=f3e92]:
+            - generic [ref=f3e93]: Valor Acordado (R$) *
+            - spinbutton "Valor Acordado (R$) *" [ref=f3e94]
+          - generic [ref=f3e95]:
+            - generic [ref=f3e96]: Condição do Equipamento na Saída
+            - textbox "Condição do Equipamento na Saída" [ref=f3e97]:
+              - /placeholder: Descreva as condições do equipamento ao ser entregue ao cliente...
+          - generic [ref=f3e98]:
+            - generic [ref=f3e99]: Observações
+            - textbox "Observações" [ref=f3e100]:
+              - /placeholder: Observações gerais sobre o aluguel...
+        - generic [ref=f3e101]:
+          - button "Cancelar" [ref=f3e102] [cursor=pointer]
+          - button "Criar Aluguel" [ref=f3e103] [cursor=pointer]

@@ -1,0 +1,146 @@
+- generic [ref=f1e34]:
+  - complementary [ref=f1e35]:
+    - generic [ref=f1e36]:
+      - heading "Empresa Master" [level=1] [ref=f1e37]
+      - text: Assistência Técnica
+    - navigation [ref=f1e38]:
+      - link "Dashboard" [ref=f1e39] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Ordens de Serviço 13" [ref=f1e98] [cursor=pointer]:
+        - /url: /os
+        - generic [ref=f1e48]: Ordens de Serviço
+        - generic [ref=f1e99]: "13"
+      - link "Clientes" [ref=f1e49] [cursor=pointer]:
+        - /url: /clientes
+      - link "Técnicos" [ref=f1e56] [cursor=pointer]:
+        - /url: /tecnicos
+      - link "Equipamentos" [ref=f1e60] [cursor=pointer]:
+        - /url: /equipamentos
+      - link "Financeiro" [ref=f1e100] [cursor=pointer]:
+        - /url: /financeiro
+      - link "Faturamento" [ref=f1e104] [cursor=pointer]:
+        - /url: /faturamento
+      - link "Aluguéis" [ref=f1e107] [cursor=pointer]:
+        - /url: /alugueis
+    - generic [ref=f1e64]:
+      - button "Painel Master" [ref=f1e65] [cursor=pointer]
+      - link "Configurações" [ref=f1e69] [cursor=pointer]:
+        - /url: /configuracoes
+      - button "Sair" [ref=f1e74] [cursor=pointer]
+    - generic [ref=f1e79]:
+      - generic [ref=f1e80]: OS Laboris
+      - 'link "Suporte: (21) 97430-3932" [ref=f1e81] [cursor=pointer]':
+        - /url: https://wa.me/5521974303932
+  - main [ref=f1e82]:
+    - alert [ref=f1e83]:
+      - generic [ref=f1e86]:
+        - text: Você está acessando como
+        - strong [ref=f1e87]: "\"Empresa Master\""
+      - button "Sair do modo impersonate" [ref=f1e88] [cursor=pointer]
+    - generic [ref=f1e89]:
+      - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=f1e95]
+      - button "Mudar para tema claro" [ref=f1e96] [cursor=pointer]: ☀️
+    - generic [ref=f1e113]:
+      - heading "Dashboard" [level=2] [ref=f1e114]
+      - generic [ref=f1e115]:
+        - generic "Clique para ver lista de OS antigas" [ref=f1e116] [cursor=pointer]:
+          - generic [ref=f1e117]: ⏰
+          - generic [ref=f1e118]:
+            - strong [ref=f1e119]: "45"
+            - text: OS paradas há mais de 30 dias
+        - generic "Equipamentos que podem ser descartados (Lei 180 dias)" [ref=f1e120] [cursor=pointer]:
+          - generic [ref=f1e121]: ⚠️
+          - generic [ref=f1e122]:
+            - strong [ref=f1e123]: "6"
+            - text: equipamentos há mais de 180 dias
+      - generic [ref=f1e124]:
+        - generic [ref=f1e129] [cursor=pointer]:
+          - generic [ref=f1e130]: "5"
+          - generic [ref=f1e131]: 📋 Abertas
+        - generic [ref=f1e137] [cursor=pointer]:
+          - generic [ref=f1e138]: "5"
+          - generic [ref=f1e139]: 📞 Avisadas
+        - generic [ref=f1e145] [cursor=pointer]:
+          - generic [ref=f1e146]: "3"
+          - generic [ref=f1e147]: ⏳ Aguardando Peça
+        - generic [ref=f1e153] [cursor=pointer]:
+          - generic [ref=f1e154]: "36"
+          - generic [ref=f1e155]: ✅ Concluídas
+        - generic [ref=f1e161] [cursor=pointer]:
+          - generic [ref=f1e162]: "57"
+          - generic [ref=f1e163]: 📦 Entregues
+        - generic [ref=f1e171] [cursor=pointer]:
+          - generic [ref=f1e172]: "17"
+          - generic [ref=f1e173]: 👥 Clientes
+      - generic [ref=f1e174]:
+        - generic [ref=f1e175]:
+          - heading "Em andamento (13)" [level=3] [ref=f1e176]
+          - generic [ref=f1e180]:
+            - generic [ref=f1e181]:
+              - generic [ref=f1e182]: 📋
+              - text: "Aberta:"
+              - strong [ref=f1e183]: "5"
+            - generic [ref=f1e184]:
+              - generic [ref=f1e185]: 📞
+              - text: "Avisada:"
+              - strong [ref=f1e186]: "5"
+            - generic [ref=f1e187]:
+              - generic [ref=f1e188]: ⏳
+              - text: "Aguardando Peça:"
+              - strong [ref=f1e189]: "3"
+        - generic [ref=f1e190]:
+          - heading "🏆 Ranking de Técnicos" [level=3] [ref=f1e191]
+          - generic [ref=f1e192]:
+            - generic [ref=f1e193]:
+              - generic [ref=f1e194]: 🥇
+              - generic [ref=f1e196]:
+                - generic [ref=f1e197]: Fernando
+                - generic [ref=f1e198]: 26 OS
+            - generic [ref=f1e201]:
+              - generic [ref=f1e202]: 🥈
+              - generic [ref=f1e204]:
+                - generic [ref=f1e205]: Igor
+                - generic [ref=f1e206]: 26 OS
+            - generic [ref=f1e209]:
+              - generic [ref=f1e210]: 🥉
+              - generic [ref=f1e212]:
+                - generic [ref=f1e213]: Carlos
+                - generic [ref=f1e214]: 23 OS
+            - generic [ref=f1e217]:
+              - generic [ref=f1e218]: "4."
+              - generic [ref=f1e220]:
+                - generic [ref=f1e221]: Marcos
+                - generic [ref=f1e222]: 15 OS
+            - generic [ref=f1e225]:
+              - generic [ref=f1e226]: "5."
+              - generic [ref=f1e228]:
+                - generic [ref=f1e229]: Felipe
+                - generic [ref=f1e230]: 3 OS
+        - generic [ref=f1e233]:
+          - heading "Últimas OS" [level=3] [ref=f1e234]
+          - generic [ref=f1e235]:
+            - generic [ref=f1e236] [cursor=pointer]:
+              - generic [ref=f1e237]:
+                - strong [ref=f1e238]: "#0103"
+                - text: Charles Daflon
+              - generic [ref=f1e239]: 📋 Aberta
+            - generic [ref=f1e240] [cursor=pointer]:
+              - generic [ref=f1e241]:
+                - strong [ref=f1e242]: "#0102"
+                - text: Charles Daflon
+              - generic [ref=f1e243]: 📋 Aberta
+            - generic [ref=f1e244] [cursor=pointer]:
+              - generic [ref=f1e245]:
+                - strong [ref=f1e246]: "#0101"
+                - text: Rafael Souza
+              - generic [ref=f1e247]: ✅ Concluída
+            - generic [ref=f1e248] [cursor=pointer]:
+              - generic [ref=f1e249]:
+                - strong [ref=f1e250]: "#0100"
+                - text: Ana Paula Rodrigues
+              - generic [ref=f1e251]: ✅ Concluída
+            - generic [ref=f1e252] [cursor=pointer]:
+              - generic [ref=f1e253]:
+                - strong [ref=f1e254]: "#0099"
+                - text: João Silva Ferreira
+              - generic [ref=f1e255]: ✅ Concluída

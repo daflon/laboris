@@ -1,0 +1,214 @@
+- generic [ref=f4e3]:
+  - complementary [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - heading "Empresa Master" [level=1] [ref=f4e61]
+      - text: Assistência Técnica
+    - navigation [ref=f4e7]:
+      - link "Dashboard" [ref=f4e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Ordens de Serviço 13" [ref=f4e62] [cursor=pointer]:
+        - /url: /os
+        - generic [ref=f4e17]: Ordens de Serviço
+        - generic [ref=f4e63]: "13"
+      - link "Clientes" [ref=f4e18] [cursor=pointer]:
+        - /url: /clientes
+      - link "Técnicos" [ref=f4e25] [cursor=pointer]:
+        - /url: /tecnicos
+      - link "Equipamentos" [ref=f4e29] [cursor=pointer]:
+        - /url: /equipamentos
+      - link "Financeiro" [ref=f4e64] [cursor=pointer]:
+        - /url: /financeiro
+      - link "Faturamento" [ref=f4e68] [cursor=pointer]:
+        - /url: /faturamento
+      - link "Aluguéis" [ref=f4e71] [cursor=pointer]:
+        - /url: /alugueis
+    - generic [ref=f4e33]:
+      - button "Painel Master" [ref=f4e34] [cursor=pointer]
+      - link "Configurações" [ref=f4e38] [cursor=pointer]:
+        - /url: /configuracoes
+      - button "Sair" [ref=f4e43] [cursor=pointer]
+    - generic [ref=f4e48]:
+      - generic [ref=f4e49]: OS Laboris
+      - 'link "Suporte: (21) 97430-3932" [ref=f4e50] [cursor=pointer]':
+        - /url: https://wa.me/5521974303932
+  - main [ref=f4e51]:
+    - alert [ref=f4e77]:
+      - generic [ref=f4e80]:
+        - text: Você está acessando como
+        - strong [ref=f4e81]: "\"Empresa Master\""
+      - button "Sair do modo impersonate" [ref=f4e82] [cursor=pointer]
+    - generic [ref=f4e52]:
+      - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=f4e58]
+      - button "Mudar para tema claro" [ref=f4e59] [cursor=pointer]: ☀️
+    - generic [ref=f4e83]:
+      - generic [ref=f4e84]:
+        - heading "Aluguéis" [level=2] [ref=f4e85]
+        - generic [ref=f4e86]:
+          - link "Novo Patrimônio" [ref=f4e87] [cursor=pointer]:
+            - /url: /alugueis/patrimonio/novo
+          - link "Novo Aluguel" [ref=f4e92] [cursor=pointer]:
+            - /url: /alugueis/novo
+      - generic [ref=f4e94]:
+        - generic [ref=f4e101] [cursor=pointer]:
+          - generic [ref=f4e102]: "5"
+          - generic [ref=f4e103]: Alugados Agora
+        - generic [ref=f4e108] [cursor=pointer]:
+          - generic [ref=f4e109]: R$ 5.330,00
+          - generic [ref=f4e110]: Valor em Aberto
+        - generic [ref=f4e115] [cursor=pointer]:
+          - generic [ref=f4e116]: "3"
+          - generic [ref=f4e117]: Devoluções na Semana
+        - generic [ref=f4e122] [cursor=pointer]:
+          - generic [ref=f4e123]: "0"
+          - generic [ref=f4e124]: Atrasados
+      - generic [ref=f4e125]:
+        - button "Ativos (5)" [ref=f4e126] [cursor=pointer]
+        - button "Histórico (7)" [ref=f4e130] [cursor=pointer]
+        - button "Patrimônio (13)" [active] [ref=f4e134] [cursor=pointer]
+      - generic [ref=f4e296]:
+        - textbox "Buscar por nome ou código..." [ref=f4e301]
+        - combobox [ref=f4e302]:
+          - option "Todos os status" [selected]
+          - option "✅ Disponível"
+          - option "📦 Alugado"
+          - option "🔧 Em Manutenção"
+          - option "⏸️ Inativo"
+      - generic [ref=f4e303]:
+        - generic [ref=f4e304] [cursor=pointer]:
+          - generic [ref=f4e305]:
+            - generic [ref=f4e306]: AND-001
+            - generic [ref=f4e307]: ✅ Disponível
+          - generic [ref=f4e313]:
+            - heading "Andaime Tubular 1,5m (kit)" [level=4] [ref=f4e314]
+            - generic [ref=f4e315]: Metax Standard
+            - generic [ref=f4e316]:
+              - generic [ref=f4e317]: "Diária: R$ 60,00"
+              - generic [ref=f4e318]: "Mensal: R$ 980,00"
+          - button "Alugar" [ref=f4e319]
+        - generic [ref=f4e320] [cursor=pointer]:
+          - generic [ref=f4e321]:
+            - generic [ref=f4e322]: BET01
+            - generic [ref=f4e323]: ✅ Disponível
+          - generic [ref=f4e329]:
+            - heading "Betoneira" [level=4] [ref=f4e330]
+            - generic [ref=f4e331]: ESM
+            - generic [ref=f4e332]:
+              - generic [ref=f4e333]: "Diária: R$ 50,00"
+              - generic [ref=f4e334]: "Mensal: R$ 1.000,00"
+          - button "Alugar" [ref=f4e335]
+        - generic [ref=f4e336] [cursor=pointer]:
+          - generic [ref=f4e337]:
+            - generic [ref=f4e338]: BET-001
+            - generic [ref=f4e339]: ✅ Disponível
+          - generic [ref=f4e345]:
+            - heading "Betoneira 400L" [level=4] [ref=f4e346]
+            - generic [ref=f4e347]: CSM CS 400
+            - generic [ref=f4e348]:
+              - generic [ref=f4e349]: "Diária: R$ 100,00"
+              - generic [ref=f4e350]: "Mensal: R$ 1.700,00"
+          - button "Alugar" [ref=f4e351]
+        - generic [ref=f4e352] [cursor=pointer]:
+          - generic [ref=f4e353]:
+            - generic [ref=f4e354]: COMP-002
+            - generic [ref=f4e355]: ✅ Disponível
+          - generic [ref=f4e361]:
+            - heading "Compressor Portátil 50L" [level=4] [ref=f4e362]
+            - generic [ref=f4e363]: Pressure Storm 300
+            - generic [ref=f4e364]:
+              - generic [ref=f4e365]: "Diária: R$ 50,00"
+              - generic [ref=f4e366]: "Mensal: R$ 850,00"
+          - button "Alugar" [ref=f4e367]
+        - generic [ref=f4e368] [cursor=pointer]:
+          - generic [ref=f4e369]:
+            - generic [ref=f4e370]: COMP-001
+            - generic [ref=f4e371]: 📦 Alugado
+          - generic [ref=f4e377]:
+            - heading "Compressor de Ar 100L" [level=4] [ref=f4e378]
+            - generic [ref=f4e379]: Schulz CSV 10/100
+            - generic [ref=f4e380]:
+              - generic [ref=f4e381]: "Diária: R$ 80,00"
+              - generic [ref=f4e382]: "Mensal: R$ 1.400,00"
+        - generic [ref=f4e383] [cursor=pointer]:
+          - generic [ref=f4e384]:
+            - generic [ref=f4e385]: ESM-001
+            - generic [ref=f4e386]: ✅ Disponível
+          - generic [ref=f4e392]:
+            - heading "Esmerilhadeira Angular 9\"" [level=4] [ref=f4e393]
+            - generic [ref=f4e394]: Makita GA9020
+            - generic [ref=f4e395]:
+              - generic [ref=f4e396]: "Diária: R$ 35,00"
+              - generic [ref=f4e397]: "Mensal: R$ 550,00"
+          - button "Alugar" [ref=f4e398]
+        - generic [ref=f4e399] [cursor=pointer]:
+          - generic [ref=f4e400]:
+            - generic [ref=f4e401]: FUR-001
+            - generic [ref=f4e402]: ✅ Disponível
+          - generic [ref=f4e408]:
+            - heading "Furadeira de Impacto Industrial" [level=4] [ref=f4e409]
+            - generic [ref=f4e410]: Bosch GSB 21-2 RE
+            - generic [ref=f4e411]:
+              - generic [ref=f4e412]: "Diária: R$ 45,00"
+              - generic [ref=f4e413]: "Mensal: R$ 750,00"
+          - button "Alugar" [ref=f4e414]
+        - generic [ref=f4e415] [cursor=pointer]:
+          - generic [ref=f4e416]:
+            - generic [ref=f4e417]: GER-002
+            - generic [ref=f4e418]: 📦 Alugado
+          - generic [ref=f4e424]:
+            - heading "Gerador 10kVA" [level=4] [ref=f4e425]
+            - generic [ref=f4e426]: Branco BD-10000
+            - generic [ref=f4e427]:
+              - generic [ref=f4e428]: "Diária: R$ 280,00"
+              - generic [ref=f4e429]: "Mensal: R$ 4.500,00"
+        - generic [ref=f4e430] [cursor=pointer]:
+          - generic [ref=f4e431]:
+            - generic [ref=f4e432]: GER-001
+            - generic [ref=f4e433]: 📦 Alugado
+          - generic [ref=f4e439]:
+            - heading "Gerador 5kVA" [level=4] [ref=f4e440]
+            - generic [ref=f4e441]: Toyama TG6500
+            - generic [ref=f4e442]:
+              - generic [ref=f4e443]: "Diária: R$ 150,00"
+              - generic [ref=f4e444]: "Mensal: R$ 2.500,00"
+        - generic [ref=f4e445] [cursor=pointer]:
+          - generic [ref=f4e446]:
+            - generic [ref=f4e447]: LAV-001
+            - generic [ref=f4e448]: 📦 Alugado
+          - generic [ref=f4e454]:
+            - heading "Lavadora de Alta Pressão" [level=4] [ref=f4e455]
+            - generic [ref=f4e456]: Karcher HD 585
+            - generic [ref=f4e457]:
+              - generic [ref=f4e458]: "Diária: R$ 70,00"
+              - generic [ref=f4e459]: "Mensal: R$ 1.200,00"
+        - generic [ref=f4e460] [cursor=pointer]:
+          - generic [ref=f4e461]:
+            - generic [ref=f4e462]: MAR-001
+            - generic [ref=f4e463]: ✅ Disponível
+          - generic [ref=f4e469]:
+            - heading "Martelete Rompedor" [level=4] [ref=f4e470]
+            - generic [ref=f4e471]: Dewalt D25901K
+            - generic [ref=f4e472]:
+              - generic [ref=f4e473]: "Diária: R$ 85,00"
+              - generic [ref=f4e474]: "Mensal: R$ 1.350,00"
+          - button "Alugar" [ref=f4e475]
+        - generic [ref=f4e476] [cursor=pointer]:
+          - generic [ref=f4e477]:
+            - generic [ref=f4e478]: SOLD-002
+            - generic [ref=f4e479]: ✅ Disponível
+          - generic [ref=f4e485]:
+            - heading "Máquina de Solda Inversora" [level=4] [ref=f4e486]
+            - generic [ref=f4e487]: Lincoln Invertec 170S
+            - generic [ref=f4e488]:
+              - generic [ref=f4e489]: "Diária: R$ 90,00"
+              - generic [ref=f4e490]: "Mensal: R$ 1.500,00"
+          - button "Alugar" [ref=f4e491]
+        - generic [ref=f4e492] [cursor=pointer]:
+          - generic [ref=f4e493]:
+            - generic [ref=f4e494]: SOLD-001
+            - generic [ref=f4e495]: 📦 Alugado
+          - generic [ref=f4e501]:
+            - heading "Máquina de Solda MIG/MAG" [level=4] [ref=f4e502]
+            - generic [ref=f4e503]: ESAB Smashweld 316
+            - generic [ref=f4e504]:
+              - generic [ref=f4e505]: "Diária: R$ 120,00"
+              - generic [ref=f4e506]: "Mensal: R$ 2.000,00"

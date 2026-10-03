@@ -1,0 +1,116 @@
+- generic [ref=f3e3]:
+  - complementary [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - heading "Empresa Master" [level=1] [ref=f3e108]
+      - text: Assistência Técnica
+    - navigation [ref=f3e7]:
+      - link "Dashboard" [ref=f3e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Ordens de Serviço 13" [ref=f3e109] [cursor=pointer]:
+        - /url: /os
+        - generic [ref=f3e17]: Ordens de Serviço
+        - generic [ref=f3e110]: "13"
+      - link "Clientes" [ref=f3e18] [cursor=pointer]:
+        - /url: /clientes
+      - link "Técnicos" [ref=f3e25] [cursor=pointer]:
+        - /url: /tecnicos
+      - link "Equipamentos" [ref=f3e29] [cursor=pointer]:
+        - /url: /equipamentos
+      - link "Financeiro" [ref=f3e111] [cursor=pointer]:
+        - /url: /financeiro
+      - link "Faturamento" [ref=f3e115] [cursor=pointer]:
+        - /url: /faturamento
+      - link "Aluguéis" [ref=f3e118] [cursor=pointer]:
+        - /url: /alugueis
+    - generic [ref=f3e33]:
+      - button "Painel Master" [ref=f3e34] [cursor=pointer]
+      - link "Configurações" [ref=f3e38] [cursor=pointer]:
+        - /url: /configuracoes
+      - button "Sair" [ref=f3e43] [cursor=pointer]
+    - generic [ref=f3e48]:
+      - generic [ref=f3e49]: OS Laboris
+      - 'link "Suporte: (21) 97430-3932" [ref=f3e50] [cursor=pointer]':
+        - /url: https://wa.me/5521974303932
+  - main [ref=f3e51]:
+    - alert [ref=f3e124]:
+      - generic [ref=f3e127]:
+        - text: Você está acessando como
+        - strong [ref=f3e128]: "\"Empresa Master\""
+      - button "Sair do modo impersonate" [ref=f3e129] [cursor=pointer]
+    - generic [ref=f3e52]:
+      - textbox "Buscar cliente, OS, equipamento, telefone..." [ref=f3e58]
+      - button "Mudar para tema claro" [ref=f3e59] [cursor=pointer]: ☀️
+    - generic [ref=f3e60]:
+      - generic [ref=f3e61]:
+        - heading "Novo Aluguel" [level=2] [ref=f3e62]
+        - button "Voltar" [ref=f3e64] [cursor=pointer]
+      - generic [ref=f3e67]:
+        - generic [ref=f3e68]:
+          - generic [ref=f3e69]:
+            - generic [ref=f3e70]: Equipamento *
+            - combobox "Equipamento *" [ref=f3e75]:
+              - option "Selecione o equipamento..."
+              - option "[AND-001] Andaime Tubular 1,5m (kit) - Metax"
+              - option "[BET01] Betoneira - ESM"
+              - option "[BET-001] Betoneira 400L - CSM"
+              - option "[COMP-002] Compressor Portátil 50L - Pressure"
+              - option "[ESM-001] Esmerilhadeira Angular 9\" - Makita"
+              - option "[FUR-001] Furadeira de Impacto Industrial - Bosch"
+              - option "[GER-002] Gerador 10kVA - Branco" [selected]
+              - option "[MAR-001] Martelete Rompedor - Dewalt"
+              - option "[SOLD-002] Máquina de Solda Inversora - Lincoln"
+          - generic [ref=f3e137]:
+            - strong [ref=f3e138]: Gerador 10kVA
+            - generic [ref=f3e139]: Branco BD-10000
+            - generic [ref=f3e140]:
+              - generic [ref=f3e141]: "Diária: R$ 280,00"
+              - generic [ref=f3e142]: "Semanal: R$ 1.500,00"
+              - generic [ref=f3e143]: "Mensal: R$ 4.500,00"
+          - generic [ref=f3e77]:
+            - generic [ref=f3e78]: Cliente *
+            - combobox "Cliente *" [ref=f3e82]:
+              - option "Selecione o cliente..." [selected]
+              - option "Ana Paula Rodrigues - 21974303932"
+              - option "Carlos Eduardo Alves - (21) 92249-5776"
+              - option "Carlos Mendes - 21991001001"
+              - option "Charles Daflon - 21974303932"
+              - option "Cliente Teste Alertas - 21999999999"
+              - option "Construtora Lote & CIA - 11999887766"
+              - option "Fernanda Dias Souza - (21) 91033-6840"
+              - option "João Silva Ferreira - (21) 91388-1184"
+              - option "Juliana Castro Reis - (21) 94969-4896"
+              - option "Luciana Ferreira - 21992002002"
+              - option "Luciana Ferreira - 21992002002"
+              - option "Maria Santos Costa - (21) 96626-2297"
+              - option "Pedro Oliveira Lima - (21) 91296-9564"
+              - option "Rafael Souza - 21993003003"
+              - option "Rafael Souza - 21993003003"
+              - option "Roberto Mendes Filho - (21) 98996-9479"
+              - option "charles - 21974303932"
+          - generic [ref=f3e83]:
+            - generic [ref=f3e84]: Data de Início *
+            - textbox "Data de Início *" [ref=f3e85]: 2026-10-03
+          - generic [ref=f3e86]:
+            - generic [ref=f3e87]: Previsão de Devolução *
+            - textbox "Previsão de Devolução *" [ref=f3e88]
+          - generic [ref=f3e89]:
+            - generic [ref=f3e90]: Tipo de Cobrança
+            - combobox "Tipo de Cobrança" [ref=f3e91]:
+              - option "Diária" [selected]
+              - option "Semanal"
+              - option "Mensal"
+              - option "Valor Fixo"
+          - generic [ref=f3e92]:
+            - generic [ref=f3e93]: Valor Acordado (R$) *
+            - spinbutton "Valor Acordado (R$) *" [ref=f3e94]: "280.00"
+          - generic [ref=f3e95]:
+            - generic [ref=f3e96]: Condição do Equipamento na Saída
+            - textbox "Condição do Equipamento na Saída" [ref=f3e97]:
+              - /placeholder: Descreva as condições do equipamento ao ser entregue ao cliente...
+          - generic [ref=f3e98]:
+            - generic [ref=f3e99]: Observações
+            - textbox "Observações" [ref=f3e100]:
+              - /placeholder: Observações gerais sobre o aluguel...
+        - generic [ref=f3e101]:
+          - button "Cancelar" [ref=f3e102] [cursor=pointer]
+          - button "Criar Aluguel" [ref=f3e103] [cursor=pointer]

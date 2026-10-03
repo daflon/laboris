@@ -7,8 +7,10 @@ export interface FinancialEntry {
   amount: number;
   due_date: string;
   paid_date?: string;
-  status: 'pendente' | 'pago' | 'atrasado';
+  status: 'pendente' | 'pago' | 'atrasado' | 'recebido' | 'cancelado';
   service_order_id?: string;
+  aluguel_id?: string;
+  aluguel_numero?: number;
   created_at: string;
 }
 
@@ -25,6 +27,10 @@ export interface FinancialSummary {
   despesasPagas: number;
   aReceber: number;
   aPagar: number;
+  // Aluguéis
+  totalAlugueis: number;
+  alugueisRecebidos: number;
+  qtdAlugueis: number;
   month: number;
   year: number;
 }

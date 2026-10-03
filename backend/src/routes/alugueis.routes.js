@@ -597,35 +597,199 @@ router.post('/:id/cancelar', async (req, res) => {
 /**
  * POST /api/v1/alugueis/:id/pagamentos
  * Registra pagamento de um aluguel
+ * Integração: Cria entrada no Financeiro automaticamente
  */
 router.post('/:id/pagamentos', async (req, res) => {
   try {
     const tenantId = req.tenantId;
     const { valor, data_pagamento, forma_pagamento, observacoes } = req.body;
 
+    // Buscar aluguel com dados do patrimônio e cliente
     const aluguel = await db('alugueis')
-      .where({ id: req.params.id, tenant_id: tenantId })
+      .where({ 'alugueis.id': req.params.id, 'alugueis.tenant_id': tenantId })
+      .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
+      .leftJoin('clients', 'clients.id', 'alugueis.client_id')
+      .select(
+        'alugueis.*',
+        'patrimonio.nome as patrimonio_nome',
+        'patrimonio.codigo as patrimonio_codigo',
+        'clients.name as client_name'
+      )
       .first();
 
     if (!aluguel) {
       return res.status(404).json({ success: false, error: { message: 'Aluguel não encontrado' } });
     }
 
+    const dataPgto = data_pagamento || new Date().toISOString().split('T')[0];
+
+    // Registrar pagamento do aluguel
     const [pagamento] = await db('aluguel_pagamentos')
       .insert({
         tenant_id: tenantId,
         aluguel_id: req.params.id,
         valor,
-        data_pagamento: data_pagamento || db.fn.now(),
+        data_pagamento: dataPgto,
         forma_pagamento: forma_pagamento || 'dinheiro',
         observacoes
       })
       .returning('*');
 
+    // INTEGRAÇÃO FINANCEIRO: Criar entrada de receita
+    // Verificar se módulo financeiro está habilitado
+    const tenant = await db('tenants').where({ id: tenantId }).first();
+    const modules = typeof tenant.modules === 'string' ? JSON.parse(tenant.modules) : (tenant.modules || []);
+    
+    if (modules.includes('financeiro')) {
+      const descricao = `Aluguel #${String(aluguel.numero).padStart(4, '0')} - ${aluguel.patrimonio_nome} (${aluguel.patrimonio_codigo}) - ${aluguel.client_name}`;
+      
+      await db('financial_entries').insert({
+        tenant_id: tenantId,
+        type: 'receita',
+        description: descricao,
+        amount: valor,
+        due_date: dataPgto,
+        paid_date: dataPgto,
+        status: 'recebido', // Já está pago
+        aluguel_id: req.params.id // Referência ao aluguel
+      });
+    }
+
     res.status(201).json({ success: true, data: pagamento });
   } catch (error) {
     console.error('Erro ao registrar pagamento:', error);
     res.status(500).json({ success: false, error: { message: 'Erro ao registrar pagamento' } });
+  }
+});
+
+/**
+ * POST /api/v1/alugueis/:id/fatura
+ * Gera uma fatura a partir do aluguel
+ * INTEGRAÇÃO FATURAMENTO: Cria registro na tabela de faturas
+ */
+router.post('/:id/fatura', async (req, res) => {
+  try {
+    const tenantId = req.tenantId;
+    const { incluir_pendente = true } = req.body; // Se deve incluir saldo pendente
+
+    // Verificar se módulo faturamento está habilitado
+    const tenant = await db('tenants').where({ id: tenantId }).first();
+    const modules = typeof tenant.modules === 'string' ? JSON.parse(tenant.modules) : (tenant.modules || []);
+    
+    if (!modules.includes('faturamento')) {
+      return res.status(403).json({ 
+        success: false, 
+        error: { message: 'Módulo Faturamento não habilitado para esta conta' } 
+      });
+    }
+
+    // Buscar aluguel completo
+    const aluguel = await db('alugueis')
+      .where({ 'alugueis.id': req.params.id, 'alugueis.tenant_id': tenantId })
+      .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
+      .leftJoin('clients', 'clients.id', 'alugueis.client_id')
+      .select(
+        'alugueis.*',
+        'patrimonio.nome as patrimonio_nome',
+        'patrimonio.codigo as patrimonio_codigo',
+        'patrimonio.marca as patrimonio_marca',
+        'patrimonio.modelo as patrimonio_modelo',
+        'clients.name as client_name',
+        'clients.document as client_document',
+        'clients.phone as client_phone',
+        'clients.email as client_email',
+        'clients.address_street',
+        'clients.address_number',
+        'clients.address_neighborhood',
+        'clients.address_city',
+        'clients.address_state',
+        'clients.address_zip'
+      )
+      .first();
+
+    if (!aluguel) {
+      return res.status(404).json({ success: false, error: { message: 'Aluguel não encontrado' } });
+    }
+
+    // Calcular valores
+    const pagamentos = await db('aluguel_pagamentos')
+      .where({ aluguel_id: aluguel.id })
+      .select(db.raw('COALESCE(SUM(valor), 0) as total'));
+    
+    const totalPago = parseFloat(pagamentos[0]?.total || 0);
+    const valorAluguel = parseFloat(aluguel.valor_final || aluguel.valor_acordado);
+    const saldoPendente = valorAluguel - totalPago;
+
+    // Valor da fatura
+    const valorFatura = incluir_pendente ? saldoPendente : valorAluguel;
+
+    if (valorFatura <= 0) {
+      return res.status(400).json({ 
+        success: false, 
+        error: { message: 'Não há valor pendente para faturar' } 
+      });
+    }
+
+    // Formatar período
+    const dataInicio = new Date(aluguel.data_inicio).toLocaleDateString('pt-BR');
+    const dataFim = aluguel.data_devolucao 
+      ? new Date(aluguel.data_devolucao).toLocaleDateString('pt-BR')
+      : new Date(aluguel.data_prevista_devolucao).toLocaleDateString('pt-BR');
+
+    // Montar descrição do item
+    const tipoCobrancaLabels = {
+      diaria: 'Diária',
+      semanal: 'Semanal', 
+      mensal: 'Mensal',
+      fixo: 'Valor Fixo'
+    };
+
+    const descricaoItem = `Aluguel de ${aluguel.patrimonio_nome} (${aluguel.patrimonio_codigo})${aluguel.patrimonio_marca ? ' - ' + aluguel.patrimonio_marca : ''}${aluguel.patrimonio_modelo ? ' ' + aluguel.patrimonio_modelo : ''} | Período: ${dataInicio} a ${dataFim} | Cobrança: ${tipoCobrancaLabels[aluguel.tipo_cobranca] || aluguel.tipo_cobranca}`;
+
+    // Gerar dados da fatura (não salvamos em tabela separada, apenas retornamos para uso no frontend)
+    const faturaData = {
+      aluguel_id: aluguel.id,
+      aluguel_numero: aluguel.numero,
+      cliente: {
+        nome: aluguel.client_name,
+        documento: aluguel.client_document,
+        telefone: aluguel.client_phone,
+        email: aluguel.client_email,
+        endereco: aluguel.address_street ? 
+          `${aluguel.address_street}, ${aluguel.address_number || 'S/N'} - ${aluguel.address_neighborhood || ''}, ${aluguel.address_city || ''} - ${aluguel.address_state || ''} CEP: ${aluguel.address_zip || ''}` 
+          : null
+      },
+      equipamento: {
+        codigo: aluguel.patrimonio_codigo,
+        nome: aluguel.patrimonio_nome,
+        marca: aluguel.patrimonio_marca,
+        modelo: aluguel.patrimonio_modelo
+      },
+      periodo: {
+        inicio: aluguel.data_inicio,
+        fim: aluguel.data_devolucao || aluguel.data_prevista_devolucao,
+        tipo_cobranca: aluguel.tipo_cobranca
+      },
+      valores: {
+        valor_acordado: valorAluguel,
+        total_pago: totalPago,
+        saldo_pendente: saldoPendente,
+        valor_fatura: valorFatura
+      },
+      itens: [{
+        descricao: descricaoItem,
+        quantidade: 1,
+        valor_unitario: valorFatura,
+        valor_total: valorFatura
+      }],
+      data_emissao: new Date().toISOString(),
+      observacoes: aluguel.observacoes
+    };
+
+    res.json({ success: true, data: faturaData });
+  } catch (error) {
+    console.error('Erro ao gerar fatura:', error);
+    res.status(500).json({ success: false, error: { message: 'Erro ao gerar fatura' } });
   }
 });
 

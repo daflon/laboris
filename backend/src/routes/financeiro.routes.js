@@ -172,6 +172,11 @@ router.get('/resumo', async (req, res, next) => {
     const totalPago = receitasRecebidas - despesasPagas; // mesmo que saldoReal
     const totalPendente = aReceber + aPagar; // soma de todos pendentes
 
+    // NOVO: Receitas de aluguéis
+    const receitasAlugueis = receitas.filter((e) => e.aluguel_id != null);
+    const totalAlugueis = receitasAlugueis.reduce((s, e) => s + parseFloat(e.amount), 0);
+    const alugueisRecebidos = receitasAlugueis.filter((e) => e.status === 'recebido').reduce((s, e) => s + parseFloat(e.amount), 0);
+
     res.json({
       success: true,
       data: {
@@ -189,6 +194,11 @@ router.get('/resumo', async (req, res, next) => {
         despesasPagas,
         aReceber,
         aPagar,
+        
+        // Aluguéis
+        totalAlugueis,
+        alugueisRecebidos,
+        qtdAlugueis: receitasAlugueis.length,
         
         month: m,
         year: y,
@@ -209,13 +219,18 @@ router.get('/', async (req, res, next) => {
     const lastDay = new Date(y, m, 0).toISOString().split('T')[0];
 
     const query = db('financial_entries')
-      .where({ tenant_id: req.tenantId })
-      .where('due_date', '>=', firstDay)
-      .where('due_date', '<=', lastDay)
-      .orderBy('due_date', 'desc');
+      .leftJoin('alugueis', 'alugueis.id', 'financial_entries.aluguel_id')
+      .where({ 'financial_entries.tenant_id': req.tenantId })
+      .where('financial_entries.due_date', '>=', firstDay)
+      .where('financial_entries.due_date', '<=', lastDay)
+      .select(
+        'financial_entries.*',
+        'alugueis.numero as aluguel_numero'
+      )
+      .orderBy('financial_entries.due_date', 'desc');
 
-    if (status && status !== 'all') query.where('status', status);
-    if (type && type !== 'all') query.where('type', type);
+    if (status && status !== 'all') query.where('financial_entries.status', status);
+    if (type && type !== 'all') query.where('financial_entries.type', type);
 
     const entries = await query;
     res.json({ success: true, data: entries });
@@ -304,22 +319,22 @@ router.patch('/:id/cancel', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-// Excluir lançamento (apenas lançamentos manuais sem vínculo com OS)
+// Excluir lançamento (apenas lançamentos manuais sem vínculo com OS ou Aluguel)
 router.delete('/:id', async (req, res, next) => {
   try {
-    // Verificar se o lançamento existe e se está vinculado a uma OS
+    // Verificar se o lançamento existe e se está vinculado
     const entry = await db('financial_entries')
       .where({ id: req.params.id, tenant_id: req.tenantId })
       .first();
     
     if (!entry) return res.status(404).json({ success: false, error: { message: 'Lançamento não encontrado' } });
     
-    // Bloquear exclusão de lançamentos vinculados a OS
-    if (entry.service_order_id) {
+    // Bloquear exclusão de lançamentos vinculados a OS ou Aluguel
+    if (entry.service_order_id || entry.aluguel_id) {
       return res.status(400).json({ 
         success: false, 
         error: { 
-          message: 'Lançamentos vinculados a OS não podem ser excluídos. Use a opção de cancelar para manter o histórico.',
+          message: 'Lançamentos vinculados não podem ser excluídos. Use a opção de cancelar para manter o histórico.',
           linked: true
         } 
       });

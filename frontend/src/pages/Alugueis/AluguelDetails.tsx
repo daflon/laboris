@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   FiArrowLeft, FiCheckCircle, FiXCircle, FiPhone, FiPackage, FiUser, 
-  FiCalendar, FiDollarSign, FiAlertTriangle, FiEdit2
+  FiCalendar, FiDollarSign, FiAlertTriangle, FiEdit2, FiFileText, FiPrinter
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { 
@@ -32,6 +32,9 @@ export default function AluguelDetails() {
   const [showDevolverModal, setShowDevolverModal] = useState(false);
   const [showPagamentoModal, setShowPagamentoModal] = useState(false);
   const [showCancelarModal, setShowCancelarModal] = useState(false);
+  const [showFaturaModal, setShowFaturaModal] = useState(false);
+  const [faturaData, setFaturaData] = useState<any>(null);
+  const [gerandoFatura, setGerandoFatura] = useState(false);
 
   // Form de devolução
   const [devolucaoForm, setDevolucaoForm] = useState({
@@ -134,6 +137,128 @@ export default function AluguelDetails() {
     }
   };
 
+  const handleGerarFatura = async () => {
+    try {
+      setGerandoFatura(true);
+      const response = await alugueisService.gerarFatura(id!);
+      setFaturaData(response.data);
+      setShowFaturaModal(true);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error?.message || 'Erro ao gerar fatura');
+    } finally {
+      setGerandoFatura(false);
+    }
+  };
+
+  const handleImprimirFatura = () => {
+    if (!faturaData) return;
+    
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      toast.error('Popup bloqueado. Permita popups para imprimir.');
+      return;
+    }
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Fatura - Aluguel #${formatAluguelNumero(faturaData.aluguel_numero)}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: Arial, sans-serif; padding: 20px; font-size: 12px; }
+          .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+          .header h1 { font-size: 18px; margin-bottom: 5px; }
+          .header h2 { font-size: 14px; color: #666; }
+          .section { margin-bottom: 20px; }
+          .section h3 { font-size: 13px; background: #f0f0f0; padding: 5px 10px; margin-bottom: 10px; }
+          .row { display: flex; justify-content: space-between; padding: 3px 10px; }
+          .row.alt { background: #f9f9f9; }
+          .label { color: #666; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background: #f0f0f0; }
+          .total { text-align: right; font-size: 16px; font-weight: bold; margin-top: 15px; padding: 10px; background: #e8f5e9; }
+          .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #888; }
+          @media print { body { padding: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>FATURA DE ALUGUEL</h1>
+          <h2>Nº ${formatAluguelNumero(faturaData.aluguel_numero)}</h2>
+          <p>Data de Emissão: ${new Date(faturaData.data_emissao).toLocaleDateString('pt-BR')}</p>
+        </div>
+
+        <div class="section">
+          <h3>CLIENTE</h3>
+          <div class="row"><span class="label">Nome:</span> <span>${faturaData.cliente.nome}</span></div>
+          ${faturaData.cliente.documento ? `<div class="row alt"><span class="label">CPF/CNPJ:</span> <span>${faturaData.cliente.documento}</span></div>` : ''}
+          ${faturaData.cliente.telefone ? `<div class="row"><span class="label">Telefone:</span> <span>${faturaData.cliente.telefone}</span></div>` : ''}
+          ${faturaData.cliente.endereco ? `<div class="row alt"><span class="label">Endereço:</span> <span>${faturaData.cliente.endereco}</span></div>` : ''}
+        </div>
+
+        <div class="section">
+          <h3>EQUIPAMENTO</h3>
+          <div class="row"><span class="label">Código:</span> <span>${faturaData.equipamento.codigo}</span></div>
+          <div class="row alt"><span class="label">Descrição:</span> <span>${faturaData.equipamento.nome}${faturaData.equipamento.marca ? ' - ' + faturaData.equipamento.marca : ''}${faturaData.equipamento.modelo ? ' ' + faturaData.equipamento.modelo : ''}</span></div>
+        </div>
+
+        <div class="section">
+          <h3>PERÍODO DO ALUGUEL</h3>
+          <div class="row"><span class="label">Início:</span> <span>${new Date(faturaData.periodo.inicio).toLocaleDateString('pt-BR')}</span></div>
+          <div class="row alt"><span class="label">Término:</span> <span>${new Date(faturaData.periodo.fim).toLocaleDateString('pt-BR')}</span></div>
+        </div>
+
+        <div class="section">
+          <h3>ITENS</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Descrição</th>
+                <th style="width: 60px; text-align: center;">Qtd</th>
+                <th style="width: 100px; text-align: right;">Valor Unit.</th>
+                <th style="width: 100px; text-align: right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${faturaData.itens.map((item: any) => `
+                <tr>
+                  <td>${item.descricao}</td>
+                  <td style="text-align: center;">${item.quantidade}</td>
+                  <td style="text-align: right;">R$ ${item.valor_unitario.toFixed(2)}</td>
+                  <td style="text-align: right;">R$ ${item.valor_total.toFixed(2)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="total">
+          TOTAL: R$ ${faturaData.valores.valor_fatura.toFixed(2)}
+        </div>
+
+        ${faturaData.valores.total_pago > 0 ? `
+          <div class="section" style="margin-top: 15px;">
+            <div class="row"><span class="label">Valor Acordado:</span> <span>R$ ${faturaData.valores.valor_acordado.toFixed(2)}</span></div>
+            <div class="row alt"><span class="label">Total Pago:</span> <span style="color: green;">R$ ${faturaData.valores.total_pago.toFixed(2)}</span></div>
+            <div class="row"><span class="label">Saldo Pendente:</span> <span style="color: #c00;">R$ ${faturaData.valores.saldo_pendente.toFixed(2)}</span></div>
+          </div>
+        ` : ''}
+
+        <div class="footer">
+          <p>Documento gerado pelo OS Laboris</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 250);
+  };
+
   if (loading) return <p className="loading-text">Carregando...</p>;
   if (!aluguel) return <p>Aluguel não encontrado</p>;
 
@@ -148,6 +273,14 @@ export default function AluguelDetails() {
       <PageHeader title={`Aluguel #${formatAluguelNumero(aluguel.numero)}`}>
         <button className="btn btn-secondary" onClick={() => navigate('/alugueis')}>
           <FiArrowLeft /> Voltar
+        </button>
+        <button 
+          className="btn" 
+          onClick={handleGerarFatura}
+          disabled={gerandoFatura}
+          style={{ background: '#7c3aed', color: 'white' }}
+        >
+          <FiFileText /> {gerandoFatura ? 'Gerando...' : 'Gerar Fatura'}
         </button>
         {isAtivo && (
           <>
@@ -493,6 +626,96 @@ export default function AluguelDetails() {
                 style={{ background: '#dc2626' }}
               >
                 <FiXCircle /> Confirmar Cancelamento
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Fatura */}
+      {showFaturaModal && faturaData && (
+        <div className="modal-overlay" onClick={() => setShowFaturaModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+            <h3 style={{ color: '#7c3aed' }}><FiFileText /> Fatura do Aluguel</h3>
+            
+            <div style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.9rem' }}>
+                <div><strong>Aluguel:</strong> #{formatAluguelNumero(faturaData.aluguel_numero)}</div>
+                <div><strong>Emissão:</strong> {new Date(faturaData.data_emissao).toLocaleDateString('pt-BR')}</div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <h4 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Cliente</h4>
+              <p style={{ margin: 0 }}><strong>{faturaData.cliente.nome}</strong></p>
+              {faturaData.cliente.documento && <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{faturaData.cliente.documento}</p>}
+              {faturaData.cliente.telefone && <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{faturaData.cliente.telefone}</p>}
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <h4 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Equipamento</h4>
+              <p style={{ margin: 0 }}><strong>[{faturaData.equipamento.codigo}]</strong> {faturaData.equipamento.nome}</p>
+              {(faturaData.equipamento.marca || faturaData.equipamento.modelo) && (
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  {faturaData.equipamento.marca} {faturaData.equipamento.modelo}
+                </p>
+              )}
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <h4 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Período</h4>
+              <p style={{ margin: 0 }}>
+                {new Date(faturaData.periodo.inicio).toLocaleDateString('pt-BR')} → {new Date(faturaData.periodo.fim).toLocaleDateString('pt-BR')}
+              </p>
+            </div>
+
+            <div style={{ 
+              background: '#f0fdf4', 
+              border: '1px solid #22c55e', 
+              borderRadius: '8px', 
+              padding: '1rem', 
+              marginBottom: '1rem' 
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <span>Valor Acordado:</span>
+                <span>{formatCurrency(faturaData.valores.valor_acordado)}</span>
+              </div>
+              {faturaData.valores.total_pago > 0 && (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: '#22c55e' }}>
+                    <span>Total Pago:</span>
+                    <span>- {formatCurrency(faturaData.valores.total_pago)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #22c55e', paddingTop: '0.5rem', marginTop: '0.5rem' }}>
+                    <span><strong>Saldo Pendente:</strong></span>
+                    <span style={{ color: '#ef4444' }}><strong>{formatCurrency(faturaData.valores.saldo_pendente)}</strong></span>
+                  </div>
+                </>
+              )}
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                fontSize: '1.2rem', 
+                fontWeight: 'bold',
+                borderTop: '2px solid #22c55e',
+                paddingTop: '0.75rem',
+                marginTop: '0.75rem'
+              }}>
+                <span>TOTAL DA FATURA:</span>
+                <span style={{ color: '#22c55e' }}>{formatCurrency(faturaData.valores.valor_fatura)}</span>
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button className="btn btn-secondary" onClick={() => setShowFaturaModal(false)}>
+                Fechar
+              </button>
+              <button 
+                className="btn" 
+                onClick={handleImprimirFatura}
+                style={{ background: '#7c3aed', color: 'white' }}
+              >
+                <FiPrinter /> Imprimir Fatura
               </button>
             </div>
           </div>
