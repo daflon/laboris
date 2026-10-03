@@ -2,7 +2,10 @@ import api from './api';
 
 export interface FaturamentoResumo {
   total_faturado: number;
+  total_os?: number;
+  total_alugueis?: number;
   qtd_os: number;
+  qtd_alugueis?: number;
   ticket_medio: number;
   clientes_atendidos: number;
   periodo: { month: number; year: number };
@@ -13,7 +16,10 @@ export interface GraficoItem {
   year: number;
   label: string;
   total: number;
+  total_os?: number;
+  total_alugueis?: number;
   qtd_os: number;
+  qtd_alugueis?: number;
 }
 
 export interface TecnicoFaturamento {
@@ -23,6 +29,21 @@ export interface TecnicoFaturamento {
   total: number;
 }
 
+export interface ItemFaturado {
+  id: string;
+  tipo: 'os' | 'aluguel';
+  numero: number;
+  lote_sufixo?: string | null;
+  data: string;
+  client_name: string;
+  descricao: string;
+  status: string;
+  technician_name?: string | null;
+  total: number;
+  aluguel_id?: string;
+}
+
+// Tipo legado para compatibilidade
 export interface OSFaturada {
   id: string;
   order_number: number;

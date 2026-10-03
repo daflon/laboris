@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { FiDollarSign, FiFileText, FiTrendingUp, FiUsers, FiDownload, FiBarChart2 } from 'react-icons/fi';
+import { FiDollarSign, FiFileText, FiTrendingUp, FiUsers, FiDownload, FiBarChart2, FiPackage } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { faturamentoService, FaturamentoResumo, GraficoItem, TecnicoFaturamento, OSFaturada } from '../../services/faturamento.service';
+import { faturamentoService, FaturamentoResumo, GraficoItem, TecnicoFaturamento, ItemFaturado } from '../../services/faturamento.service';
 import PageHeader from '../../components/PageHeader';
 import './FaturamentoPage.css';
 
@@ -11,9 +12,12 @@ function formatCurrency(value: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
 }
 
-function formatOrderNumber(order: { order_number: number; lote_sufixo?: string }): string {
-  const num = String(order.order_number).padStart(4, '0');
-  return order.lote_sufixo ? `${num}-${order.lote_sufixo}` : num;
+function formatItemNumber(item: ItemFaturado): string {
+  const num = String(item.numero).padStart(4, '0');
+  if (item.tipo === 'aluguel') {
+    return `AL#${num}`;
+  }
+  return item.lote_sufixo ? `OS#${num}-${item.lote_sufixo}` : `OS#${num}`;
 }
 
 export default function FaturamentoPage() {
@@ -23,7 +27,7 @@ export default function FaturamentoPage() {
   const [resumo, setResumo] = useState<FaturamentoResumo | null>(null);
   const [grafico, setGrafico] = useState<GraficoItem[]>([]);
   const [tecnicos, setTecnicos] = useState<TecnicoFaturamento[]>([]);
-  const [lista, setLista] = useState<OSFaturada[]>([]);
+  const [lista, setLista] = useState<ItemFaturado[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPdfModal, setShowPdfModal] = useState(false);
 
@@ -109,11 +113,11 @@ export default function FaturamentoPage() {
               <span className="dash-card-label">OS Concluídas</span>
             </div>
           </div>
-          <div className="dash-card">
-            <div className="dash-card-icon"><FiTrendingUp /></div>
+          <div className="dash-card" style={{ borderLeft: '3px solid #7c3aed' }}>
+            <div className="dash-card-icon" style={{ color: '#7c3aed' }}><FiPackage /></div>
             <div className="dash-card-content">
-              <span className="dash-card-value">{formatCurrency(resumo.ticket_medio)}</span>
-              <span className="dash-card-label">Ticket Médio</span>
+              <span className="dash-card-value">{resumo.qtd_alugueis || 0}</span>
+              <span className="dash-card-label">Aluguéis Pagos</span>
             </div>
           </div>
           <div className="dash-card">
@@ -170,37 +174,56 @@ export default function FaturamentoPage() {
         </div>
       </div>
 
-      {/* Lista de OS */}
+      {/* Lista de Faturamento (OS + Aluguéis) */}
       <div className="faturamento-section faturamento-lista">
-        <h3 className="section-title"><FiFileText /> Ordens de Serviço do Período</h3>
+        <h3 className="section-title"><FiFileText /> Faturamento do Período</h3>
         {lista.length === 0 ? (
-          <p className="empty-text">Nenhuma OS concluída em {MONTHS[month - 1]} {year}</p>
+          <p className="empty-text">Nenhum faturamento em {MONTHS[month - 1]} {year}</p>
         ) : (
           <div className="table-responsive">
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>OS</th>
+                  <th>ID</th>
                   <th>Data</th>
                   <th>Cliente</th>
-                  <th className="hide-mobile">Equipamento</th>
+                  <th className="hide-mobile">Descrição</th>
                   <th>Status</th>
                   <th className="text-right">Valor</th>
                 </tr>
               </thead>
               <tbody>
-                {lista.map((order) => (
-                  <tr key={order.id}>
-                    <td><strong>#{formatOrderNumber(order)}</strong></td>
-                    <td>{order.completion_date ? new Date(order.completion_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '-'}</td>
-                    <td>{order.client_name}</td>
-                    <td className="hide-mobile">{order.equipment_type} {order.equipment_brand}</td>
+                {lista.map((item) => (
+                  <tr key={`${item.tipo}-${item.id}`}>
                     <td>
-                      <span className={`status-badge status-${order.status}`}>
-                        {order.status === 'concluida' ? 'Concluída' : 'Entregue'}
-                      </span>
+                      {item.tipo === 'aluguel' ? (
+                        <Link 
+                          to={`/alugueis/${item.aluguel_id}`} 
+                          style={{ color: '#7c3aed', fontWeight: 600, textDecoration: 'none' }}
+                          title="Ver aluguel"
+                        >
+                          <FiPackage style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                          {formatItemNumber(item)}
+                        </Link>
+                      ) : (
+                        <strong>{formatItemNumber(item)}</strong>
+                      )}
                     </td>
-                    <td className="text-right"><strong>{formatCurrency(order.total)}</strong></td>
+                    <td>{item.data ? new Date(item.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '-'}</td>
+                    <td>{item.client_name}</td>
+                    <td className="hide-mobile">{item.descricao}</td>
+                    <td>
+                      {item.tipo === 'aluguel' ? (
+                        <span className="status-badge" style={{ background: '#7c3aed', color: '#fff' }}>
+                          Pago
+                        </span>
+                      ) : (
+                        <span className={`status-badge status-${item.status}`}>
+                          {item.status === 'concluida' ? 'Concluída' : 'Entregue'}
+                        </span>
+                      )}
+                    </td>
+                    <td className="text-right"><strong>{formatCurrency(item.total)}</strong></td>
                   </tr>
                 ))}
               </tbody>
@@ -229,7 +252,7 @@ export default function FaturamentoPage() {
                 <div className="pdf-option-icon">📄</div>
                 <div className="pdf-option-info">
                   <strong>Compacto</strong>
-                  <span>Resumo + lista de OS</span>
+                  <span>Resumo + lista de OS e Aluguéis</span>
                 </div>
               </button>
               
