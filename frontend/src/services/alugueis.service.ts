@@ -68,6 +68,7 @@ export interface Pagamento {
 
 export interface AluguelStats {
   alugados: number;
+  valorAtivos: number;
   devolucoesSemana: number;
   atrasados: number;
   receitaMes: number;

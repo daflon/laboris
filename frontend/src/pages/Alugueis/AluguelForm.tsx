@@ -39,7 +39,7 @@ export default function AluguelForm() {
     try {
       const [patRes, cliRes] = await Promise.all([
         patrimonioService.list({ status: 'disponivel' }),
-        clientsService.findAll()
+        clientsService.list()
       ]);
       setPatrimonios(patRes.data);
       setClientes(cliRes.data);

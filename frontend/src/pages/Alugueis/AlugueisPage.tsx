@@ -111,8 +111,8 @@ export default function AlugueisPage() {
           <div className="dash-card" style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}>
             <div className="dash-card-icon"><FiDollarSign /></div>
             <div className="dash-card-content">
-              <span className="dash-card-value">{formatCurrency(stats.receitaMes)}</span>
-              <span className="dash-card-label">Receita do Mês</span>
+              <span className="dash-card-value">{formatCurrency(stats.valorAtivos)}</span>
+              <span className="dash-card-label">Valor em Aberto</span>
             </div>
           </div>
           <div className="dash-card">

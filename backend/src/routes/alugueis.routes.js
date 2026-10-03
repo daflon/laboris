@@ -291,6 +291,13 @@ router.get('/stats', async (req, res) => {
       .count('id as count')
       .first();
 
+    // Valor total dos aluguéis ativos (a receber)
+    const valorAtivos = await db('alugueis')
+      .where({ tenant_id: tenantId })
+      .whereIn('status', ['ativo', 'atrasado'])
+      .sum('valor_acordado as total')
+      .first();
+
     // Devoluções previstas na semana
     const devolucoesSemana = await db('alugueis')
       .where({ tenant_id: tenantId, status: 'ativo' })
@@ -322,6 +329,7 @@ router.get('/stats', async (req, res) => {
       success: true,
       data: {
         alugados: parseInt(alugados?.count || 0),
+        valorAtivos: parseFloat(valorAtivos?.total || 0),
         devolucoesSemana: parseInt(devolucoesSemana?.count || 0),
         atrasados: parseInt(atrasados?.count || 0),
         receitaMes: parseFloat(receitaMes?.total || 0),
