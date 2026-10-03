@@ -116,6 +116,9 @@ export default function EditTenant() {
             <label className="checkbox-label" style={{ marginTop: 0 }}>
               <input type="checkbox" checked={form.modules.includes('financeiro')} onChange={() => handleModuleToggle('financeiro')} /> Financeiro
             </label>
+            <label className="checkbox-label" style={{ marginTop: 0 }}>
+              <input type="checkbox" checked={form.modules.includes('alugueis')} onChange={() => handleModuleToggle('alugueis')} /> Aluguéis
+            </label>
           </div>
         </div>
 
