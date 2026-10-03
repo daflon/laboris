@@ -168,36 +168,6 @@ export default function FinanceiroPage() {
         </div>
       )}
 
-      {/* Resumo de Aluguéis (se houver) */}
-      {summary && summary.qtdAlugueis > 0 && (
-        <div style={{ 
-          background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)', 
-          borderRadius: '12px', 
-          padding: '1rem 1.5rem', 
-          marginBottom: '1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          color: 'white'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <FiPackage size={24} />
-            <div>
-              <div style={{ fontWeight: 600 }}>Receita de Aluguéis</div>
-              <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>{summary.qtdAlugueis} pagamento{summary.qtdAlugueis > 1 ? 's' : ''} recebido{summary.qtdAlugueis > 1 ? 's' : ''}</div>
-            </div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{formatCurrency(summary.alugueisRecebidos)}</div>
-            {summary.totalAlugueis > summary.alugueisRecebidos && (
-              <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>
-                {formatCurrency(summary.totalAlugueis - summary.alugueisRecebidos)} pendente
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Modal de novo lançamento */}
       {showForm && (
         <div className="modal-overlay" onClick={() => setShowForm(false)}>
