@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign, FiAlertTriangle, FiBarChart2, FiMoreHorizontal, FiX } from 'react-icons/fi';
+import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign, FiAlertTriangle, FiBarChart2, FiMoreHorizontal, FiX, FiPackage } from 'react-icons/fi';
 import api from '../services/api';
 import { authService } from '../services/auth.service';
 import GlobalSearch from './GlobalSearch';
@@ -125,6 +125,11 @@ export default function Layout() {
           {modules.includes('faturamento') && (
             <NavLink to="/faturamento" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               <FiBarChart2 /> <span>Faturamento</span>
+            </NavLink>
+          )}
+          {modules.includes('alugueis') && (
+            <NavLink to="/alugueis" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <FiPackage /> <span>Aluguéis</span>
             </NavLink>
           )}
         </nav>
@@ -256,6 +261,15 @@ export default function Layout() {
                   onClick={() => setShowMobileMenu(false)}
                 >
                   <FiBarChart2 /> Faturamento
+                </NavLink>
+              )}
+              {modules.includes('alugueis') && (
+                <NavLink 
+                  to="/alugueis" 
+                  className="mobile-menu-item"
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  <FiPackage /> Aluguéis
                 </NavLink>
               )}
               <NavLink 

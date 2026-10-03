@@ -24,6 +24,10 @@ import CompanySettingsPage from './pages/Settings/CompanySettings';
 import FinanceiroPage from './pages/Financeiro/FinanceiroPage';
 import RelatorioFinanceiro from './pages/Financeiro/RelatorioFinanceiro';
 import FaturamentoPage from './pages/Faturamento/FaturamentoPage';
+import AlugueisPage from './pages/Alugueis/AlugueisPage';
+import PatrimonioForm from './pages/Alugueis/PatrimonioForm';
+import AluguelForm from './pages/Alugueis/AluguelForm';
+import AluguelDetails from './pages/Alugueis/AluguelDetails';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!authService.isAuthenticated()) {
@@ -88,6 +92,12 @@ export default function App() {
           <Route path="/financeiro" element={<FinanceiroPage />} />
           <Route path="/financeiro/relatorio" element={<RelatorioFinanceiro />} />
           <Route path="/faturamento" element={<FaturamentoPage />} />
+          <Route path="/alugueis" element={<AlugueisPage />} />
+          <Route path="/alugueis/novo" element={<AluguelForm />} />
+          <Route path="/alugueis/:id" element={<AluguelDetails />} />
+          <Route path="/alugueis/:id/devolver" element={<AluguelDetails />} />
+          <Route path="/alugueis/patrimonio/novo" element={<PatrimonioForm />} />
+          <Route path="/alugueis/patrimonio/:id/editar" element={<PatrimonioForm />} />
         </Route>
       </Routes>
     </BrowserRouter>
