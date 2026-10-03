@@ -1,6 +1,6 @@
 # Módulo de Controle de Aluguéis
 
-> **Status:** Planejado  
+> **Status:** ✅ Implementado (02/10/2026)  
 > **Origem:** Demanda ESM (Eletrotécnica São Miguel)  
 > **Data:** Agosto/2026
 
