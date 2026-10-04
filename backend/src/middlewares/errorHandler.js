@@ -2,7 +2,13 @@
  * Middleware global de tratamento de erros
  */
 function errorHandler(err, req, res, next) {
-  console.error('Error:', err.message, err.stack);
+  // Em produção, não expõe stack trace nos logs
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Error:', err.message);
+    // TODO: Enviar para serviço de monitoramento (Sentry, etc)
+  } else {
+    console.error('Error:', err.message, err.stack);
+  }
 
   // Erro de constraint unique (PostgreSQL)
   if (err.code === '23505') {

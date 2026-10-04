@@ -1,6 +1,13 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'oslaboris_dev_secret';
+// JWT_SECRET obrigatória - sem fallback inseguro
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error('❌ FATAL: JWT_SECRET não está configurada!');
+  console.error('   Configure a variável de ambiente JWT_SECRET antes de iniciar o servidor.');
+  process.exit(1);
+}
 
 /**
  * Middleware de autenticação — verifica JWT e injeta req.user

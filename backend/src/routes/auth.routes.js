@@ -1,22 +1,38 @@
 const { Router } = require('express');
 const bcrypt = require('bcryptjs');
+const { z } = require('zod');
 const db = require('../database/connection');
 const { authenticate, generateToken } = require('../middlewares/auth');
 const { loginLimiter, sensitiveLimiter } = require('../middlewares/rateLimiter.middleware');
+const validateRequest = require('../middlewares/validateRequest');
 
 const router = Router();
 
-// Login (com rate limiting restritivo)
-router.post('/login', loginLimiter, async (req, res, next) => {
+// Schema de validação para login
+const loginSchema = z.object({
+  email: z.string()
+    .email('Email inválido')
+    .max(200, 'Email muito longo')
+    .transform(val => val.toLowerCase().trim()),
+  password: z.string()
+    .min(1, 'Senha é obrigatória')
+    .max(100, 'Senha muito longa')
+});
+
+// Schema de validação para alteração de senha
+const changePasswordSchema = z.object({
+  current_password: z.string()
+    .min(1, 'Senha atual é obrigatória')
+    .max(100, 'Senha muito longa'),
+  new_password: z.string()
+    .min(6, 'Nova senha deve ter no mínimo 6 caracteres')
+    .max(100, 'Senha muito longa')
+});
+
+// Login (com rate limiting restritivo + validação Zod)
+router.post('/login', loginLimiter, validateRequest(loginSchema), async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        error: { message: 'Email e senha são obrigatórios' },
-      });
-    }
 
     const user = await db('users').where({ email, active: true }).first();
 
@@ -109,8 +125,8 @@ router.get('/me', authenticate, async (req, res, next) => {
   }
 });
 
-// Alterar senha (com rate limiting para operações sensíveis)
-router.put('/change-password', authenticate, sensitiveLimiter, async (req, res, next) => {
+// Alterar senha (com rate limiting para operações sensíveis + validação Zod)
+router.put('/change-password', authenticate, sensitiveLimiter, validateRequest(changePasswordSchema), async (req, res, next) => {
   try {
     const { current_password, new_password } = req.body;
 

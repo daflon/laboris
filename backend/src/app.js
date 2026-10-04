@@ -11,9 +11,56 @@ const app = express();
 // Trust proxy - necessário para rate limiting correto atrás de reverse proxy (Render, etc)
 app.set('trust proxy', 1);
 
+// =============================================
+// CONFIGURAÇÃO DE SEGURANÇA
+// =============================================
+
+// CORS restritivo - apenas origens permitidas
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? ['https://os-laboris.onrender.com']
+  : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Permitir requests sem origin (mobile apps, Postman, curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️ CORS bloqueado para origem: ${origin}`);
+      callback(new Error('Origem não permitida pelo CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 86400 // Cache preflight por 24h
+};
+
+// Helmet com Content Security Policy
+const helmetOptions = {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // React precisa de unsafe-inline/eval em dev
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+      connectSrc: ["'self'", 'https://os-laboris.onrender.com', 'http://localhost:*'],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      formAction: ["'self'"],
+      upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
+    }
+  },
+  crossOriginEmbedderPolicy: false, // Desabilitar para permitir imagens externas
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+};
+
 // Middlewares globais
-app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors());
+app.use(helmet(helmetOptions));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '5mb' })); // Aumentado para suportar fotos em Base64
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 
