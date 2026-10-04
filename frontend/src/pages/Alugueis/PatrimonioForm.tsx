@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiSave, FiArrowLeft, FiCamera, FiTrash2 } from 'react-icons/fi';
+import { FiSave, FiArrowLeft, FiCamera, FiTrash2, FiClock } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { patrimonioService, Patrimonio, STATUS_PATRIMONIO } from '../../services/alugueis.service';
+import { patrimonioService, alugueisService, Patrimonio, Aluguel, STATUS_PATRIMONIO, STATUS_ALUGUEL, formatAluguelNumero } from '../../services/alugueis.service';
 import PageHeader from '../../components/PageHeader';
 
 const CATEGORIAS = [
@@ -16,6 +16,14 @@ const CATEGORIAS = [
   'Outro'
 ];
 
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('pt-BR');
+}
+
 export default function PatrimonioForm() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -23,6 +31,7 @@ export default function PatrimonioForm() {
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [alugueis, setAlugueis] = useState<Aluguel[]>([]);
   const [form, setForm] = useState<Partial<Patrimonio>>({
     codigo: '',
     nome: '',
@@ -48,8 +57,12 @@ export default function PatrimonioForm() {
   const loadPatrimonio = async () => {
     try {
       setLoading(true);
-      const response = await patrimonioService.getById(id!);
-      setForm(response.data);
+      const [patrimonioRes, alugueisRes] = await Promise.all([
+        patrimonioService.getById(id!),
+        alugueisService.list({ patrimonio: id }).catch(() => ({ data: [] }))
+      ]);
+      setForm(patrimonioRes.data);
+      setAlugueis(alugueisRes.data || []);
     } catch {
       toast.error('Erro ao carregar equipamento');
       navigate('/alugueis');
@@ -400,6 +413,61 @@ export default function PatrimonioForm() {
           </button>
         </div>
       </form>
+
+      {/* Histórico de Aluguéis (apenas edição) */}
+      {isEditing && (
+        <div className="form-card" style={{ marginTop: '1.5rem' }}>
+          <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <FiClock /> Histórico de Aluguéis ({alugueis.length})
+          </h3>
+          {alugueis.length > 0 ? (
+            <div className="table-responsive">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Cliente</th>
+                    <th>Período</th>
+                    <th>Status</th>
+                    <th className="text-right">Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {alugueis.map((aluguel) => {
+                    const statusInfo = STATUS_ALUGUEL.find(s => s.value === aluguel.status);
+                    return (
+                      <tr 
+                        key={aluguel.id} 
+                        onClick={() => navigate(`/alugueis/${aluguel.id}`)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <td><strong>#{formatAluguelNumero(aluguel.numero)}</strong></td>
+                        <td>{aluguel.client_name}</td>
+                        <td>
+                          {formatDate(aluguel.data_inicio)} → {aluguel.data_devolucao ? formatDate(aluguel.data_devolucao) : formatDate(aluguel.data_prevista_devolucao)}
+                        </td>
+                        <td>
+                          <span 
+                            className="status-badge"
+                            style={{ background: statusInfo?.color, color: 'white' }}
+                          >
+                            {statusInfo?.emoji} {statusInfo?.label}
+                          </span>
+                        </td>
+                        <td className="text-right">
+                          <strong>{formatCurrency(aluguel.valor_final || aluguel.valor_acordado)}</strong>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="empty-text">Nenhum aluguel registrado para este equipamento.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
