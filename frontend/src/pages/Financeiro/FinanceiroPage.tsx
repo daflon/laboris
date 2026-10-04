@@ -263,7 +263,11 @@ export default function FinanceiroPage() {
                   <td>{entry.description}</td>
                   <td>
                     {linkedOs ? (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#6366f1', fontWeight: 500 }}>
+                      <span 
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#6366f1', fontWeight: 500, cursor: 'pointer' }}
+                        onClick={() => navigate(`/ordens/${linkedOs.id}`)}
+                        title="Ver OS"
+                      >
                         <FiLink size={12} />
                         #{formatOrderNumber(linkedOs)}
                       </span>
