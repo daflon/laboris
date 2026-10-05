@@ -46,6 +46,16 @@ router.post('/login', loginLimiter, validateRequest(loginSchema), async (req, re
     const user = await db('users').where({ email, active: true }).first();
 
     if (!user) {
+      // Log de tentativa de login falha
+      await db('audit_logs').insert({
+        tenant_id: null,
+        action: 'LOGIN_FAILED',
+        entity_type: 'USER',
+        entity_id: null,
+        description: `Tentativa de login falha para email: ${email}`,
+        performed_by: email,
+      }).catch(err => console.error('Erro ao logar tentativa de login:', err.message));
+      
       return res.status(401).json({
         success: false,
         error: { message: 'Email ou senha incorretos' },
@@ -55,6 +65,16 @@ router.post('/login', loginLimiter, validateRequest(loginSchema), async (req, re
     const validPassword = await bcrypt.compare(password, user.password_hash);
 
     if (!validPassword) {
+      // Log de tentativa de login falha (senha incorreta)
+      await db('audit_logs').insert({
+        tenant_id: user.tenant_id,
+        action: 'LOGIN_FAILED',
+        entity_type: 'USER',
+        entity_id: user.id,
+        description: `Tentativa de login falha (senha incorreta) para: ${email}`,
+        performed_by: email,
+      }).catch(err => console.error('Erro ao logar tentativa de login:', err.message));
+      
       return res.status(401).json({
         success: false,
         error: { message: 'Email ou senha incorretos' },
@@ -88,6 +108,16 @@ router.post('/login', loginLimiter, validateRequest(loginSchema), async (req, re
 
     // Define cookies httpOnly
     setTokenCookies(res, accessToken, refreshToken, expiresAt);
+    
+    // Log de login bem sucedido
+    await db('audit_logs').insert({
+      tenant_id: user.tenant_id,
+      action: 'LOGIN',
+      entity_type: 'USER',
+      entity_id: user.id,
+      description: `Login realizado com sucesso: ${email}`,
+      performed_by: email,
+    }).catch(err => console.error('Erro ao logar login:', err.message));
 
     res.json({
       success: true,
