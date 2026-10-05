@@ -74,6 +74,12 @@ interface AuditLog {
   performed_by: string;
   details: string;
   created_at: string;
+  // Novos campos da auditoria automática
+  ip_address?: string;
+  user_agent?: string;
+  request_body?: string;
+  response_status?: number;
+  duration_ms?: number;
 }
 
 interface UptimeMonitor {
@@ -639,10 +645,37 @@ export default function MasterDashboard() {
                     onChange={(e) => setAuditFilter(prev => ({ ...prev, action: e.target.value }))}
                   >
                     <option value="">Todas as ações</option>
-                    <option value="delete_client">Excluir Cliente</option>
-                    <option value="delete_equipment">Excluir Equipamento</option>
-                    <option value="delete_service_order">Excluir OS</option>
-                    <option value="delete_technician">Excluir Técnico</option>
+                    <optgroup label="Autenticação">
+                      <option value="LOGIN">Login</option>
+                      <option value="LOGIN_FAILED">Login Falhou</option>
+                      <option value="CHANGE_PASSWORD">Alteração de Senha</option>
+                    </optgroup>
+                    <optgroup label="Clientes">
+                      <option value="CREATE_CLIENT">Criar Cliente</option>
+                      <option value="UPDATE_CLIENT">Editar Cliente</option>
+                      <option value="DELETE_CLIENT">Excluir Cliente</option>
+                    </optgroup>
+                    <optgroup label="Ordens de Serviço">
+                      <option value="CREATE_SERVICE_ORDER">Criar OS</option>
+                      <option value="UPDATE_SERVICE_ORDER">Editar OS</option>
+                      <option value="UPDATE_SERVICE_ORDER_STATUS">Alterar Status OS</option>
+                      <option value="DELETE_SERVICE_ORDER">Excluir OS</option>
+                    </optgroup>
+                    <optgroup label="Equipamentos">
+                      <option value="CREATE_EQUIPMENT">Criar Equipamento</option>
+                      <option value="UPDATE_EQUIPMENT">Editar Equipamento</option>
+                      <option value="DELETE_EQUIPMENT">Excluir Equipamento</option>
+                    </optgroup>
+                    <optgroup label="Técnicos">
+                      <option value="CREATE_TECHNICIAN">Criar Técnico</option>
+                      <option value="UPDATE_TECHNICIAN">Editar Técnico</option>
+                      <option value="DELETE_TECHNICIAN">Excluir Técnico</option>
+                    </optgroup>
+                    <optgroup label="Admin">
+                      <option value="UPDATE_COMPANY_SETTINGS">Config. Empresa</option>
+                      <option value="UPDATE_ADMIN_PIN">Alterar PIN Admin</option>
+                      <option value="IMPERSONATE_TENANT">Acessar como Tenant</option>
+                    </optgroup>
                   </select>
                   <button 
                     className="btn btn-secondary" 
@@ -661,39 +694,110 @@ export default function MasterDashboard() {
               ) : auditLogs.length === 0 ? (
                 <p className="empty-text">Nenhum log de auditoria encontrado.</p>
               ) : (
-                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  <table className="data-table">
+                <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                  <table className="data-table audit-table">
                     <thead>
                       <tr>
-                        <th>Data</th>
-                        <th>Tenant</th>
-                        <th>Ação</th>
+                        <th style={{ width: '130px' }}>Data</th>
+                        <th style={{ width: '100px' }}>Tenant</th>
+                        <th style={{ width: '140px' }}>Ação</th>
                         <th>Descrição</th>
-                        <th>Usuário</th>
+                        <th style={{ width: '120px' }}>Usuário</th>
+                        <th style={{ width: '80px' }}>Status</th>
+                        <th style={{ width: '70px' }}>Tempo</th>
+                        <th style={{ width: '110px' }}>IP</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {auditLogs.map((log) => (
-                        <tr key={log.id}>
-                          <td style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                            {new Date(log.created_at).toLocaleString('pt-BR', { 
-                              day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
-                            })}
-                          </td>
-                          <td>
-                            <span className="badge badge-info">
-                              {log.tenant_name || log.tenant_slug}
-                            </span>
-                          </td>
-                          <td>
-                            <span className={`badge ${log.action.includes('delete') ? 'badge-danger' : 'badge-secondary'}`}>
-                              {log.action.replace('delete_', '🗑️ ').replace('_', ' ')}
-                            </span>
-                          </td>
-                          <td style={{ fontSize: '0.85rem' }}>{log.description}</td>
-                          <td style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>{log.performed_by}</td>
-                        </tr>
-                      ))}
+                      {auditLogs.map((log) => {
+                        // Determina cor do badge de ação
+                        const getActionBadge = () => {
+                          if (log.action.includes('DELETE') || log.action === 'LOGIN_FAILED') {
+                            return 'badge-danger';
+                          }
+                          if (log.action.includes('CREATE') || log.action === 'LOGIN') {
+                            return 'badge-success';
+                          }
+                          if (log.action.includes('UPDATE') || log.action.includes('CHANGE')) {
+                            return 'badge-warning';
+                          }
+                          return 'badge-secondary';
+                        };
+
+                        // Formata nome da ação
+                        const formatAction = (action: string) => {
+                          const icons: Record<string, string> = {
+                            'LOGIN': '🔐',
+                            'LOGIN_FAILED': '🚫',
+                            'CREATE': '➕',
+                            'UPDATE': '✏️',
+                            'DELETE': '🗑️',
+                            'CHANGE_PASSWORD': '🔑',
+                            'IMPERSONATE': '👤',
+                          };
+                          let icon = '📝';
+                          for (const [key, emoji] of Object.entries(icons)) {
+                            if (action.includes(key)) {
+                              icon = emoji;
+                              break;
+                            }
+                          }
+                          return `${icon} ${action.replace(/_/g, ' ').toLowerCase()}`;
+                        };
+
+                        // Status badge
+                        const getStatusBadge = () => {
+                          if (!log.response_status) return null;
+                          if (log.response_status >= 200 && log.response_status < 300) {
+                            return <span className="badge badge-success" style={{ fontSize: '0.7rem' }}>{log.response_status}</span>;
+                          }
+                          if (log.response_status >= 400) {
+                            return <span className="badge badge-danger" style={{ fontSize: '0.7rem' }}>{log.response_status}</span>;
+                          }
+                          return <span className="badge badge-secondary" style={{ fontSize: '0.7rem' }}>{log.response_status}</span>;
+                        };
+
+                        return (
+                          <tr key={log.id} style={{ 
+                            background: log.action === 'LOGIN_FAILED' ? 'rgba(239, 68, 68, 0.1)' : undefined 
+                          }}>
+                            <td style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                              {new Date(log.created_at).toLocaleString('pt-BR', { 
+                                day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
+                              })}
+                            </td>
+                            <td>
+                              {log.tenant_name || log.tenant_slug ? (
+                                <span className="badge badge-info" style={{ fontSize: '0.75rem' }}>
+                                  {log.tenant_name || log.tenant_slug}
+                                </span>
+                              ) : (
+                                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>-</span>
+                              )}
+                            </td>
+                            <td>
+                              <span className={`badge ${getActionBadge()}`} style={{ fontSize: '0.7rem', textTransform: 'capitalize' }}>
+                                {formatAction(log.action)}
+                              </span>
+                            </td>
+                            <td style={{ fontSize: '0.85rem', maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={log.description}>
+                              {log.description}
+                            </td>
+                            <td style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                              {log.performed_by || '-'}
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              {getStatusBadge()}
+                            </td>
+                            <td style={{ fontSize: '0.8rem', textAlign: 'right', color: log.duration_ms && log.duration_ms > 1000 ? '#f59e0b' : 'var(--color-text-muted)' }}>
+                              {log.duration_ms ? `${log.duration_ms}ms` : '-'}
+                            </td>
+                            <td style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
+                              {log.ip_address || '-'}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
