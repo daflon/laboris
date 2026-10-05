@@ -143,7 +143,8 @@ function auditMiddleware(req, res, next) {
         delete sanitizedBody.logo_url;
         
         // Insere no banco de forma assíncrona
-        db('audit_logs').insert({
+        // Tenta inserir com todos os campos novos, se falhar tenta só com os básicos
+        const fullLogData = {
           tenant_id: tenantId,
           action: isFailedLogin ? 'LOGIN_FAILED' : action,
           entity_type: entityType,
@@ -155,10 +156,26 @@ function auditMiddleware(req, res, next) {
           request_body: Object.keys(sanitizedBody).length > 0 ? JSON.stringify(sanitizedBody).substring(0, 1000) : null,
           response_status: res.statusCode,
           duration_ms: duration,
-        }).catch(err => {
-          // Log silencioso - não deve quebrar a aplicação
-          console.error('Erro ao registrar audit log:', err.message);
-        });
+        };
+        
+        const basicLogData = {
+          tenant_id: tenantId,
+          action: isFailedLogin ? 'LOGIN_FAILED' : action,
+          entity_type: entityType,
+          entity_id: entityId,
+          description: description,
+          performed_by: userEmail,
+        };
+        
+        db('audit_logs').insert(fullLogData)
+          .catch(() => {
+            // Se falhar (colunas não existem), tenta inserir só com campos básicos
+            return db('audit_logs').insert(basicLogData);
+          })
+          .catch(err => {
+            // Log silencioso - não deve quebrar a aplicação
+            console.error('Erro ao registrar audit log:', err.message);
+          });
         
       } catch (err) {
         console.error('Erro no middleware de auditoria:', err.message);
