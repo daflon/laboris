@@ -172,6 +172,8 @@ export default function CompanySettingsPage() {
     const roles: Record<string, string> = {
       super_admin: 'Super Administrador',
       admin: 'Administrador',
+      tenant_admin: 'Administrador',
+      tenant_user: 'Usuário',
       user: 'Usuário',
     };
     return roles[role] || role;

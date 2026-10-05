@@ -121,15 +121,16 @@
   color: white;
 }
 
-.role-admin {
+.role-admin,
+.role-tenant_admin {
   background: linear-gradient(135deg, #0891b2, #06b6d4);
   color: white;
 }
 
-.role-user {
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
+.role-user,
+.role-tenant_user {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
 }
 
 /* Formulário de senha */
