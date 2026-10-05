@@ -98,13 +98,11 @@ function auditMiddleware(req, res, next) {
   // Captura o tempo de início
   const startTime = Date.now();
   
-  // Intercepta o fim da response
-  const originalEnd = res.end;
-  res.end = function(chunk, encoding) {
-    // Restaura o método original
-    res.end = originalEnd;
-    res.end(chunk, encoding);
-    
+  // Log imediato para confirmar que o middleware está sendo executado
+  console.log('[AUDIT MIDDLEWARE] Request:', req.method, req.path);
+  
+  // Usa o evento 'finish' que dispara quando a resposta termina
+  res.on('finish', () => {
     // Processa auditoria de forma assíncrona (não bloqueia a response)
     setImmediate(() => {
       try {
@@ -113,15 +111,13 @@ function auditMiddleware(req, res, next) {
         const action = AUDITABLE_ACTIONS[routeKey];
         
         // Debug log para diagnóstico
-        if (req.path.includes('auth') || req.path.includes('login')) {
-          console.log('[AUDIT DEBUG]', {
-            originalPath: req.path,
-            normalizedPath,
-            routeKey,
-            action: action || 'NOT_AUDITABLE',
-            statusCode: res.statusCode,
-          });
-        }
+        console.log('[AUDIT CHECK]', {
+          originalPath: req.path,
+          normalizedPath,
+          routeKey,
+          action: action || 'NOT_AUDITABLE',
+          statusCode: res.statusCode,
+        });
         
         // Se não é uma ação auditável, ignora
         if (!action) return;
@@ -153,31 +149,6 @@ function auditMiddleware(req, res, next) {
         delete sanitizedBody.image_data;
         delete sanitizedBody.logo_url;
         
-        // Insere no banco de forma assíncrona
-        // Tenta inserir com todos os campos novos, se falhar tenta só com os básicos
-        const fullLogData = {
-          tenant_id: tenantId,
-          action: isFailedLogin ? 'LOGIN_FAILED' : action,
-          entity_type: entityType,
-          entity_id: entityId,
-          description: description,
-          performed_by: userEmail,
-          ip_address: req.ip || req.connection?.remoteAddress,
-          user_agent: req.get('User-Agent')?.substring(0, 255),
-          request_body: Object.keys(sanitizedBody).length > 0 ? JSON.stringify(sanitizedBody).substring(0, 1000) : null,
-          response_status: res.statusCode,
-          duration_ms: duration,
-        };
-        
-        const basicLogData = {
-          tenant_id: tenantId,
-          action: isFailedLogin ? 'LOGIN_FAILED' : action,
-          entity_type: entityType,
-          entity_id: entityId,
-          description: description,
-          performed_by: userEmail,
-        };
-        
         // Log de debug antes de inserir
         console.log('[AUDIT INSERT]', {
           action: isFailedLogin ? 'LOGIN_FAILED' : action,
@@ -186,28 +157,29 @@ function auditMiddleware(req, res, next) {
           statusCode: res.statusCode,
         });
         
-        db('audit_logs').insert(fullLogData)
+        // Insere no banco - campos básicos apenas (compatível com schema existente)
+        const logData = {
+          tenant_id: tenantId,
+          action: isFailedLogin ? 'LOGIN_FAILED' : action,
+          entity_type: entityType,
+          entity_id: entityId,
+          description: description,
+          performed_by: userEmail,
+        };
+        
+        db('audit_logs').insert(logData)
           .then(() => {
             console.log('[AUDIT SUCCESS] Log inserido com sucesso');
           })
-          .catch((err) => {
-            console.log('[AUDIT FALLBACK] Tentando inserção básica:', err.message);
-            // Se falhar (colunas não existem), tenta inserir só com campos básicos
-            return db('audit_logs').insert(basicLogData);
-          })
-          .then(() => {
-            console.log('[AUDIT SUCCESS] Log básico inserido com sucesso');
-          })
           .catch(err => {
-            // Log silencioso - não deve quebrar a aplicação
             console.error('[AUDIT ERROR] Erro ao registrar audit log:', err.message);
           });
         
       } catch (err) {
-        console.error('Erro no middleware de auditoria:', err.message);
+        console.error('[AUDIT EXCEPTION]', err.message);
       }
     });
-  };
+  });
   
   next();
 }
