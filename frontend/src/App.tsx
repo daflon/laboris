@@ -7,6 +7,7 @@ import Login from './pages/Login/Login';
 import MasterDashboard from './pages/Master/MasterDashboard';
 import CreateTenant from './pages/Master/CreateTenant';
 import EditTenant from './pages/Master/EditTenant';
+import MasterMyAccount from './pages/Master/MasterMyAccount';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ClientsList from './pages/Clients/ClientsList';
 import ClientForm from './pages/Clients/ClientForm';
@@ -28,6 +29,7 @@ import AlugueisPage from './pages/Alugueis/AlugueisPage';
 import PatrimonioForm from './pages/Alugueis/PatrimonioForm';
 import AluguelForm from './pages/Alugueis/AluguelForm';
 import AluguelDetails from './pages/Alugueis/AluguelDetails';
+import MyAccount from './pages/Account/MyAccount';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!authService.isAuthenticated()) {
@@ -61,6 +63,7 @@ export default function App() {
 
         {/* Super Admin */}
         <Route path="/master" element={<SuperAdminRoute><MasterDashboard /></SuperAdminRoute>} />
+        <Route path="/master/minha-conta" element={<SuperAdminRoute><MasterMyAccount /></SuperAdminRoute>} />
         <Route path="/master/tenants/novo" element={<SuperAdminRoute><CreateTenant /></SuperAdminRoute>} />
         <Route path="/master/tenants/:id/editar" element={<SuperAdminRoute><EditTenant /></SuperAdminRoute>} />
 
@@ -89,6 +92,7 @@ export default function App() {
           <Route path="/equipamentos/:id/historico" element={<EquipmentHistory />} />
 
           <Route path="/configuracoes" element={<CompanySettingsPage />} />
+          <Route path="/minha-conta" element={<MyAccount />} />
           <Route path="/financeiro" element={<FinanceiroPage />} />
           <Route path="/financeiro/relatorio" element={<RelatorioFinanceiro />} />
           <Route path="/faturamento" element={<FaturamentoPage />} />

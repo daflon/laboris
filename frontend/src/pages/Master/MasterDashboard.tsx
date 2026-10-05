@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiPlus, FiUsers, FiClipboard, FiLayers, FiDatabase, FiCloud, FiHardDrive, FiRefreshCw, FiAlertTriangle, FiX, FiActivity, FiFileText, FiFilter } from 'react-icons/fi';
+import { FiPlus, FiUsers, FiClipboard, FiLayers, FiDatabase, FiCloud, FiHardDrive, FiRefreshCw, FiAlertTriangle, FiX, FiActivity, FiFileText, FiFilter, FiUser } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { authService } from '../../services/auth.service';
@@ -357,6 +357,7 @@ export default function MasterDashboard() {
           <div className="btn-group">
             <button className="btn" onClick={handleGoToApp} style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}>🚀 Meu App</button>
             <Link to="/master/tenants/novo" className="btn" style={{ background: 'white', color: '#0891b2' }}><FiPlus /> Nova Conta</Link>
+            <Link to="/master/minha-conta" className="btn" style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}><FiUser /> Minha Conta</Link>
             <button className="btn" onClick={handleLogout} style={{ background: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}>Sair</button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign, FiAlertTriangle, FiBarChart2, FiMoreHorizontal, FiX, FiPackage } from 'react-icons/fi';
+import { FiUsers, FiTool, FiMonitor, FiClipboard, FiSettings, FiHome, FiLogOut, FiShield, FiDollarSign, FiAlertTriangle, FiBarChart2, FiMoreHorizontal, FiX, FiPackage, FiUser } from 'react-icons/fi';
 import api from '../services/api';
 import { authService } from '../services/auth.service';
 import GlobalSearch from './GlobalSearch';
@@ -143,6 +143,9 @@ export default function Layout() {
           )}
           <NavLink to="/configuracoes" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <FiSettings /> <span>Configurações</span>
+          </NavLink>
+          <NavLink to="/minha-conta" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <FiUser /> <span>Minha Conta</span>
           </NavLink>
           <button onClick={handleLogout} className="nav-link" style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
             <FiLogOut /> <span>Sair</span>
@@ -292,6 +295,13 @@ export default function Layout() {
                 onClick={() => setShowMobileMenu(false)}
               >
                 <FiSettings /> Configurações
+              </NavLink>
+              <NavLink 
+                to="/minha-conta" 
+                className="mobile-menu-item"
+                onClick={() => setShowMobileMenu(false)}
+              >
+                <FiUser /> Minha Conta
               </NavLink>
               <button 
                 onClick={() => { setShowMobileMenu(false); handleLogout(); }} 
