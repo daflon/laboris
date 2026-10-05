@@ -2,7 +2,16 @@ const { Router } = require('express');
 const bcrypt = require('bcryptjs');
 const { z } = require('zod');
 const db = require('../database/connection');
-const { authenticate, generateToken } = require('../middlewares/auth');
+const { 
+  authenticate, 
+  generateAccessToken, 
+  generateRefreshToken,
+  validateRefreshToken,
+  revokeRefreshToken,
+  revokeAllUserTokens,
+  setTokenCookies,
+  clearTokenCookies,
+} = require('../middlewares/auth');
 const { loginLimiter, sensitiveLimiter } = require('../middlewares/rateLimiter.middleware');
 const validateRequest = require('../middlewares/validateRequest');
 
@@ -66,17 +75,24 @@ router.post('/login', loginLimiter, validateRequest(loginSchema), async (req, re
     // Atualizar last_login
     await db('users').where({ id: user.id }).update({ last_login: new Date().toISOString() });
 
-    const token = generateToken({
+    // Gera Access Token (curta duração)
+    const accessToken = generateAccessToken({
       userId: user.id,
       tenantId: user.tenant_id,
       role: user.role,
       email: user.email,
     });
 
+    // Gera Refresh Token (longa duração)
+    const { token: refreshToken, expiresAt } = await generateRefreshToken(user.id, user.tenant_id, req);
+
+    // Define cookies httpOnly
+    setTokenCookies(res, accessToken, refreshToken, expiresAt);
+
     res.json({
       success: true,
       data: {
-        token,
+        token: accessToken, // Mantém para compatibilidade
         user: {
           id: user.id,
           name: user.name,
@@ -85,6 +101,119 @@ router.post('/login', loginLimiter, validateRequest(loginSchema), async (req, re
           tenant_id: user.tenant_id,
         },
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Refresh Token - gera novo access token
+router.post('/refresh', async (req, res, next) => {
+  try {
+    // Obtém refresh token do cookie ou body
+    const refreshToken = req.cookies?.refresh_token || req.body?.refresh_token;
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'NO_REFRESH_TOKEN', message: 'Refresh token não fornecido' },
+      });
+    }
+
+    // Valida refresh token
+    const tokenData = await validateRefreshToken(refreshToken);
+
+    if (!tokenData) {
+      clearTokenCookies(res);
+      return res.status(401).json({
+        success: false,
+        error: { code: 'INVALID_REFRESH_TOKEN', message: 'Refresh token inválido ou expirado' },
+      });
+    }
+
+    // Busca usuário
+    const user = await db('users').where({ id: tokenData.user_id, active: true }).first();
+
+    if (!user) {
+      await revokeRefreshToken(refreshToken);
+      clearTokenCookies(res);
+      return res.status(401).json({
+        success: false,
+        error: { message: 'Usuário não encontrado ou inativo' },
+      });
+    }
+
+    // Verifica tenant (se aplicável)
+    if (tokenData.tenant_id) {
+      const tenant = await db('tenants').where({ id: tokenData.tenant_id, active: true }).first();
+      if (!tenant) {
+        await revokeRefreshToken(refreshToken);
+        clearTokenCookies(res);
+        return res.status(403).json({
+          success: false,
+          error: { message: 'Conta desativada' },
+        });
+      }
+    }
+
+    // Gera novo access token
+    const accessToken = generateAccessToken({
+      userId: user.id,
+      tenantId: tokenData.tenant_id || user.tenant_id,
+      role: user.role,
+      email: user.email,
+    });
+
+    // Atualiza cookie do access token
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000,
+      path: '/',
+    });
+
+    res.json({
+      success: true,
+      data: {
+        token: accessToken,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Logout - revoga refresh token
+router.post('/logout', async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies?.refresh_token || req.body?.refresh_token;
+
+    if (refreshToken) {
+      await revokeRefreshToken(refreshToken);
+    }
+
+    clearTokenCookies(res);
+
+    res.json({
+      success: true,
+      data: { message: 'Logout realizado com sucesso' },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Logout de todos os dispositivos
+router.post('/logout-all', authenticate, async (req, res, next) => {
+  try {
+    await revokeAllUserTokens(req.user.userId);
+    clearTokenCookies(res);
+
+    res.json({
+      success: true,
+      data: { message: 'Logout de todos os dispositivos realizado' },
     });
   } catch (error) {
     next(error);

@@ -22,12 +22,53 @@ export interface LoginResponse {
 export const authService = {
   async login(email: string, password: string): Promise<LoginResponse> {
     const response = await api.post('/auth/login', { email, password });
-    return response.data.data;
+    const data = response.data.data;
+    
+    // Salva no localStorage para compatibilidade e uso em requisições
+    // O cookie httpOnly é definido automaticamente pelo backend
+    this.setToken(data.token);
+    this.setUser(data.user);
+    
+    return data;
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await api.post('/auth/logout');
+    } catch {
+      // Ignora erros no logout
+    } finally {
+      this.removeToken();
+    }
+  },
+
+  async logoutAll(): Promise<void> {
+    try {
+      await api.post('/auth/logout-all');
+    } catch {
+      // Ignora erros
+    } finally {
+      this.removeToken();
+    }
+  },
+
+  async refreshToken(): Promise<string | null> {
+    try {
+      const response = await api.post('/auth/refresh');
+      const token = response.data.data.token;
+      this.setToken(token);
+      return token;
+    } catch {
+      this.removeToken();
+      return null;
+    }
   },
 
   async getMe(): Promise<User> {
     const response = await api.get('/auth/me');
-    return response.data.data;
+    const user = response.data.data;
+    this.setUser(user);
+    return user;
   },
 
   async changePassword(current_password: string, new_password: string) {
@@ -46,6 +87,7 @@ export const authService = {
   removeToken() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('master_token');
   },
 
   getUser(): User | null {

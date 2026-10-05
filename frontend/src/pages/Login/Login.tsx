@@ -14,9 +14,8 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const { token, user } = await authService.login(email, password);
-      authService.setToken(token);
-      authService.setUser(user);
+      // O authService.login já salva token e user automaticamente
+      const { user } = await authService.login(email, password);
 
       if (user.role === 'super_admin') {
         navigate('/master');

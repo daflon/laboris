@@ -305,8 +305,8 @@ export default function MasterDashboard() {
     } catch { toast.error('Erro ao acessar conta'); }
   };
 
-  const handleLogout = () => {
-    authService.removeToken();
+  const handleLogout = async () => {
+    await authService.logout();
     navigate('/login');
   };
 

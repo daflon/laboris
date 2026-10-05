@@ -51,8 +51,8 @@ export default function Layout() {
       .catch(() => {});
   }, [isMasterImpersonating]);
 
-  const handleLogout = () => {
-    authService.removeToken();
+  const handleLogout = async () => {
+    await authService.logout();
     navigate('/login');
   };
 

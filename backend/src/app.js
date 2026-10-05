@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 const { publicLimiter } = require('./middlewares/rateLimiter.middleware');
+const auditMiddleware = require('./middlewares/audit.middleware');
 
 const app = express();
 
@@ -61,8 +63,12 @@ const helmetOptions = {
 // Middlewares globais
 app.use(helmet(helmetOptions));
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json({ limit: '5mb' })); // Aumentado para suportar fotos em Base64
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
+
+// Middleware de auditoria automática
+app.use(auditMiddleware);
 
 // Rotas da API (rate limiting aplicado nas rotas individuais)
 app.use('/api/v1', routes);
