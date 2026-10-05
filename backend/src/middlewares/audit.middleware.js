@@ -112,6 +112,17 @@ function auditMiddleware(req, res, next) {
         const routeKey = `${req.method} ${normalizedPath}`;
         const action = AUDITABLE_ACTIONS[routeKey];
         
+        // Debug log para diagnóstico
+        if (req.path.includes('auth') || req.path.includes('login')) {
+          console.log('[AUDIT DEBUG]', {
+            originalPath: req.path,
+            normalizedPath,
+            routeKey,
+            action: action || 'NOT_AUDITABLE',
+            statusCode: res.statusCode,
+          });
+        }
+        
         // Se não é uma ação auditável, ignora
         if (!action) return;
         
@@ -167,14 +178,29 @@ function auditMiddleware(req, res, next) {
           performed_by: userEmail,
         };
         
+        // Log de debug antes de inserir
+        console.log('[AUDIT INSERT]', {
+          action: isFailedLogin ? 'LOGIN_FAILED' : action,
+          tenantId,
+          userEmail,
+          statusCode: res.statusCode,
+        });
+        
         db('audit_logs').insert(fullLogData)
-          .catch(() => {
+          .then(() => {
+            console.log('[AUDIT SUCCESS] Log inserido com sucesso');
+          })
+          .catch((err) => {
+            console.log('[AUDIT FALLBACK] Tentando inserção básica:', err.message);
             // Se falhar (colunas não existem), tenta inserir só com campos básicos
             return db('audit_logs').insert(basicLogData);
           })
+          .then(() => {
+            console.log('[AUDIT SUCCESS] Log básico inserido com sucesso');
+          })
           .catch(err => {
             // Log silencioso - não deve quebrar a aplicação
-            console.error('Erro ao registrar audit log:', err.message);
+            console.error('[AUDIT ERROR] Erro ao registrar audit log:', err.message);
           });
         
       } catch (err) {
