@@ -1,9 +1,24 @@
 const equipmentService = require('../services/equipment.service');
 const { getPaginationParams, buildPaginationMeta } = require('../utils/pagination');
+const db = require('../database/connection');
 
 const equipmentController = {
   async create(req, res, next) {
-    try { res.status(201).json({ success: true, data: await equipmentService.create(req.tenantId, req.body) }); }
+    try {
+      const equipment = await equipmentService.create(req.tenantId, req.body);
+      
+      // Log de criação de equipamento
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'CREATE_EQUIPMENT',
+        entity_type: 'EQUIPMENT',
+        entity_id: equipment.id,
+        description: `Equipamento criado: ${equipment.type || ''} ${equipment.brand || ''} ${equipment.model || ''}`.trim(),
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar criação de equipamento:', err.message));
+      
+      res.status(201).json({ success: true, data: equipment });
+    }
     catch (error) { next(error); }
   },
   async findAll(req, res, next) {
@@ -23,11 +38,41 @@ const equipmentController = {
     catch (error) { next(error); }
   },
   async update(req, res, next) {
-    try { res.json({ success: true, data: await equipmentService.update(req.tenantId, req.params.id, req.body) }); }
+    try {
+      const equipment = await equipmentService.update(req.tenantId, req.params.id, req.body);
+      
+      // Log de atualização de equipamento
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'UPDATE_EQUIPMENT',
+        entity_type: 'EQUIPMENT',
+        entity_id: req.params.id,
+        description: `Equipamento atualizado: ${equipment.type || ''} ${equipment.brand || ''} ${equipment.model || ''}`.trim(),
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar atualização de equipamento:', err.message));
+      
+      res.json({ success: true, data: equipment });
+    }
     catch (error) { next(error); }
   },
   async delete(req, res, next) {
-    try { await equipmentService.delete(req.tenantId, req.params.id); res.json({ success: true, data: { message: 'Equipamento removido' } }); }
+    try {
+      // Busca o equipamento antes de deletar
+      const equipment = await equipmentService.findById(req.tenantId, req.params.id);
+      await equipmentService.delete(req.tenantId, req.params.id);
+      
+      // Log de exclusão de equipamento
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'DELETE_EQUIPMENT',
+        entity_type: 'EQUIPMENT',
+        entity_id: req.params.id,
+        description: `Equipamento excluído: ${equipment.type || ''} ${equipment.brand || ''} ${equipment.model || ''}`.trim(),
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar exclusão de equipamento:', err.message));
+      
+      res.json({ success: true, data: { message: 'Equipamento removido' } });
+    }
     catch (error) { next(error); }
   },
 };

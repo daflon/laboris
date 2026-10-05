@@ -219,12 +219,33 @@ router.post('/refresh', async (req, res, next) => {
 router.post('/logout', async (req, res, next) => {
   try {
     const refreshToken = req.cookies?.refresh_token || req.body?.refresh_token;
-
+    
+    // Tenta extrair info do usuário do token (se existir)
+    let userEmail = 'anonymous';
+    let tenantId = null;
     if (refreshToken) {
+      const tokenData = await validateRefreshToken(refreshToken);
+      if (tokenData) {
+        const user = await db('users').where({ id: tokenData.user_id }).first();
+        if (user) {
+          userEmail = user.email;
+          tenantId = tokenData.tenant_id;
+        }
+      }
       await revokeRefreshToken(refreshToken);
     }
 
     clearTokenCookies(res);
+    
+    // Log de logout
+    await db('audit_logs').insert({
+      tenant_id: tenantId,
+      action: 'LOGOUT',
+      entity_type: 'USER',
+      entity_id: null,
+      description: `Logout realizado: ${userEmail}`,
+      performed_by: userEmail,
+    }).catch(err => console.error('Erro ao logar logout:', err.message));
 
     res.json({
       success: true,
@@ -240,6 +261,16 @@ router.post('/logout-all', authenticate, async (req, res, next) => {
   try {
     await revokeAllUserTokens(req.user.userId);
     clearTokenCookies(res);
+    
+    // Log de logout de todos os dispositivos
+    await db('audit_logs').insert({
+      tenant_id: req.user.tenantId,
+      action: 'LOGOUT_ALL',
+      entity_type: 'USER',
+      entity_id: req.user.userId,
+      description: `Logout de todos os dispositivos: ${req.user.email}`,
+      performed_by: req.user.email,
+    }).catch(err => console.error('Erro ao logar logout-all:', err.message));
 
     res.json({
       success: true,
@@ -293,11 +324,31 @@ router.put('/change-password', authenticate, sensitiveLimiter, validateRequest(c
     const validPassword = await bcrypt.compare(current_password, user.password_hash);
 
     if (!validPassword) {
+      // Log de tentativa de alteração de senha falha
+      await db('audit_logs').insert({
+        tenant_id: req.user.tenantId,
+        action: 'CHANGE_PASSWORD_FAILED',
+        entity_type: 'USER',
+        entity_id: req.user.userId,
+        description: `Tentativa de alteração de senha falha (senha atual incorreta): ${user.email}`,
+        performed_by: user.email,
+      }).catch(err => console.error('Erro ao logar tentativa de alteração de senha:', err.message));
+      
       return res.status(400).json({ success: false, error: { message: 'Senha atual incorreta' } });
     }
 
     const password_hash = await bcrypt.hash(new_password, 10);
     await db('users').where({ id: user.id }).update({ password_hash, updated_at: new Date().toISOString() });
+    
+    // Log de alteração de senha bem sucedida
+    await db('audit_logs').insert({
+      tenant_id: req.user.tenantId,
+      action: 'CHANGE_PASSWORD',
+      entity_type: 'USER',
+      entity_id: req.user.userId,
+      description: `Senha alterada com sucesso: ${user.email}`,
+      performed_by: user.email,
+    }).catch(err => console.error('Erro ao logar alteração de senha:', err.message));
 
     res.json({ success: true, data: { message: 'Senha alterada com sucesso' } });
   } catch (error) {

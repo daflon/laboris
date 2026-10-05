@@ -1,9 +1,24 @@
 const serviceOrdersService = require('../services/serviceOrders.service');
 const { getPaginationParams, buildPaginationMeta } = require('../utils/pagination');
+const db = require('../database/connection');
 
 const serviceOrdersController = {
   async create(req, res, next) {
-    try { res.status(201).json({ success: true, data: await serviceOrdersService.create(req.tenantId, req.body) }); }
+    try {
+      const order = await serviceOrdersService.create(req.tenantId, req.body);
+      
+      // Log de criação de OS
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'CREATE_OS',
+        entity_type: 'SERVICE_ORDER',
+        entity_id: order.id,
+        description: `OS #${String(order.order_number).padStart(4, '0')} criada`,
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar criação de OS:', err.message));
+      
+      res.status(201).json({ success: true, data: order });
+    }
     catch (error) { next(error); }
   },
   async findAll(req, res, next) {
@@ -19,15 +34,59 @@ const serviceOrdersController = {
     catch (error) { next(error); }
   },
   async update(req, res, next) {
-    try { res.json({ success: true, data: await serviceOrdersService.update(req.tenantId, req.params.id, req.body) }); }
+    try {
+      const order = await serviceOrdersService.update(req.tenantId, req.params.id, req.body);
+      
+      // Log de atualização de OS
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'UPDATE_OS',
+        entity_type: 'SERVICE_ORDER',
+        entity_id: req.params.id,
+        description: `OS #${String(order.order_number).padStart(4, '0')} atualizada`,
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar atualização de OS:', err.message));
+      
+      res.json({ success: true, data: order });
+    }
     catch (error) { next(error); }
   },
   async updateStatus(req, res, next) {
-    try { res.json({ success: true, data: await serviceOrdersService.updateStatus(req.tenantId, req.params.id, req.body.status) }); }
+    try {
+      const order = await serviceOrdersService.updateStatus(req.tenantId, req.params.id, req.body.status);
+      
+      // Log de alteração de status
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'UPDATE_OS_STATUS',
+        entity_type: 'SERVICE_ORDER',
+        entity_id: req.params.id,
+        description: `OS #${String(order.order_number).padStart(4, '0')} - Status alterado para: ${req.body.status}`,
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar alteração de status:', err.message));
+      
+      res.json({ success: true, data: order });
+    }
     catch (error) { next(error); }
   },
   async delete(req, res, next) {
-    try { await serviceOrdersService.delete(req.tenantId, req.params.id); res.json({ success: true, data: { message: 'OS removida' } }); }
+    try {
+      // Busca a OS antes de deletar para ter o número
+      const order = await serviceOrdersService.findById(req.tenantId, req.params.id);
+      await serviceOrdersService.delete(req.tenantId, req.params.id);
+      
+      // Log de exclusão de OS
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'DELETE_OS',
+        entity_type: 'SERVICE_ORDER',
+        entity_id: req.params.id,
+        description: `OS #${String(order.order_number).padStart(4, '0')} excluída`,
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar exclusão de OS:', err.message));
+      
+      res.json({ success: true, data: { message: 'OS removida' } });
+    }
     catch (error) { next(error); }
   },
   async duplicate(req, res, next) {

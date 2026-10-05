@@ -1,9 +1,24 @@
 const techniciansService = require('../services/technicians.service');
 const { getPaginationParams, buildPaginationMeta } = require('../utils/pagination');
+const db = require('../database/connection');
 
 const techniciansController = {
   async create(req, res, next) {
-    try { res.status(201).json({ success: true, data: await techniciansService.create(req.tenantId, req.body) }); }
+    try {
+      const technician = await techniciansService.create(req.tenantId, req.body);
+      
+      // Log de criação de técnico
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'CREATE_TECHNICIAN',
+        entity_type: 'TECHNICIAN',
+        entity_id: technician.id,
+        description: `Técnico criado: ${technician.name}`,
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar criação de técnico:', err.message));
+      
+      res.status(201).json({ success: true, data: technician });
+    }
     catch (error) { next(error); }
   },
   async findAll(req, res, next) {
@@ -19,15 +34,59 @@ const techniciansController = {
     catch (error) { next(error); }
   },
   async update(req, res, next) {
-    try { res.json({ success: true, data: await techniciansService.update(req.tenantId, req.params.id, req.body) }); }
+    try {
+      const technician = await techniciansService.update(req.tenantId, req.params.id, req.body);
+      
+      // Log de atualização de técnico
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'UPDATE_TECHNICIAN',
+        entity_type: 'TECHNICIAN',
+        entity_id: req.params.id,
+        description: `Técnico atualizado: ${technician.name}`,
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar atualização de técnico:', err.message));
+      
+      res.json({ success: true, data: technician });
+    }
     catch (error) { next(error); }
   },
   async toggleStatus(req, res, next) {
-    try { res.json({ success: true, data: await techniciansService.toggleStatus(req.tenantId, req.params.id) }); }
+    try {
+      const technician = await techniciansService.toggleStatus(req.tenantId, req.params.id);
+      
+      // Log de alteração de status do técnico
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'TOGGLE_TECHNICIAN_STATUS',
+        entity_type: 'TECHNICIAN',
+        entity_id: req.params.id,
+        description: `Técnico ${technician.name} - Status alterado para: ${technician.active ? 'Ativo' : 'Inativo'}`,
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar alteração de status do técnico:', err.message));
+      
+      res.json({ success: true, data: technician });
+    }
     catch (error) { next(error); }
   },
   async delete(req, res, next) {
-    try { await techniciansService.delete(req.tenantId, req.params.id); res.json({ success: true, data: { message: 'Técnico removido' } }); }
+    try {
+      // Busca o técnico antes de deletar
+      const technician = await techniciansService.findById(req.tenantId, req.params.id);
+      await techniciansService.delete(req.tenantId, req.params.id);
+      
+      // Log de exclusão de técnico
+      await db('audit_logs').insert({
+        tenant_id: req.tenantId,
+        action: 'DELETE_TECHNICIAN',
+        entity_type: 'TECHNICIAN',
+        entity_id: req.params.id,
+        description: `Técnico excluído: ${technician.name}`,
+        performed_by: req.user?.email || 'system',
+      }).catch(err => console.error('Erro ao logar exclusão de técnico:', err.message));
+      
+      res.json({ success: true, data: { message: 'Técnico removido' } });
+    }
     catch (error) { next(error); }
   },
 };
