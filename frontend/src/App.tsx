@@ -29,7 +29,6 @@ import AlugueisPage from './pages/Alugueis/AlugueisPage';
 import PatrimonioForm from './pages/Alugueis/PatrimonioForm';
 import AluguelForm from './pages/Alugueis/AluguelForm';
 import AluguelDetails from './pages/Alugueis/AluguelDetails';
-import MyAccount from './pages/Account/MyAccount';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!authService.isAuthenticated()) {
@@ -92,7 +91,6 @@ export default function App() {
           <Route path="/equipamentos/:id/historico" element={<EquipmentHistory />} />
 
           <Route path="/configuracoes" element={<CompanySettingsPage />} />
-          <Route path="/minha-conta" element={<MyAccount />} />
           <Route path="/financeiro" element={<FinanceiroPage />} />
           <Route path="/financeiro/relatorio" element={<RelatorioFinanceiro />} />
           <Route path="/faturamento" element={<FaturamentoPage />} />
