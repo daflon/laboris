@@ -4,7 +4,7 @@ import { FiUser, FiLock, FiMail, FiShield, FiCheck, FiX, FiEye, FiEyeOff, FiArro
 import { toast } from 'react-hot-toast';
 import { authService } from '../../services/auth.service';
 import api from '../../services/api';
-import '../Account/MyAccount.css';
+import '../Settings/CompanySettings.css';
 import './MasterDashboard.css';
 
 interface UserData {
