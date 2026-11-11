@@ -159,6 +159,82 @@ export default function AluguelDetails() {
       return;
     }
 
+    // Template da fatura (meia folha - renderizado 2x)
+    const renderFatura = () => `
+      <div class="fatura">
+        <div class="fatura-header">
+          <div class="fatura-title">
+            <span class="fatura-label">Fatura - Aluguel #002</span>
+            <h1>FATURA DE ALUGUEL</h1>
+            <span class="fatura-numero">Nº ${formatAluguelNumero(faturaData.aluguel_numero)}</span>
+          </div>
+          <div class="fatura-data">
+            <span>Data de Emissão: ${new Date(faturaData.data_emissao).toLocaleDateString('pt-BR')}</span>
+          </div>
+        </div>
+
+        <div class="fatura-body">
+          <div class="fatura-section">
+            <h3>CLIENTE</h3>
+            <div class="fatura-grid">
+              <div><span class="label">Nome:</span> ${faturaData.cliente.nome}</div>
+              ${faturaData.cliente.documento ? `<div><span class="label">CPF/CNPJ:</span> ${faturaData.cliente.documento}</div>` : ''}
+              ${faturaData.cliente.telefone ? `<div><span class="label">Telefone:</span> ${faturaData.cliente.telefone}</div>` : ''}
+            </div>
+          </div>
+
+          <div class="fatura-section">
+            <h3>EQUIPAMENTO</h3>
+            <div class="fatura-grid">
+              <div><span class="label">Código:</span> ${faturaData.equipamento.codigo}</div>
+              <div><span class="label">Descrição:</span> ${faturaData.equipamento.nome}${faturaData.equipamento.marca ? ' - ' + faturaData.equipamento.marca : ''}${faturaData.equipamento.modelo ? ' ' + faturaData.equipamento.modelo : ''}</div>
+            </div>
+          </div>
+
+          <div class="fatura-section">
+            <h3>PERÍODO DO ALUGUEL</h3>
+            <div class="fatura-grid two-cols">
+              <div><span class="label">Início:</span> ${new Date(faturaData.periodo.inicio).toLocaleDateString('pt-BR')}</div>
+              <div><span class="label">Término:</span> ${new Date(faturaData.periodo.fim).toLocaleDateString('pt-BR')}</div>
+            </div>
+          </div>
+
+          <div class="fatura-section">
+            <h3>ITENS</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Descrição</th>
+                  <th class="center" style="width: 40px;">Qtd</th>
+                  <th class="right" style="width: 70px;">Valor Unit.</th>
+                  <th class="right" style="width: 70px;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${faturaData.itens.map((item: any) => `
+                  <tr>
+                    <td>${item.descricao}</td>
+                    <td class="center">${item.quantidade}</td>
+                    <td class="right">R$ ${item.valor_unitario.toFixed(2)}</td>
+                    <td class="right">R$ ${item.valor_total.toFixed(2)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="fatura-total">
+            <span>TOTAL:</span>
+            <strong>R$ ${faturaData.valores.valor_fatura.toFixed(2)}</strong>
+          </div>
+        </div>
+
+        <div class="fatura-footer">
+          <p>Documento gerado pelo OS Laboris</p>
+        </div>
+      </div>
+    `;
+
     const html = `
       <!DOCTYPE html>
       <html>
@@ -166,88 +242,157 @@ export default function AluguelDetails() {
         <title>Fatura - Aluguel #${formatAluguelNumero(faturaData.aluguel_numero)}</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: Arial, sans-serif; padding: 20px; font-size: 12px; }
-          .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px; }
-          .header h1 { font-size: 18px; margin-bottom: 5px; }
-          .header h2 { font-size: 14px; color: #666; }
-          .section { margin-bottom: 20px; }
-          .section h3 { font-size: 13px; background: #f0f0f0; padding: 5px 10px; margin-bottom: 10px; }
-          .row { display: flex; justify-content: space-between; padding: 3px 10px; }
-          .row.alt { background: #f9f9f9; }
-          .label { color: #666; }
-          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-          th { background: #f0f0f0; }
-          .total { text-align: right; font-size: 16px; font-weight: bold; margin-top: 15px; padding: 10px; background: #e8f5e9; }
-          .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #888; }
-          @media print { body { padding: 0; } }
+          
+          @page {
+            size: A4;
+            margin: 0;
+          }
+          
+          body { 
+            font-family: Arial, sans-serif; 
+            font-size: 9px;
+            line-height: 1.3;
+          }
+          
+          .page {
+            width: 210mm;
+            height: 297mm;
+            display: flex;
+            flex-direction: column;
+          }
+          
+          .fatura {
+            height: 148.5mm;
+            padding: 8mm 12mm;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+          }
+          
+          .fatura:first-child {
+            border-bottom: 1px dashed #999;
+          }
+          
+          .fatura-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid #333;
+            padding-bottom: 4mm;
+            margin-bottom: 3mm;
+          }
+          
+          .fatura-title h1 {
+            font-size: 14px;
+            margin: 2px 0;
+          }
+          
+          .fatura-label {
+            font-size: 7px;
+            color: #666;
+          }
+          
+          .fatura-numero {
+            font-size: 11px;
+            color: #7c3aed;
+            font-weight: bold;
+          }
+          
+          .fatura-data {
+            text-align: right;
+            font-size: 8px;
+            color: #666;
+          }
+          
+          .fatura-body {
+            flex: 1;
+          }
+          
+          .fatura-section {
+            margin-bottom: 3mm;
+          }
+          
+          .fatura-section h3 {
+            font-size: 8px;
+            background: #f0f0f0;
+            padding: 2px 5px;
+            margin-bottom: 2mm;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          
+          .fatura-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1mm;
+            padding: 0 2mm;
+          }
+          
+          .fatura-grid.two-cols {
+            grid-template-columns: 1fr 1fr;
+          }
+          
+          .fatura-grid .label {
+            color: #666;
+            font-size: 7px;
+            margin-right: 3px;
+          }
+          
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px;
+          }
+          
+          th, td {
+            border: 1px solid #ddd;
+            padding: 3px 5px;
+            text-align: left;
+          }
+          
+          th {
+            background: #f0f0f0;
+            font-size: 7px;
+            font-weight: 600;
+          }
+          
+          .center { text-align: center; }
+          .right { text-align: right; }
+          
+          .fatura-total {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            margin-top: 3mm;
+            padding: 3mm;
+            background: #e8f5e9;
+            font-size: 11px;
+          }
+          
+          .fatura-total strong {
+            color: #22c55e;
+            font-size: 13px;
+          }
+          
+          .fatura-footer {
+            text-align: center;
+            font-size: 7px;
+            color: #888;
+            margin-top: 2mm;
+            padding-top: 2mm;
+            border-top: 1px solid #eee;
+          }
+          
+          @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          }
         </style>
       </head>
       <body>
-        <div class="header">
-          <h1>FATURA DE ALUGUEL</h1>
-          <h2>Nº ${formatAluguelNumero(faturaData.aluguel_numero)}</h2>
-          <p>Data de Emissão: ${new Date(faturaData.data_emissao).toLocaleDateString('pt-BR')}</p>
-        </div>
-
-        <div class="section">
-          <h3>CLIENTE</h3>
-          <div class="row"><span class="label">Nome:</span> <span>${faturaData.cliente.nome}</span></div>
-          ${faturaData.cliente.documento ? `<div class="row alt"><span class="label">CPF/CNPJ:</span> <span>${faturaData.cliente.documento}</span></div>` : ''}
-          ${faturaData.cliente.telefone ? `<div class="row"><span class="label">Telefone:</span> <span>${faturaData.cliente.telefone}</span></div>` : ''}
-          ${faturaData.cliente.endereco ? `<div class="row alt"><span class="label">Endereço:</span> <span>${faturaData.cliente.endereco}</span></div>` : ''}
-        </div>
-
-        <div class="section">
-          <h3>EQUIPAMENTO</h3>
-          <div class="row"><span class="label">Código:</span> <span>${faturaData.equipamento.codigo}</span></div>
-          <div class="row alt"><span class="label">Descrição:</span> <span>${faturaData.equipamento.nome}${faturaData.equipamento.marca ? ' - ' + faturaData.equipamento.marca : ''}${faturaData.equipamento.modelo ? ' ' + faturaData.equipamento.modelo : ''}</span></div>
-        </div>
-
-        <div class="section">
-          <h3>PERÍODO DO ALUGUEL</h3>
-          <div class="row"><span class="label">Início:</span> <span>${new Date(faturaData.periodo.inicio).toLocaleDateString('pt-BR')}</span></div>
-          <div class="row alt"><span class="label">Término:</span> <span>${new Date(faturaData.periodo.fim).toLocaleDateString('pt-BR')}</span></div>
-        </div>
-
-        <div class="section">
-          <h3>ITENS</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Descrição</th>
-                <th style="width: 60px; text-align: center;">Qtd</th>
-                <th style="width: 100px; text-align: right;">Valor Unit.</th>
-                <th style="width: 100px; text-align: right;">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${faturaData.itens.map((item: any) => `
-                <tr>
-                  <td>${item.descricao}</td>
-                  <td style="text-align: center;">${item.quantidade}</td>
-                  <td style="text-align: right;">R$ ${item.valor_unitario.toFixed(2)}</td>
-                  <td style="text-align: right;">R$ ${item.valor_total.toFixed(2)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-
-        <div class="total">
-          TOTAL: R$ ${faturaData.valores.valor_fatura.toFixed(2)}
-        </div>
-
-        ${faturaData.valores.total_pago > 0 ? `
-          <div class="section" style="margin-top: 15px;">
-            <div class="row"><span class="label">Valor Acordado:</span> <span>R$ ${faturaData.valores.valor_acordado.toFixed(2)}</span></div>
-            <div class="row alt"><span class="label">Total Pago:</span> <span style="color: green;">R$ ${faturaData.valores.total_pago.toFixed(2)}</span></div>
-            <div class="row"><span class="label">Saldo Pendente:</span> <span style="color: #c00;">R$ ${faturaData.valores.saldo_pendente.toFixed(2)}</span></div>
-          </div>
-        ` : ''}
-
-        <div class="footer">
-          <p>Documento gerado pelo OS Laboris</p>
+        <div class="page">
+          ${renderFatura()}
+          ${renderFatura()}
         </div>
       </body>
       </html>
