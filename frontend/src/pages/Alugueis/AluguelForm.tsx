@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FiSave, FiArrowLeft, FiPackage, FiUser } from 'react-icons/fi';
+import { FiSave, FiArrowLeft, FiPackage, FiUser, FiInfo } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { alugueisService, patrimonioService, Patrimonio, TIPOS_COBRANCA } from '../../services/alugueis.service';
 import { clientsService, Client } from '../../services/clients.service';
@@ -8,6 +8,28 @@ import PageHeader from '../../components/PageHeader';
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+}
+
+// Calcula o número de dias entre duas datas (inclusive)
+function calcularDias(dataInicio: string, dataFim: string): number {
+  if (!dataInicio || !dataFim) return 0;
+  const inicio = new Date(dataInicio);
+  const fim = new Date(dataFim);
+  const diffTime = fim.getTime() - inicio.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 para incluir o dia inicial
+  return diffDays > 0 ? diffDays : 0;
+}
+
+// Calcula o número de semanas (arredondando para cima)
+function calcularSemanas(dataInicio: string, dataFim: string): number {
+  const dias = calcularDias(dataInicio, dataFim);
+  return Math.ceil(dias / 7);
+}
+
+// Calcula o número de meses (arredondando para cima)
+function calcularMeses(dataInicio: string, dataFim: string): number {
+  const dias = calcularDias(dataInicio, dataFim);
+  return Math.ceil(dias / 30);
 }
 
 export default function AluguelForm() {
@@ -19,6 +41,7 @@ export default function AluguelForm() {
   const [patrimonios, setPatrimonios] = useState<Patrimonio[]>([]);
   const [clientes, setClientes] = useState<Client[]>([]);
   const [selectedPatrimonio, setSelectedPatrimonio] = useState<Patrimonio | null>(null);
+  const [calculoInfo, setCalculoInfo] = useState<string>('');
   
   const [form, setForm] = useState({
     patrimonio_id: preSelectedPatrimonio || '',
@@ -35,6 +58,11 @@ export default function AluguelForm() {
     loadData();
   }, []);
 
+  // Recalcula o valor quando mudam as datas, tipo de cobrança ou patrimônio
+  useEffect(() => {
+    calcularValorSugerido();
+  }, [form.data_inicio, form.data_prevista_devolucao, form.tipo_cobranca, selectedPatrimonio]);
+
   const loadData = async () => {
     try {
       const [patRes, cliRes] = await Promise.all([
@@ -49,10 +77,6 @@ export default function AluguelForm() {
         const pat = patRes.data.find((p: Patrimonio) => p.id === preSelectedPatrimonio);
         if (pat) {
           setSelectedPatrimonio(pat);
-          // Sugere valor baseado no tipo de cobrança
-          if (pat.valor_diaria) {
-            setForm(prev => ({ ...prev, valor_acordado: String(pat.valor_diaria) }));
-          }
         }
       }
     } catch {
@@ -60,34 +84,48 @@ export default function AluguelForm() {
     }
   };
 
+  const calcularValorSugerido = () => {
+    if (!selectedPatrimonio || !form.data_inicio || !form.data_prevista_devolucao) {
+      setCalculoInfo('');
+      return;
+    }
+
+    const { tipo_cobranca, data_inicio, data_prevista_devolucao } = form;
+    let valorUnitario = 0;
+    let quantidade = 0;
+    let unidade = '';
+
+    if (tipo_cobranca === 'diaria' && selectedPatrimonio.valor_diaria) {
+      valorUnitario = selectedPatrimonio.valor_diaria;
+      quantidade = calcularDias(data_inicio, data_prevista_devolucao);
+      unidade = quantidade === 1 ? 'dia' : 'dias';
+    } else if (tipo_cobranca === 'semanal' && selectedPatrimonio.valor_semanal) {
+      valorUnitario = selectedPatrimonio.valor_semanal;
+      quantidade = calcularSemanas(data_inicio, data_prevista_devolucao);
+      unidade = quantidade === 1 ? 'semana' : 'semanas';
+    } else if (tipo_cobranca === 'mensal' && selectedPatrimonio.valor_mensal) {
+      valorUnitario = selectedPatrimonio.valor_mensal;
+      quantidade = calcularMeses(data_inicio, data_prevista_devolucao);
+      unidade = quantidade === 1 ? 'mês' : 'meses';
+    }
+
+    if (valorUnitario > 0 && quantidade > 0) {
+      const valorTotal = valorUnitario * quantidade;
+      setForm(prev => ({ ...prev, valor_acordado: String(valorTotal.toFixed(2)) }));
+      setCalculoInfo(`${quantidade} ${unidade} × ${formatCurrency(valorUnitario)} = ${formatCurrency(valorTotal)}`);
+    } else {
+      setCalculoInfo('');
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
 
-    // Ao mudar patrimônio, atualiza selecionado e sugere valor
+    // Ao mudar patrimônio, atualiza selecionado
     if (name === 'patrimonio_id') {
       const pat = patrimonios.find(p => p.id === value);
       setSelectedPatrimonio(pat || null);
-      if (pat) {
-        const valorSugerido = 
-          form.tipo_cobranca === 'diaria' ? pat.valor_diaria :
-          form.tipo_cobranca === 'semanal' ? pat.valor_semanal :
-          form.tipo_cobranca === 'mensal' ? pat.valor_mensal : '';
-        if (valorSugerido) {
-          setForm(prev => ({ ...prev, valor_acordado: String(valorSugerido) }));
-        }
-      }
-    }
-
-    // Ao mudar tipo de cobrança, sugere valor
-    if (name === 'tipo_cobranca' && selectedPatrimonio) {
-      const valorSugerido = 
-        value === 'diaria' ? selectedPatrimonio.valor_diaria :
-        value === 'semanal' ? selectedPatrimonio.valor_semanal :
-        value === 'mensal' ? selectedPatrimonio.valor_mensal : '';
-      if (valorSugerido) {
-        setForm(prev => ({ ...prev, valor_acordado: String(valorSugerido) }));
-      }
     }
   };
 
@@ -276,6 +314,18 @@ export default function AluguelForm() {
               required
               placeholder="0,00"
             />
+            {calculoInfo && (
+              <small style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.25rem', 
+                marginTop: '0.25rem',
+                color: 'var(--color-primary)',
+                fontSize: '0.8rem'
+              }}>
+                <FiInfo size={12} /> {calculoInfo}
+              </small>
+            )}
           </div>
 
           {/* Condição de saída */}
