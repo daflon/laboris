@@ -701,18 +701,55 @@ export default function AluguelDetails() {
               />
             </div>
 
-            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {/* Checkbox de equipamento danificado com estilo melhorado */}
+            <label 
+              htmlFor="equipamento_danificado"
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.75rem',
+                padding: '0.75rem 1rem',
+                background: devolucaoForm.equipamento_danificado ? 'rgba(239, 68, 68, 0.15)' : 'var(--bg-secondary)',
+                border: `2px solid ${devolucaoForm.equipamento_danificado ? '#ef4444' : 'var(--border-color)'}`,
+                borderRadius: '8px',
+                cursor: 'pointer',
+                marginBottom: '1rem',
+                transition: 'all 0.2s'
+              }}
+            >
               <input
                 type="checkbox"
                 id="equipamento_danificado"
                 checked={devolucaoForm.equipamento_danificado}
                 onChange={e => setDevolucaoForm(prev => ({ ...prev, equipamento_danificado: e.target.checked }))}
+                style={{ 
+                  width: '20px', 
+                  height: '20px',
+                  accentColor: '#ef4444',
+                  cursor: 'pointer'
+                }}
               />
-              <label htmlFor="equipamento_danificado" style={{ margin: 0, cursor: 'pointer' }}>
-                <FiAlertTriangle style={{ color: '#ef4444', marginRight: '0.25rem' }} />
-                Equipamento retornou danificado
-              </label>
-            </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <FiAlertTriangle style={{ color: '#ef4444', fontSize: '1.1rem' }} />
+                <span style={{ fontWeight: 500, color: devolucaoForm.equipamento_danificado ? '#ef4444' : 'var(--text-primary)' }}>
+                  Equipamento retornou danificado
+                </span>
+              </div>
+            </label>
+            {devolucaoForm.equipamento_danificado && (
+              <p style={{ 
+                fontSize: '0.8rem', 
+                color: '#f59e0b', 
+                marginTop: '-0.5rem', 
+                marginBottom: '1rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem'
+              }}>
+                <FiAlertTriangle size={12} />
+                O equipamento será enviado para manutenção após a devolução
+              </p>
+            )}
 
             <div className="modal-actions">
               <button className="btn btn-secondary" onClick={() => setShowDevolverModal(false)}>
