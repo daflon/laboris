@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiPlus, FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight, FiPhone, FiMessageCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { techniciansService, Technician } from '../../services/technicians.service';
 import PageHeader from '../../components/PageHeader';
 import SearchInput from '../../components/SearchInput';
 import PinModal from '../../components/PinModal';
+import ActionMenu from '../../components/ActionMenu';
 import api from '../../services/api';
 import { formatPhone } from '../../utils/masks';
 
@@ -41,10 +42,10 @@ export default function TechniciansList() {
     return () => clearTimeout(timeout);
   }, [search, statusFilter]);
 
-  const handleToggleStatus = async (id: string) => {
+  const handleToggleStatus = async (tech: Technician) => {
     try {
-      await techniciansService.toggleStatus(id);
-      toast.success('Status atualizado');
+      await techniciansService.toggleStatus(tech.id);
+      toast.success(tech.active ? 'Técnico inativado' : 'Técnico ativado');
       loadTechnicians(meta.page);
     } catch {
       toast.error('Erro ao atualizar status');
@@ -69,6 +70,24 @@ export default function TechniciansList() {
     } catch {
       toast.error('Erro ao remover técnico');
     }
+  };
+
+  const handleWhatsApp = (tech: Technician) => {
+    const phone = tech.phone?.replace(/\D/g, '');
+    if (!phone) {
+      toast.error('Técnico sem telefone cadastrado');
+      return;
+    }
+    window.open(`https://wa.me/55${phone}`, '_blank');
+  };
+
+  const handleCall = (tech: Technician) => {
+    const phone = tech.phone?.replace(/\D/g, '');
+    if (!phone) {
+      toast.error('Técnico sem telefone cadastrado');
+      return;
+    }
+    window.open(`tel:+55${phone}`, '_self');
   };
 
   return (
@@ -109,12 +128,16 @@ export default function TechniciansList() {
                 <th>Telefone</th>
                 <th>Especialidade</th>
                 <th>Status</th>
-                <th>Ações</th>
+                <th style={{ width: '120px' }}></th>
               </tr>
             </thead>
             <tbody>
               {technicians.map((tech) => (
-                <tr key={tech.id}>
+                <tr 
+                  key={tech.id}
+                  className="clickable-row"
+                  onClick={() => navigate(`/tecnicos/${tech.id}/editar`)}
+                >
                   <td>{tech.name}</td>
                   <td>{formatPhone(tech.phone)}</td>
                   <td>{tech.specialty || '—'}</td>
@@ -123,31 +146,28 @@ export default function TechniciansList() {
                       {tech.active ? 'Ativo' : 'Inativo'}
                     </span>
                   </td>
-                  <td className="actions-cell">
-                    <button
-                      className="btn-icon"
-                      title={tech.active ? `Inativar ${tech.name}` : `Ativar ${tech.name}`}
-                      aria-label={tech.active ? `Inativar ${tech.name}` : `Ativar ${tech.name}`}
-                      onClick={() => handleToggleStatus(tech.id)}
-                    >
-                      {tech.active ? <FiToggleRight /> : <FiToggleLeft />}
-                    </button>
-                    <button 
-                      className="btn-icon" 
-                      title={`Editar ${tech.name}`}
-                      aria-label={`Editar ${tech.name}`}
-                      onClick={() => navigate(`/tecnicos/${tech.id}/editar`)}
-                    >
-                      <FiEdit2 />
-                    </button>
-                    <button 
-                      className="btn-icon btn-icon-danger" 
-                      title={`Excluir ${tech.name}`}
-                      aria-label={`Excluir ${tech.name}`}
-                      onClick={() => setDeleteId(tech.id)}
-                    >
-                      <FiTrash2 />
-                    </button>
+                  <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
+                    <ActionMenu
+                      quickActions={[
+                        { icon: <FiEdit2 size={14} />, label: 'Editar', onClick: () => navigate(`/tecnicos/${tech.id}/editar`) },
+                        { 
+                          icon: tech.active ? <FiToggleRight size={14} /> : <FiToggleLeft size={14} />, 
+                          label: tech.active ? 'Inativar' : 'Ativar', 
+                          onClick: () => handleToggleStatus(tech) 
+                        },
+                      ]}
+                      items={[
+                        { icon: <FiEdit2 />, label: 'Editar', onClick: () => navigate(`/tecnicos/${tech.id}/editar`) },
+                        { 
+                          icon: tech.active ? <FiToggleRight /> : <FiToggleLeft />, 
+                          label: tech.active ? 'Inativar' : 'Ativar', 
+                          onClick: () => handleToggleStatus(tech) 
+                        },
+                        { icon: <FiMessageCircle />, label: 'WhatsApp', onClick: () => handleWhatsApp(tech) },
+                        { icon: <FiPhone />, label: 'Ligar', onClick: () => handleCall(tech) },
+                        { icon: <FiTrash2 />, label: 'Excluir', onClick: () => setDeleteId(tech.id), danger: true, dividerBefore: true },
+                      ]}
+                    />
                   </td>
                 </tr>
               ))}

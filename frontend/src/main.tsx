@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
+import './components/ActionMenu.css';
 
 // Aplicar tema salvo ao carregar (antes do render para evitar flash)
 const savedTheme = localStorage.getItem('os-laboris-theme') || 'dark';

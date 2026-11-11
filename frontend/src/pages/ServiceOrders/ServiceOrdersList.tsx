@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { FiPlus, FiEye, FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiEye, FiEdit2, FiTrash2, FiCopy, FiMessageCircle, FiPrinter } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { serviceOrdersService, ServiceOrder, STATUSES, getStatusEmoji } from '../../services/serviceOrders.service';
 import PageHeader from '../../components/PageHeader';
 import SearchInput from '../../components/SearchInput';
 import PinModal from '../../components/PinModal';
+import ActionMenu from '../../components/ActionMenu';
 import api from '../../services/api';
 
 function getStatusLabel(status: string) {
@@ -109,6 +110,25 @@ export default function ServiceOrdersList() {
     }
   };
 
+  const handleWhatsApp = (order: ServiceOrder) => {
+    const phone = (order as any).client_phone?.replace(/\D/g, '');
+    if (!phone) {
+      toast.error('Cliente sem telefone cadastrado');
+      return;
+    }
+    const msg = `Olá! Sua OS #${formatOrderNumber(order)} está ${getStatusLabel(order.status).toLowerCase()}. Em breve entraremos em contato.`;
+    window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+
+  const handlePrint = (order: ServiceOrder) => {
+    navigate(`/os/${order.id}?action=print`);
+  };
+
+  const handleDuplicate = async (order: ServiceOrder) => {
+    toast.success(`Duplicar OS #${formatOrderNumber(order)} (em breve)`);
+    // TODO: Implementar duplicação
+  };
+
   return (
     <div>
       <PageHeader title="Ordens de Serviço">
@@ -186,12 +206,16 @@ export default function ServiceOrdersList() {
                 <th>Técnico</th>
                 <th>Status</th>
                 <th>Data Entrada</th>
-                <th>Ações</th>
+                <th style={{ width: '120px' }}></th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order) => (
-                <tr key={order.id}>
+                <tr 
+                  key={order.id} 
+                  className="clickable-row"
+                  onClick={() => navigate(`/os/${order.id}`)}
+                >
                   <td>
                     <strong>#{formatOrderNumber(order)}</strong>
                     {order.lote_sufixo && (
@@ -225,6 +249,7 @@ export default function ServiceOrdersList() {
                   <td>
                     <select
                       value={order.status}
+                      onClick={(e) => e.stopPropagation()}
                       onChange={async (e) => {
                         try {
                           await serviceOrdersService.updateStatus(order.id, e.target.value);
@@ -240,31 +265,21 @@ export default function ServiceOrdersList() {
                     </select>
                   </td>
                   <td>{order.entry_date ? new Date(order.entry_date).toLocaleDateString('pt-BR') : '—'}</td>
-                  <td className="actions-cell">
-                    <button 
-                      className="btn-icon" 
-                      title={`Ver detalhes da OS #${formatOrderNumber(order)}`}
-                      aria-label={`Ver detalhes da OS #${formatOrderNumber(order)} - ${order.client_name}`}
-                      onClick={() => navigate(`/os/${order.id}`)}
-                    >
-                      <FiEye />
-                    </button>
-                    <button 
-                      className="btn-icon" 
-                      title={`Editar OS #${formatOrderNumber(order)}`}
-                      aria-label={`Editar OS #${formatOrderNumber(order)}`}
-                      onClick={() => navigate(`/os/${order.id}/editar`)}
-                    >
-                      <FiEdit2 />
-                    </button>
-                    <button 
-                      className="btn-icon btn-icon-danger" 
-                      title={`Excluir OS #${formatOrderNumber(order)}`}
-                      aria-label={`Excluir OS #${formatOrderNumber(order)}`}
-                      onClick={() => setDeleteId(order.id)}
-                    >
-                      <FiTrash2 />
-                    </button>
+                  <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
+                    <ActionMenu
+                      quickActions={[
+                        { icon: <FiEdit2 size={14} />, label: 'Editar', onClick: () => navigate(`/os/${order.id}/editar`) },
+                        { icon: <FiMessageCircle size={14} />, label: 'WhatsApp', onClick: () => handleWhatsApp(order) },
+                      ]}
+                      items={[
+                        { icon: <FiEye />, label: 'Ver detalhes', onClick: () => navigate(`/os/${order.id}`) },
+                        { icon: <FiEdit2 />, label: 'Editar', onClick: () => navigate(`/os/${order.id}/editar`) },
+                        { icon: <FiPrinter />, label: 'Imprimir', onClick: () => handlePrint(order) },
+                        { icon: <FiCopy />, label: 'Duplicar', onClick: () => handleDuplicate(order) },
+                        { icon: <FiMessageCircle />, label: 'WhatsApp', onClick: () => handleWhatsApp(order) },
+                        { icon: <FiTrash2 />, label: 'Excluir', onClick: () => setDeleteId(order.id), danger: true, dividerBefore: true },
+                      ]}
+                    />
                   </td>
                 </tr>
               ))}

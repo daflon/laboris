@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiPlus, FiEdit2, FiTrash2, FiEye } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiEye, FiMessageCircle, FiPhone, FiMail } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { clientsService, Client } from '../../services/clients.service';
 import PageHeader from '../../components/PageHeader';
 import SearchInput from '../../components/SearchInput';
 import PinModal from '../../components/PinModal';
+import ActionMenu from '../../components/ActionMenu';
 import api from '../../services/api';
 import { formatDocument, formatPhone } from '../../utils/masks';
 
@@ -55,6 +56,32 @@ export default function ClientsList() {
     }
   };
 
+  const handleWhatsApp = (client: Client) => {
+    const phone = client.phone?.replace(/\D/g, '');
+    if (!phone) {
+      toast.error('Cliente sem telefone cadastrado');
+      return;
+    }
+    window.open(`https://wa.me/55${phone}`, '_blank');
+  };
+
+  const handleCall = (client: Client) => {
+    const phone = client.phone?.replace(/\D/g, '');
+    if (!phone) {
+      toast.error('Cliente sem telefone cadastrado');
+      return;
+    }
+    window.open(`tel:+55${phone}`, '_self');
+  };
+
+  const handleEmail = (client: Client) => {
+    if (!client.email) {
+      toast.error('Cliente sem email cadastrado');
+      return;
+    }
+    window.open(`mailto:${client.email}`, '_self');
+  };
+
   return (
     <div>
       <PageHeader title="Clientes">
@@ -84,12 +111,16 @@ export default function ClientsList() {
                 <th>Documento</th>
                 <th>Telefone</th>
                 <th>Cidade/UF</th>
-                <th>Ações</th>
+                <th style={{ width: '120px' }}></th>
               </tr>
             </thead>
             <tbody>
               {clients.map((client) => (
-                <tr key={client.id}>
+                <tr 
+                  key={client.id}
+                  className="clickable-row"
+                  onClick={() => navigate(`/clientes/${client.id}`)}
+                >
                   <td>{client.name}</td>
                   <td>{formatDocument(client.document)}</td>
                   <td>{formatPhone(client.phone)}</td>
@@ -97,31 +128,21 @@ export default function ClientsList() {
                     {client.address_city}
                     {client.address_state ? `/${client.address_state}` : ''}
                   </td>
-                  <td className="actions-cell">
-                    <button 
-                      className="btn-icon" 
-                      title={`Ver detalhes de ${client.name}`}
-                      aria-label={`Ver detalhes de ${client.name}`}
-                      onClick={() => navigate(`/clientes/${client.id}`)}
-                    >
-                      <FiEye />
-                    </button>
-                    <button 
-                      className="btn-icon" 
-                      title={`Editar ${client.name}`}
-                      aria-label={`Editar ${client.name}`}
-                      onClick={() => navigate(`/clientes/${client.id}/editar`)}
-                    >
-                      <FiEdit2 />
-                    </button>
-                    <button 
-                      className="btn-icon btn-icon-danger" 
-                      title={`Excluir ${client.name}`}
-                      aria-label={`Excluir ${client.name}`}
-                      onClick={() => setDeleteId(client.id)}
-                    >
-                      <FiTrash2 />
-                    </button>
+                  <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
+                    <ActionMenu
+                      quickActions={[
+                        { icon: <FiEdit2 size={14} />, label: 'Editar', onClick: () => navigate(`/clientes/${client.id}/editar`) },
+                        { icon: <FiMessageCircle size={14} />, label: 'WhatsApp', onClick: () => handleWhatsApp(client) },
+                      ]}
+                      items={[
+                        { icon: <FiEye />, label: 'Ver detalhes', onClick: () => navigate(`/clientes/${client.id}`) },
+                        { icon: <FiEdit2 />, label: 'Editar', onClick: () => navigate(`/clientes/${client.id}/editar`) },
+                        { icon: <FiMessageCircle />, label: 'WhatsApp', onClick: () => handleWhatsApp(client) },
+                        { icon: <FiPhone />, label: 'Ligar', onClick: () => handleCall(client) },
+                        { icon: <FiMail />, label: 'Email', onClick: () => handleEmail(client) },
+                        { icon: <FiTrash2 />, label: 'Excluir', onClick: () => setDeleteId(client.id), danger: true, dividerBefore: true },
+                      ]}
+                    />
                   </td>
                 </tr>
               ))}

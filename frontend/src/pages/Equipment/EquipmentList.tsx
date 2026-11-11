@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiPlus, FiEdit2, FiTrash2, FiClock } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiClock, FiEye, FiFileText } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { equipmentService, Equipment } from '../../services/equipment.service';
 import PageHeader from '../../components/PageHeader';
 import SearchInput from '../../components/SearchInput';
 import PinModal from '../../components/PinModal';
+import ActionMenu from '../../components/ActionMenu';
 import api from '../../services/api';
 
 export default function EquipmentList() {
@@ -54,6 +55,10 @@ export default function EquipmentList() {
     }
   };
 
+  const handleNovaOS = (eq: Equipment) => {
+    navigate(`/os/nova?equipamento=${eq.id}`);
+  };
+
   return (
     <div>
       <PageHeader title="Equipamentos">
@@ -84,42 +89,34 @@ export default function EquipmentList() {
                 <th>Modelo</th>
                 <th>Cliente</th>
                 <th>Nº Série</th>
-                <th>Ações</th>
+                <th style={{ width: '120px' }}></th>
               </tr>
             </thead>
             <tbody>
               {equipment.map((eq) => (
-                <tr key={eq.id}>
+                <tr 
+                  key={eq.id}
+                  className="clickable-row"
+                  onClick={() => navigate(`/equipamentos/${eq.id}/historico`)}
+                >
                   <td>{eq.type}</td>
                   <td>{eq.brand}</td>
                   <td>{eq.model}</td>
                   <td>{eq.client_name || '—'}</td>
                   <td>{eq.serial_number || '—'}</td>
-                  <td className="actions-cell">
-                    <button 
-                      className="btn-icon" 
-                      title={`Histórico de ${eq.brand} ${eq.model}`}
-                      aria-label={`Ver histórico de reparos de ${eq.brand} ${eq.model}`}
-                      onClick={() => navigate(`/equipamentos/${eq.id}/historico`)}
-                    >
-                      <FiClock />
-                    </button>
-                    <button 
-                      className="btn-icon" 
-                      title={`Editar ${eq.brand} ${eq.model}`}
-                      aria-label={`Editar ${eq.brand} ${eq.model}`}
-                      onClick={() => navigate(`/equipamentos/${eq.id}/editar`)}
-                    >
-                      <FiEdit2 />
-                    </button>
-                    <button 
-                      className="btn-icon btn-icon-danger" 
-                      title={`Excluir ${eq.brand} ${eq.model}`}
-                      aria-label={`Excluir ${eq.brand} ${eq.model}`}
-                      onClick={() => setDeleteId(eq.id)}
-                    >
-                      <FiTrash2 />
-                    </button>
+                  <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
+                    <ActionMenu
+                      quickActions={[
+                        { icon: <FiEdit2 size={14} />, label: 'Editar', onClick: () => navigate(`/equipamentos/${eq.id}/editar`) },
+                        { icon: <FiClock size={14} />, label: 'Histórico', onClick: () => navigate(`/equipamentos/${eq.id}/historico`) },
+                      ]}
+                      items={[
+                        { icon: <FiClock />, label: 'Histórico de reparos', onClick: () => navigate(`/equipamentos/${eq.id}/historico`) },
+                        { icon: <FiEdit2 />, label: 'Editar', onClick: () => navigate(`/equipamentos/${eq.id}/editar`) },
+                        { icon: <FiFileText />, label: 'Nova OS', onClick: () => handleNovaOS(eq) },
+                        { icon: <FiTrash2 />, label: 'Excluir', onClick: () => setDeleteId(eq.id), danger: true, dividerBefore: true },
+                      ]}
+                    />
                   </td>
                 </tr>
               ))}
