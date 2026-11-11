@@ -621,6 +621,39 @@ router.post('/:id/pagamentos', async (req, res) => {
       return res.status(404).json({ success: false, error: { message: 'Aluguel não encontrado' } });
     }
 
+    // Verificar se aluguel já foi finalizado
+    if (aluguel.status === 'cancelado') {
+      return res.status(400).json({ 
+        success: false, 
+        error: { message: 'Não é possível registrar pagamento em aluguel cancelado' } 
+      });
+    }
+
+    // Calcular total já pago
+    const pagamentosExistentes = await db('aluguel_pagamentos')
+      .where({ aluguel_id: req.params.id })
+      .select(db.raw('COALESCE(SUM(valor), 0) as total'));
+    
+    const totalJaPago = parseFloat(pagamentosExistentes[0]?.total || 0);
+    const valorAluguel = parseFloat(aluguel.valor_final || aluguel.valor_acordado);
+    const saldoRestante = valorAluguel - totalJaPago;
+
+    // Verificar se já está totalmente pago
+    if (saldoRestante <= 0) {
+      return res.status(400).json({ 
+        success: false, 
+        error: { message: `Este aluguel já está totalmente pago (${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalJaPago)})` } 
+      });
+    }
+
+    // Verificar se o valor não excede o saldo
+    if (parseFloat(valor) > saldoRestante + 0.01) { // tolerância de centavos
+      return res.status(400).json({ 
+        success: false, 
+        error: { message: `Valor excede o saldo restante de ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(saldoRestante)}` } 
+      });
+    }
+
     const dataPgto = data_pagamento || new Date().toISOString().split('T')[0];
 
     // Registrar pagamento do aluguel
@@ -659,6 +692,71 @@ router.post('/:id/pagamentos', async (req, res) => {
   } catch (error) {
     console.error('Erro ao registrar pagamento:', error);
     res.status(500).json({ success: false, error: { message: 'Erro ao registrar pagamento' } });
+  }
+});
+
+/**
+ * DELETE /api/v1/alugueis/:id/pagamentos/:pagamentoId
+ * Estorna/exclui um pagamento de aluguel
+ * Integração: Remove a entrada correspondente no Financeiro
+ */
+router.delete('/:id/pagamentos/:pagamentoId', async (req, res) => {
+  try {
+    const tenantId = req.tenantId;
+    const { id, pagamentoId } = req.params;
+
+    // Verificar se o pagamento existe e pertence ao aluguel/tenant
+    const pagamento = await db('aluguel_pagamentos')
+      .where({ 
+        id: pagamentoId, 
+        aluguel_id: id,
+        tenant_id: tenantId 
+      })
+      .first();
+
+    if (!pagamento) {
+      return res.status(404).json({ 
+        success: false, 
+        error: { message: 'Pagamento não encontrado' } 
+      });
+    }
+
+    // Buscar aluguel para verificar status
+    const aluguel = await db('alugueis')
+      .where({ id, tenant_id: tenantId })
+      .first();
+
+    if (!aluguel) {
+      return res.status(404).json({ 
+        success: false, 
+        error: { message: 'Aluguel não encontrado' } 
+      });
+    }
+
+    // Excluir pagamento
+    await db('aluguel_pagamentos')
+      .where({ id: pagamentoId })
+      .del();
+
+    // INTEGRAÇÃO FINANCEIRO: Remover entrada correspondente
+    // Busca pelo aluguel_id e valor similar na mesma data
+    await db('financial_entries')
+      .where({ 
+        tenant_id: tenantId,
+        aluguel_id: id,
+        amount: pagamento.valor
+      })
+      .whereRaw("DATE(paid_date) = DATE(?)", [pagamento.data_pagamento])
+      .del();
+
+    res.json({ 
+      success: true, 
+      message: 'Pagamento estornado com sucesso',
+      data: { estornado: pagamento }
+    });
+  } catch (error) {
+    console.error('Erro ao estornar pagamento:', error);
+    res.status(500).json({ success: false, error: { message: 'Erro ao estornar pagamento' } });
   }
 });
 
