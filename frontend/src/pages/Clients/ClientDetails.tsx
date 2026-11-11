@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FiEdit2, FiArrowLeft, FiClock, FiPackage } from 'react-icons/fi';
+import { FiEdit2, FiArrowLeft, FiPackage } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { clientsService, Client } from '../../services/clients.service';
 import { Equipment } from '../../services/equipment.service';
@@ -90,21 +90,19 @@ export default function ClientDetails() {
                   <th>Marca</th>
                   <th>Modelo</th>
                   <th>Nº Série</th>
-                  <th>Histórico</th>
                 </tr>
               </thead>
               <tbody>
                 {client.equipment.map((eq) => (
-                  <tr key={eq.id}>
+                  <tr 
+                    key={eq.id}
+                    onClick={() => navigate(`/equipamentos/${eq.id}/historico`)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <td>{eq.type}</td>
                     <td>{eq.brand}</td>
                     <td>{eq.model}</td>
                     <td>{eq.serial_number || '—'}</td>
-                    <td>
-                      <button className="btn-icon" title="Ver histórico de reparos" onClick={() => navigate(`/equipamentos/${eq.id}/historico`)}>
-                        <FiClock />
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
