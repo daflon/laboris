@@ -1,0 +1,42 @@
+- generic [ref=f5e2]:
+  - complementary [ref=f5e3]:
+    - generic [ref=f5e4]: Ordo
+    - navigation [ref=f5e6]:
+      - link "Dashboard" [ref=f5e7] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Dash Custom" [ref=f5e14] [cursor=pointer]:
+        - /url: /dashboard-custom
+      - link "Transações" [ref=f5e21] [cursor=pointer]:
+        - /url: /transacoes
+      - link "Contas" [ref=f5e26] [cursor=pointer]:
+        - /url: /contas
+      - link "Categorias" [ref=f5e30] [cursor=pointer]:
+        - /url: /categorias
+      - link "Calendário" [ref=f5e35] [cursor=pointer]:
+        - /url: /calendario
+      - link "Cupons Fiscais" [ref=f5e39] [cursor=pointer]:
+        - /url: /cupons-fiscais
+      - link "Analista" [ref=f5e44] [cursor=pointer]:
+        - /url: /analista
+      - link "Análise Consumo" [ref=f5e54] [cursor=pointer]:
+        - /url: /analise-consumo
+    - generic [ref=f5e58]:
+      - button "Sistema" [ref=f5e59] [cursor=pointer]
+      - button [ref=f5e63] [cursor=pointer]
+  - generic [ref=f5e66]:
+    - banner [ref=f5e67]:
+      - button "Modo privacidade" [ref=f5e68] [cursor=pointer]
+      - button [ref=f5e73]
+      - button "Alternar tema" [ref=f5e77] [cursor=pointer]
+      - button "Usuário" [ref=f5e80] [cursor=pointer]
+    - main [ref=f5e85]:
+      - generic [ref=f5e86]:
+        - generic [ref=f5e87]:
+          - heading "Contas" [level=1] [ref=f5e88]
+          - generic [ref=f5e89]:
+            - button [ref=f5e90] [cursor=pointer]
+            - button "Transferir" [ref=f5e96] [cursor=pointer]
+            - button "Nova Conta" [ref=f5e100] [cursor=pointer]
+        - generic [ref=f5e107]:
+          - paragraph [ref=f5e108]: Saldo Total
+          - paragraph [ref=f5e109]: R$ 0,00

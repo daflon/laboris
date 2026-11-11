@@ -1,0 +1,32 @@
+- generic [ref=f3e2]:
+  - complementary [ref=f3e3]:
+    - generic [ref=f3e4]: Ordo
+    - navigation [ref=f3e6]:
+      - link "Dashboard" [ref=f3e7] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Dash Custom" [ref=f3e14] [cursor=pointer]:
+        - /url: /dashboard-custom
+      - link "Transações" [ref=f3e21] [cursor=pointer]:
+        - /url: /transacoes
+      - link "Contas" [ref=f3e26] [cursor=pointer]:
+        - /url: /contas
+      - link "Categorias" [ref=f3e30] [cursor=pointer]:
+        - /url: /categorias
+      - link "Calendário" [ref=f3e35] [cursor=pointer]:
+        - /url: /calendario
+      - link "Cupons Fiscais" [ref=f3e39] [cursor=pointer]:
+        - /url: /cupons-fiscais
+      - link "Analista" [ref=f3e44] [cursor=pointer]:
+        - /url: /analista
+      - link "Análise Consumo" [ref=f3e54] [cursor=pointer]:
+        - /url: /analise-consumo
+    - generic [ref=f3e58]:
+      - button "Sistema" [ref=f3e59] [cursor=pointer]
+      - button [ref=f3e63] [cursor=pointer]
+  - generic [ref=f3e66]:
+    - banner [ref=f3e67]:
+      - button "Modo privacidade" [ref=f3e68] [cursor=pointer]
+      - button [ref=f3e73]
+      - button "Alternar tema" [ref=f3e77] [cursor=pointer]
+      - button "Usuário" [ref=f3e80] [cursor=pointer]
+    - main [ref=f3e85]
