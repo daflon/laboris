@@ -167,6 +167,11 @@ export const alugueisService = {
     return response.data;
   },
 
+  async estornarPagamento(aluguelId: string, pagamentoId: string) {
+    const response = await api.delete(`/alugueis/${aluguelId}/pagamentos/${pagamentoId}`);
+    return response.data;
+  },
+
   async gerarFatura(id: string, incluirPendente: boolean = true) {
     const response = await api.post(`/alugueis/${id}/fatura`, { incluir_pendente: incluirPendente });
     return response.data;

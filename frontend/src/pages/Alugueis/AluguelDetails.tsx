@@ -126,6 +126,20 @@ export default function AluguelDetails() {
     }
   };
 
+  const handleEstornarPagamento = async (pagamentoId: string, valor: number) => {
+    if (!confirm(`Deseja estornar este pagamento de ${formatCurrency(valor)}?\n\nEsta ação também removerá o lançamento correspondente do Financeiro.`)) {
+      return;
+    }
+    
+    try {
+      await alugueisService.estornarPagamento(id!, pagamentoId);
+      toast.success('Pagamento estornado!');
+      loadAluguel();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error?.message || 'Erro ao estornar pagamento');
+    }
+  };
+
   const handleCancelar = async () => {
     try {
       await alugueisService.cancelar(id!, cancelarMotivo);
@@ -568,7 +582,7 @@ export default function AluguelDetails() {
             )}
           </div>
 
-          {isAtivo && (
+          {isAtivo && saldoDevedor > 0 && (
             <button 
               className="btn btn-primary" 
               style={{ marginTop: '1rem' }}
@@ -588,6 +602,7 @@ export default function AluguelDetails() {
                     <th>Data</th>
                     <th>Forma</th>
                     <th style={{ textAlign: 'right' }}>Valor</th>
+                    <th style={{ width: '40px' }}></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -596,6 +611,25 @@ export default function AluguelDetails() {
                       <td>{formatDate(pag.data_pagamento)}</td>
                       <td>{FORMAS_PAGAMENTO.find(f => f.value === pag.forma_pagamento)?.label || pag.forma_pagamento}</td>
                       <td style={{ textAlign: 'right' }}>{formatCurrency(pag.valor)}</td>
+                      <td>
+                        <button
+                          onClick={() => handleEstornarPagamento(pag.id, pag.valor)}
+                          title="Estornar pagamento"
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#ef4444',
+                            cursor: 'pointer',
+                            padding: '0.25rem',
+                            borderRadius: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          <FiXCircle size={16} />
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
