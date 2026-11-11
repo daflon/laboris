@@ -17,7 +17,10 @@ interface ActionMenuProps {
 
 export default function ActionMenu({ items, quickActions }: ActionMenuProps) {
   const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState<'bottom' | 'top'>('bottom');
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -39,6 +42,22 @@ export default function ActionMenu({ items, quickActions }: ActionMenuProps) {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
+  }, [open]);
+
+  // Calcula posição do dropdown (abre pra cima se não couber embaixo)
+  useEffect(() => {
+    if (open && triggerRef.current) {
+      const triggerRect = triggerRef.current.getBoundingClientRect();
+      const dropdownHeight = 280; // Altura estimada do dropdown
+      const spaceBelow = window.innerHeight - triggerRect.bottom;
+      const spaceAbove = triggerRect.top;
+
+      if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+        setPosition('top');
+      } else {
+        setPosition('bottom');
+      }
+    }
   }, [open]);
 
   const handleItemClick = (item: ActionMenuItem, e: React.MouseEvent) => {
@@ -68,6 +87,7 @@ export default function ActionMenu({ items, quickActions }: ActionMenuProps) {
 
       {/* Menu Trigger */}
       <button
+        ref={triggerRef}
         className="menu-trigger"
         onClick={(e) => {
           e.stopPropagation();
@@ -81,7 +101,10 @@ export default function ActionMenu({ items, quickActions }: ActionMenuProps) {
 
       {/* Dropdown */}
       {open && (
-        <div className="action-dropdown">
+        <div 
+          ref={dropdownRef}
+          className={`action-dropdown position-${position}`}
+        >
           {items.map((item, idx) => (
             <div key={idx}>
               {item.dividerBefore && <div className="dropdown-divider" />}
