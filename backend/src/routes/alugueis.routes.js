@@ -345,6 +345,78 @@ router.get('/stats', async (req, res) => {
 });
 
 /**
+ * GET /api/v1/alugueis/calendario
+ * Retorna dados para o calendário visual de devoluções
+ */
+router.get('/calendario', async (req, res) => {
+  try {
+    const tenantId = req.tenantId;
+    const { year, month, inicio, fim } = req.query;
+
+    let dataInicio, dataFim;
+
+    // Se passou year e month, usa para filtrar o mês específico
+    if (year && month) {
+      dataInicio = new Date(parseInt(year), parseInt(month) - 1, 1);
+      dataFim = new Date(parseInt(year), parseInt(month), 0); // Último dia do mês
+    } else {
+      // Período padrão: próximas 4 semanas
+      dataInicio = inicio ? new Date(inicio) : new Date();
+      dataFim = fim ? new Date(fim) : new Date(Date.now() + 28 * 24 * 60 * 60 * 1000);
+    }
+
+    // Buscar aluguéis ativos/atrasados com devolução prevista no período
+    const alugueis = await db('alugueis')
+      .where({ 'alugueis.tenant_id': tenantId })
+      .whereIn('status', ['ativo', 'atrasado'])
+      .where('data_prevista_devolucao', '>=', dataInicio.toISOString().split('T')[0])
+      .where('data_prevista_devolucao', '<=', dataFim.toISOString().split('T')[0])
+      .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
+      .leftJoin('clients', 'clients.id', 'alugueis.client_id')
+      .select(
+        'alugueis.id',
+        'alugueis.numero',
+        'alugueis.patrimonio_id',
+        'alugueis.data_inicio',
+        'alugueis.data_prevista_devolucao',
+        'alugueis.status',
+        'alugueis.valor_acordado',
+        'patrimonio.codigo as patrimonio_codigo',
+        'patrimonio.nome as patrimonio_nome',
+        'patrimonio.categoria as patrimonio_categoria',
+        'clients.name as client_name'
+      )
+      .orderBy('data_prevista_devolucao', 'asc');
+
+    // Retornar lista simplificada de itens para o calendário
+    const items = alugueis.map(a => ({
+      id: a.id,
+      numero: a.numero,
+      data_prevista_devolucao: a.data_prevista_devolucao,
+      data_inicio: a.data_inicio,
+      status: a.status,
+      valor_acordado: a.valor_acordado,
+      patrimonio_id: a.patrimonio_id,
+      patrimonio_codigo: a.patrimonio_codigo,
+      patrimonio_nome: a.patrimonio_nome,
+      patrimonio_categoria: a.patrimonio_categoria,
+      client_name: a.client_name
+    }));
+
+    res.json({ 
+      success: true, 
+      data: {
+        periodo: { inicio: dataInicio, fim: dataFim },
+        items
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao buscar calendário:', error);
+    res.status(500).json({ success: false, error: { message: 'Erro ao buscar calendário' } });
+  }
+});
+
+/**
  * GET /api/v1/alugueis/:id
  * Busca um aluguel específico
  */
@@ -506,10 +578,23 @@ router.put('/:id', async (req, res) => {
 router.post('/:id/devolver', async (req, res) => {
   try {
     const tenantId = req.tenantId;
+    const userId = req.user.userId;
     const { data_devolucao, condicao_devolucao, equipamento_danificado, valor_final, observacoes } = req.body;
 
     const aluguel = await db('alugueis')
       .where({ id: req.params.id, tenant_id: tenantId })
+      .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
+      .leftJoin('clients', 'clients.id', 'alugueis.client_id')
+      .select(
+        'alugueis.*',
+        'patrimonio.nome as patrimonio_nome',
+        'patrimonio.codigo as patrimonio_codigo',
+        'patrimonio.marca as patrimonio_marca',
+        'patrimonio.modelo as patrimonio_modelo',
+        'patrimonio.numero_serie as patrimonio_serie',
+        'patrimonio.categoria as patrimonio_categoria',
+        'clients.name as client_name'
+      )
       .first();
 
     if (!aluguel) {
@@ -523,7 +608,83 @@ router.post('/:id/devolver', async (req, res) => {
       });
     }
 
+    let osData = null;
+
+    // Se equipamento danificado, cria OS de manutenção
+    if (equipamento_danificado) {
+      // Buscar ou criar cliente "interno" para manutenção de patrimônio
+      let clienteInterno = await db('clients')
+        .where({ tenant_id: tenantId, name: 'MANUTENÇÃO INTERNA' })
+        .whereNull('deleted_at')
+        .first();
+
+      if (!clienteInterno) {
+        const tenant = await db('tenants').where({ id: tenantId }).first();
+        [clienteInterno] = await db('clients')
+          .insert({
+            tenant_id: tenantId,
+            name: 'MANUTENÇÃO INTERNA',
+            phone: tenant?.phone || '',
+            document: tenant?.document || ''
+          })
+          .returning('*');
+      }
+
+      // Criar ou buscar equipamento correspondente ao patrimônio
+      let equipment = await db('equipment')
+        .where({ 
+          tenant_id: tenantId, 
+          serial_number: aluguel.patrimonio_serie || `PAT-${aluguel.patrimonio_codigo}`
+        })
+        .whereNull('deleted_at')
+        .first();
+
+      if (!equipment) {
+        [equipment] = await db('equipment')
+          .insert({
+            tenant_id: tenantId,
+            client_id: clienteInterno.id,
+            type: aluguel.patrimonio_categoria || 'Patrimônio',
+            brand: aluguel.patrimonio_marca || 'N/A',
+            model: aluguel.patrimonio_modelo || aluguel.patrimonio_nome,
+            serial_number: aluguel.patrimonio_serie || `PAT-${aluguel.patrimonio_codigo}`
+          })
+          .returning('*');
+      }
+
+      // Gerar próximo número de OS
+      const lastOs = await db('service_orders')
+        .where({ tenant_id: tenantId })
+        .max('order_number as max')
+        .first();
+      const orderNumber = (lastOs?.max || 0) + 1;
+
+      // Criar OS
+      const [newOs] = await db('service_orders')
+        .insert({
+          tenant_id: tenantId,
+          client_id: clienteInterno.id,
+          equipment_id: equipment.id,
+          order_number: orderNumber,
+          status: 'aberta',
+          entry_date: new Date(),
+          reported_defect: `Equipamento danificado na devolução do Aluguel #${String(aluguel.numero).padStart(4, '0')}.\n${aluguel.patrimonio_nome} (${aluguel.patrimonio_codigo})\nCliente: ${aluguel.client_name}\n${condicao_devolucao ? `Condição: ${condicao_devolucao}` : ''}`,
+          created_by: userId
+        })
+        .returning('*');
+
+      osData = {
+        id: newOs.id,
+        order_number: orderNumber
+      };
+    }
+
     // Atualiza aluguel
+    const obsAtualizada = observacoes || aluguel.observacoes;
+    const obsComOs = osData 
+      ? `${obsAtualizada || ''}\n[OS #${String(osData.order_number).padStart(4, '0')} criada para manutenção]`.trim()
+      : obsAtualizada;
+
     const [updated] = await db('alugueis')
       .where({ id: req.params.id })
       .update({
@@ -531,7 +692,8 @@ router.post('/:id/devolver', async (req, res) => {
         condicao_devolucao,
         equipamento_danificado: equipamento_danificado || false,
         valor_final: valor_final || aluguel.valor_acordado,
-        observacoes: observacoes || aluguel.observacoes,
+        observacoes: obsComOs,
+        os_manutencao_id: osData?.id || null,
         status: 'devolvido',
         updated_at: db.fn.now()
       })
@@ -543,7 +705,11 @@ router.post('/:id/devolver', async (req, res) => {
       .where({ id: aluguel.patrimonio_id })
       .update({ status: novoStatus, updated_at: db.fn.now() });
 
-    res.json({ success: true, data: updated });
+    res.json({ 
+      success: true, 
+      data: updated,
+      os_criada: osData
+    });
   } catch (error) {
     console.error('Erro ao registrar devolução:', error);
     res.status(500).json({ success: false, error: { message: 'Erro ao registrar devolução' } });
@@ -975,78 +1141,6 @@ router.post('/:id/renovar', async (req, res) => {
   } catch (error) {
     console.error('Erro ao renovar aluguel:', error);
     res.status(500).json({ success: false, error: { message: 'Erro ao renovar aluguel' } });
-  }
-});
-
-/**
- * GET /api/v1/alugueis/calendario
- * Retorna dados para o calendário visual de devoluções
- */
-router.get('/calendario', async (req, res) => {
-  try {
-    const tenantId = req.tenantId;
-    const { year, month, inicio, fim, categoria } = req.query;
-
-    let dataInicio, dataFim;
-
-    // Se passou year e month, usa para filtrar o mês específico
-    if (year && month) {
-      dataInicio = new Date(parseInt(year), parseInt(month) - 1, 1);
-      dataFim = new Date(parseInt(year), parseInt(month), 0); // Último dia do mês
-    } else {
-      // Período padrão: próximas 4 semanas
-      dataInicio = inicio ? new Date(inicio) : new Date();
-      dataFim = fim ? new Date(fim) : new Date(Date.now() + 28 * 24 * 60 * 60 * 1000);
-    }
-
-    // Buscar aluguéis ativos/atrasados com devolução prevista no período
-    const alugueis = await db('alugueis')
-      .where({ 'alugueis.tenant_id': tenantId })
-      .whereIn('status', ['ativo', 'atrasado'])
-      .where('data_prevista_devolucao', '>=', dataInicio.toISOString().split('T')[0])
-      .where('data_prevista_devolucao', '<=', dataFim.toISOString().split('T')[0])
-      .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
-      .leftJoin('clients', 'clients.id', 'alugueis.client_id')
-      .select(
-        'alugueis.id',
-        'alugueis.numero',
-        'alugueis.patrimonio_id',
-        'alugueis.data_inicio',
-        'alugueis.data_prevista_devolucao',
-        'alugueis.status',
-        'alugueis.valor_acordado',
-        'patrimonio.codigo as patrimonio_codigo',
-        'patrimonio.nome as patrimonio_nome',
-        'patrimonio.categoria as patrimonio_categoria',
-        'clients.name as client_name'
-      )
-      .orderBy('data_prevista_devolucao', 'asc');
-
-    // Retornar lista simplificada de itens para o calendário
-    const items = alugueis.map(a => ({
-      id: a.id,
-      numero: a.numero,
-      data_prevista_devolucao: a.data_prevista_devolucao,
-      data_inicio: a.data_inicio,
-      status: a.status,
-      valor_acordado: a.valor_acordado,
-      patrimonio_id: a.patrimonio_id,
-      patrimonio_codigo: a.patrimonio_codigo,
-      patrimonio_nome: a.patrimonio_nome,
-      patrimonio_categoria: a.patrimonio_categoria,
-      client_name: a.client_name
-    }));
-
-    res.json({ 
-      success: true, 
-      data: {
-        periodo: { inicio: dataInicio, fim: dataFim },
-        items
-      }
-    });
-  } catch (error) {
-    console.error('Erro ao buscar calendário:', error);
-    res.status(500).json({ success: false, error: { message: 'Erro ao buscar calendário' } });
   }
 });
 

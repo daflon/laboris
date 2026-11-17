@@ -611,26 +611,58 @@ export default function AluguelDetails() {
                 <span style={{ fontWeight: 600 }}>{formatCurrency(aluguel.valor_final)}</span>
               </div>
             )}
-            <div>
-              <label>Total Pago</label>
-              <span style={{ color: '#22c55e', fontWeight: 600 }}>{formatCurrency(totalPago)}</span>
-            </div>
-            {saldoDevedor > 0 && (
+            {totalPago > 0 && (
               <div>
-                <label>Saldo Devedor</label>
-                <span style={{ color: '#ef4444', fontWeight: 600 }}>{formatCurrency(saldoDevedor)}</span>
+                <label>Total Pago</label>
+                <span style={{ color: '#22c55e', fontWeight: 600 }}>{formatCurrency(totalPago)}</span>
               </div>
             )}
           </div>
 
-          {isAtivo && saldoDevedor > 0 && (
-            <button 
-              className="btn btn-primary" 
-              style={{ marginTop: '1rem' }}
-              onClick={() => setShowPagamentoModal(true)}
-            >
-              <FiDollarSign /> Registrar Pagamento
-            </button>
+          {/* Destaque para saldo devedor */}
+          {saldoDevedor > 0 && (
+            <div style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              borderRadius: '8px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Saldo Devedor</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#ef4444' }}>
+                  {formatCurrency(saldoDevedor)}
+                </div>
+              </div>
+              {isAtivo && (
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => setShowPagamentoModal(true)}
+                >
+                  <FiDollarSign /> Registrar Pagamento
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Quando quitado */}
+          {saldoDevedor <= 0 && totalPago > 0 && (
+            <div style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              background: 'rgba(34, 197, 94, 0.1)',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <FiCheckCircle style={{ color: '#22c55e', fontSize: '1.25rem' }} />
+              <span style={{ fontWeight: 600, color: '#22c55e' }}>Pagamento Quitado</span>
+            </div>
           )}
 
           {/* Lista de pagamentos */}
