@@ -357,20 +357,33 @@ router.get('/calendario', async (req, res) => {
 
     // Se passou year e month, usa para filtrar o mês específico
     if (year && month) {
-      dataInicio = new Date(parseInt(year), parseInt(month) - 1, 1);
-      dataFim = new Date(parseInt(year), parseInt(month), 0); // Último dia do mês
+      const y = parseInt(year);
+      const m = parseInt(month);
+      dataInicio = new Date(y, m - 1, 1);
+      dataFim = new Date(y, m, 0); // Último dia do mês
     } else {
       // Período padrão: próximas 4 semanas
       dataInicio = inicio ? new Date(inicio) : new Date();
       dataFim = fim ? new Date(fim) : new Date(Date.now() + 28 * 24 * 60 * 60 * 1000);
     }
 
+    // Formatar datas para SQL (YYYY-MM-DD)
+    const formatDate = (d) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const dataInicioStr = formatDate(dataInicio);
+    const dataFimStr = formatDate(dataFim);
+
     // Buscar aluguéis ativos/atrasados com devolução prevista no período
     const alugueis = await db('alugueis')
       .where({ 'alugueis.tenant_id': tenantId })
       .whereIn('status', ['ativo', 'atrasado'])
-      .where('data_prevista_devolucao', '>=', dataInicio.toISOString().split('T')[0])
-      .where('data_prevista_devolucao', '<=', dataFim.toISOString().split('T')[0])
+      .where('data_prevista_devolucao', '>=', dataInicioStr)
+      .where('data_prevista_devolucao', '<=', dataFimStr)
       .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
       .leftJoin('clients', 'clients.id', 'alugueis.client_id')
       .select(
@@ -406,13 +419,13 @@ router.get('/calendario', async (req, res) => {
     res.json({ 
       success: true, 
       data: {
-        periodo: { inicio: dataInicio, fim: dataFim },
+        periodo: { inicio: dataInicioStr, fim: dataFimStr },
         items
       }
     });
   } catch (error) {
     console.error('Erro ao buscar calendário:', error);
-    res.status(500).json({ success: false, error: { message: 'Erro ao buscar calendário' } });
+    res.status(500).json({ success: false, error: { message: 'Erro ao buscar calendário', details: error.message } });
   }
 });
 
@@ -651,11 +664,17 @@ router.post('/:id/devolver', async (req, res) => {
     const { data_devolucao, condicao_devolucao, equipamento_danificado, valor_final, observacoes } = req.body;
 
     const aluguel = await db('alugueis')
-      .where({ id: req.params.id, tenant_id: tenantId })
+      .where({ 'alugueis.id': req.params.id, 'alugueis.tenant_id': tenantId })
       .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
       .leftJoin('clients', 'clients.id', 'alugueis.client_id')
       .select(
-        'alugueis.*',
+        'alugueis.id',
+        'alugueis.numero',
+        'alugueis.patrimonio_id',
+        'alugueis.client_id',
+        'alugueis.status',
+        'alugueis.valor_acordado',
+        'alugueis.observacoes',
         'patrimonio.nome as patrimonio_nome',
         'patrimonio.codigo as patrimonio_codigo',
         'patrimonio.marca as patrimonio_marca',
@@ -781,7 +800,7 @@ router.post('/:id/devolver', async (req, res) => {
     });
   } catch (error) {
     console.error('Erro ao registrar devolução:', error);
-    res.status(500).json({ success: false, error: { message: 'Erro ao registrar devolução' } });
+    res.status(500).json({ success: false, error: { message: 'Erro ao registrar devolução', details: error.message } });
   }
 });
 
