@@ -15,6 +15,7 @@ import { techniciansService, Technician } from '../../services/technicians.servi
 import PageHeader from '../../components/PageHeader';
 import QuickClientModal from '../../components/QuickClientModal';
 import AddEquipmentModal, { EquipmentToAdd } from '../../components/AddEquipmentModal';
+import SearchableSelect from '../../components/SearchableSelect';
 import { formatDocument } from '../../utils/masks';
 
 import './ServiceOrderFormLote.css';
@@ -207,20 +208,24 @@ export default function ServiceOrderFormLote() {
             <div className="form-group" style={{ gridColumn: 'span 2' }}>
               <label htmlFor="client_id">Selecione o cliente *</label>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <select
-                  id="client_id"
-                  value={clientId}
-                  onChange={(e) => setClientId(e.target.value)}
-                  required
-                  style={{ flex: 1 }}
-                >
-                  <option value="">Selecione...</option>
-                  {clients.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} — {formatDocument(c.document)}
-                    </option>
-                  ))}
-                </select>
+                <div style={{ flex: 1 }}>
+                  <SearchableSelect
+                    id="client_id"
+                    name="client_id"
+                    value={clientId}
+                    onChange={(value) => {
+                      setClientId(value);
+                      setEquipmentsToCreate([]);
+                    }}
+                    options={clients.map(c => ({
+                      value: c.id,
+                      label: c.name,
+                      sublabel: formatDocument(c.document)
+                    }))}
+                    placeholder="Selecione ou digite para buscar..."
+                    required
+                  />
+                </div>
                 <button
                   type="button"
                   className="btn btn-primary"
