@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiClipboard, FiUsers, FiAlertCircle, FiCheckCircle, FiClock } from 'react-icons/fi';
+import { FiClipboard, FiUsers, FiAlertCircle, FiCheckCircle, FiClock, FiFileText } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { STATUSES } from '../../services/serviceOrders.service';
@@ -53,9 +53,57 @@ export default function Dashboard() {
 
   const totalOpen = (data.statuses.aberta || 0) + (data.statuses.aprovada || 0) + (data.statuses.aguardando_peca || 0);
 
+  const handleMonthlyReport = async () => {
+    const month = new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+    
+    const token = localStorage.getItem('token');
+    const baseUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:3000' 
+      : `${window.location.protocol}//${window.location.host}`;
+    
+    const url = `${baseUrl}/api/v1/reports/monthly?month=${month}&year=${year}`;
+    
+    try {
+      toast.loading('Gerando relatório...', { id: 'report' });
+      
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (!response.ok) throw new Error('Erro ao gerar relatório');
+      
+      const blob = await response.blob();
+      const file = new File([blob], `Relatorio-${month}-${year}.pdf`, { type: 'application/pdf' });
+      
+      toast.dismiss('report');
+      
+      // No celular: tentar compartilhar
+      if (/Android|iPhone|iPad/i.test(navigator.userAgent) && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ title: 'Relatório Mensal', files: [file] });
+      } else {
+        // Desktop: abrir em nova aba
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+      }
+    } catch {
+      toast.dismiss('report');
+      toast.error('Erro ao gerar relatório');
+    }
+  };
+
   return (
     <div>
-      <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1.5rem' }}>Dashboard</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0 }}>Dashboard</h2>
+        <button
+          onClick={handleMonthlyReport}
+          className="btn btn-secondary"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+        >
+          <FiFileText /> Relatório Mensal
+        </button>
+      </div>
 
       {/* Alertas discretos (só aparece se tiver) */}
       {data.alerts && (data.alerts.old_orders > 0 || data.alerts.abandoned_equipment > 0) && (

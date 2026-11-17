@@ -21,6 +21,7 @@ const searchRoutes = require('./search.routes');
 const financeiroRoutes = require('./financeiro.routes');
 const faturamentoRoutes = require('./faturamento.routes');
 const alugueisRoutes = require('./alugueis.routes');
+const reportsRoutes = require('./reports.routes');
 
 const equipmentController = require('../controllers/equipment.controller');
 const serviceOrdersController = require('../controllers/serviceOrders.controller');
@@ -50,6 +51,7 @@ router.use('/financeiro', authenticate, financeiroRoutes);
 // Faturamento tem seu próprio middleware de auth que aceita token via query (para PDFs)
 router.use('/faturamento', faturamentoRoutes);
 router.use('/alugueis', authenticate, alugueisRoutes);
+router.use('/reports', authenticate, reportsRoutes);
 
 // Rotas aninhadas
 router.get('/clients/:id/equipment', authenticate, equipmentController.findByClientId);
