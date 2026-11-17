@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FiX, FiPlus, FiSearch } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { Equipment, equipmentService } from '../services/equipment.service';
@@ -47,6 +47,20 @@ export default function AddEquipmentModal({
   const [newBrand, setNewBrand] = useState('');
   const [newModel, setNewModel] = useState('');
   const [newSerial, setNewSerial] = useState('');
+
+  // Fechar com ESC
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  }, [onClose]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, handleKeyDown]);
 
   // Reset ao abrir
   useEffect(() => {
@@ -101,7 +115,7 @@ export default function AddEquipmentModal({
         addAnother
       );
     } else {
-      if (!newType || !newBrand.trim() || !newModel.trim()) {
+      if (!newType.trim() || !newBrand.trim() || !newModel.trim()) {
         toast.error('Preencha tipo, marca e modelo');
         return;
       }
@@ -109,12 +123,12 @@ export default function AddEquipmentModal({
       onAdd(
         {
           id: `new-${Date.now()}`,
-          name: `${newType} ${newBrand} ${newModel}`,
+          name: `${newType.trim()} ${newBrand.trim()} ${newModel.trim()}`,
           serial: newSerial || 'N/A',
           defect: defect.trim(),
           isNew: true,
           newEquipmentData: {
-            type: newType,
+            type: newType.trim(),
             brand: newBrand.trim(),
             model: newModel.trim(),
             serial_number: newSerial.trim(),
@@ -226,22 +240,18 @@ export default function AddEquipmentModal({
                 <div className="form-row">
                   <div className="form-group">
                     <label>Tipo *</label>
-                    <select value={newType} onChange={(e) => setNewType(e.target.value)}>
-                      <option value="">Selecione...</option>
-                      <option value="Notebook">Notebook</option>
-                      <option value="Desktop">Desktop</option>
-                      <option value="Impressora">Impressora</option>
-                      <option value="Monitor">Monitor</option>
-                      <option value="Celular">Celular</option>
-                      <option value="Tablet">Tablet</option>
-                      <option value="Outro">Outro</option>
-                    </select>
+                    <input
+                      type="text"
+                      placeholder="Ex: Furadeira, Serra, Martelete..."
+                      value={newType}
+                      onChange={(e) => setNewType(e.target.value)}
+                    />
                   </div>
                   <div className="form-group">
                     <label>Marca *</label>
                     <input
                       type="text"
-                      placeholder="Ex: Dell, HP..."
+                      placeholder="Ex: Bosch, Makita, DeWalt..."
                       value={newBrand}
                       onChange={(e) => setNewBrand(e.target.value)}
                     />
@@ -252,7 +262,7 @@ export default function AddEquipmentModal({
                     <label>Modelo *</label>
                     <input
                       type="text"
-                      placeholder="Ex: Inspiron 15..."
+                      placeholder="Ex: GBH 2-24D, RT0700C..."
                       value={newModel}
                       onChange={(e) => setNewModel(e.target.value)}
                     />
