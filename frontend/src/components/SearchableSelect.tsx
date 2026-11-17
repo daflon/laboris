@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { FiChevronDown, FiSearch, FiX } from 'react-icons/fi';
 import './SearchableSelect.css';
 
+// SearchableSelect v1.0 - Combobox com busca por digitação
+
 export interface SelectOption {
   value: string;
   label: string;
