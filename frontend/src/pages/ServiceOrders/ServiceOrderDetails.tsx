@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers, FiCamera, FiMaximize2, FiX, FiImage } from 'react-icons/fi';
+import { FiEdit2, FiArrowLeft, FiMessageCircle, FiPrinter, FiCopy, FiPlus, FiLayers, FiCamera, FiMaximize2, FiX, FiImage, FiClock } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { serviceOrdersService, ServiceOrder, STATUSES, formatOrderNumber } from '../../services/serviceOrders.service';
 import attachmentsService, { Attachment } from '../../services/attachments.service';
 import PageHeader from '../../components/PageHeader';
+import StatusTimeline from '../../components/StatusTimeline';
 import { formatDocument, formatPhone } from '../../utils/masks';
 import LotePdfModal from '../../components/LotePdfModal';
 
@@ -320,6 +321,18 @@ export default function ServiceOrderDetails() {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Timeline de Status */}
+        <div className="detail-section">
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <FiClock /> Progresso da OS
+          </h3>
+          <StatusTimeline 
+            key={`${id}-${order.status}`} 
+            serviceOrderId={id!} 
+            currentStatus={order.status} 
+          />
         </div>
 
         {/* Dados principais */}

@@ -1,0 +1,141 @@
+/* Status Timeline - Mini Visual (Opção C) */
+
+.status-timeline {
+  padding: 1rem 0;
+}
+
+.status-timeline-loading {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 1rem;
+}
+
+.timeline-track {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 75px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Linha conectora */
+.timeline-connector {
+  position: absolute;
+  top: 12px;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border-color);
+  z-index: 0;
+}
+
+.timeline-connector.done {
+  background: #22c55e;
+}
+
+/* Dot central */
+.timeline-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: white;
+  font-weight: 600;
+  z-index: 1;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.timeline-step.done .timeline-dot {
+  background: #22c55e;
+}
+
+.timeline-step.current .timeline-dot {
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+  transform: scale(1.1);
+}
+
+/* Label do status */
+.timeline-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 70px;
+  word-wrap: break-word;
+}
+
+.timeline-step.done .timeline-label,
+.timeline-step.current .timeline-label {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Data */
+.timeline-date {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.timeline-step.done .timeline-date,
+.timeline-step.current .timeline-date {
+  color: var(--text-secondary);
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .timeline-step {
+    min-width: 65px;
+  }
+  
+  .timeline-dot {
+    width: 22px;
+    height: 22px;
+    font-size: 0.65rem;
+  }
+  
+  .timeline-label {
+    font-size: 0.65rem;
+    max-width: 60px;
+  }
+  
+  .timeline-date {
+    font-size: 0.6rem;
+  }
+}
+
+/* Esconde scrollbar mas mantém funcionalidade */
+.timeline-track::-webkit-scrollbar {
+  height: 4px;
+}
+
+.timeline-track::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 2px;
+}
+
+.timeline-track::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+.timeline-track::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

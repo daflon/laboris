@@ -173,4 +173,9 @@ export const serviceOrdersService = {
     const response = await api.get(`/equipment/${equipmentId}/history`);
     return response.data;
   },
+
+  async getStatusHistory(id: string) {
+    const response = await api.get(`/service-orders/${id}/status-history`);
+    return response.data;
+  },
 };

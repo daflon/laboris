@@ -140,6 +140,12 @@ const serviceOrdersController = {
     try { res.json({ success: true, data: await serviceOrdersService.findByEquipmentId(req.tenantId, req.params.id) }); }
     catch (error) { next(error); }
   },
+  async getStatusHistory(req, res, next) {
+    try {
+      const history = await serviceOrdersService.getStatusHistory(req.tenantId, req.params.id);
+      res.json({ success: true, data: history });
+    } catch (error) { next(error); }
+  },
 };
 
 module.exports = serviceOrdersController;

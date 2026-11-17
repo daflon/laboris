@@ -22,6 +22,7 @@ router.post('/:id/duplicate', serviceOrdersController.duplicate);
 router.post('/:id/add-to-lote', serviceOrdersController.addToLote);
 router.put('/:id', validateRequest(updateServiceOrderSchema), serviceOrdersController.update);
 router.patch('/:id/status', validateRequest(updateStatusSchema), serviceOrdersController.updateStatus);
+router.get('/:id/status-history', serviceOrdersController.getStatusHistory);
 router.delete('/:id', serviceOrdersController.delete);
 
 // ========== ROTAS DE ANEXOS (FOTOS) ==========

@@ -2,6 +2,7 @@ const serviceOrdersRepository = require('../repositories/serviceOrders.repositor
 const clientsRepository = require('../repositories/clients.repository');
 const equipmentRepository = require('../repositories/equipment.repository');
 const techniciansRepository = require('../repositories/technicians.repository');
+const statusHistoryRepository = require('../repositories/statusHistory.repository');
 
 class AppError extends Error {
   constructor(message, statusCode, code) { super(message); this.statusCode = statusCode; this.code = code; }
@@ -31,7 +32,12 @@ const serviceOrdersService = {
     if (equipment.client_id !== data.client_id) throw new AppError('Equipamento não pertence a este cliente', 400, 'VALIDATION_ERROR');
 
     const { items, ...orderData } = data;
-    return serviceOrdersRepository.create(tenantId, orderData, items || []);
+    const order = await serviceOrdersRepository.create(tenantId, orderData, items || []);
+    
+    // Registrar status inicial no histórico
+    await statusHistoryRepository.create(tenantId, order.id, null, order.status);
+    
+    return order;
   },
 
   async findAll(tenantId, params) { return serviceOrdersRepository.findAll(tenantId, params); },
@@ -53,7 +59,13 @@ const serviceOrdersService = {
     const order = await serviceOrdersRepository.findById(tenantId, id);
     if (!order) throw new AppError('OS não encontrada', 404, 'NOT_FOUND');
 
+    const previousStatus = order.status;
     const result = await serviceOrdersRepository.updateStatus(tenantId, id, status);
+
+    // Registrar mudança no histórico (só se realmente mudou)
+    if (previousStatus !== status) {
+      await statusHistoryRepository.create(tenantId, id, previousStatus, status);
+    }
 
     // Auto-gerar lançamento financeiro quando OS é concluída ou entregue
     if ((status === 'concluida' || status === 'entregue') && order.status !== 'concluida' && order.status !== 'entregue') {
@@ -98,6 +110,14 @@ const serviceOrdersService = {
     return serviceOrdersRepository.findByEquipmentId(tenantId, equipmentId);
   },
 
+  // ========== HISTÓRICO DE STATUS ==========
+
+  async getStatusHistory(tenantId, id) {
+    const order = await serviceOrdersRepository.findById(tenantId, id);
+    if (!order) throw new AppError('OS não encontrada', 404, 'NOT_FOUND');
+    return statusHistoryRepository.findByServiceOrderId(tenantId, id);
+  },
+
   // ========== LOTE METHODS ==========
 
   async addToLote(tenantId, orderId, data) {
@@ -132,7 +152,12 @@ const serviceOrdersService = {
       entry_date: getBrazilDateString(),
     };
 
-    return serviceOrdersRepository.createInLote(tenantId, newOrderData, data.items || [], loteNumero);
+    const order = await serviceOrdersRepository.createInLote(tenantId, newOrderData, data.items || [], loteNumero);
+    
+    // Registrar status inicial no histórico
+    await statusHistoryRepository.create(tenantId, order.id, null, order.status);
+    
+    return order;
   },
 
   async duplicateToLote(tenantId, orderId, data) {
@@ -174,7 +199,12 @@ const serviceOrdersService = {
       unit_price: item.unit_price
     }));
 
-    return serviceOrdersRepository.createInLote(tenantId, newOrderData, items, loteNumero);
+    const order = await serviceOrdersRepository.createInLote(tenantId, newOrderData, items, loteNumero);
+    
+    // Registrar status inicial no histórico
+    await statusHistoryRepository.create(tenantId, order.id, null, order.status);
+    
+    return order;
   },
 };
 
