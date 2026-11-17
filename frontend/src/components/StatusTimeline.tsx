@@ -94,7 +94,7 @@ export default function StatusTimeline({ serviceOrderId, currentStatus }: Status
                   backgroundColor: isDone || isCurrent ? statusInfo?.color : undefined 
                 }}
               >
-                {isDone && !isCurrent ? '✓' : statusInfo?.emoji}
+                {isCurrent ? statusInfo?.emoji : (isDone ? '✓' : '')}
               </div>
               
               {/* Label */}
