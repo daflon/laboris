@@ -1,0 +1,258 @@
+/* ============================================ */
+/* Service Order Form - Lote Styles            */
+/* ============================================ */
+
+/* Equipment section header */
+.eq-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.eq-count {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #9ca3af);
+  margin-bottom: 1rem;
+}
+
+.eq-count strong {
+  color: var(--color-primary, #3b82f6);
+}
+
+/* Equipment list */
+.eq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Empty state */
+.eq-empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-muted, #6b7280);
+  background: var(--color-bg-secondary, #111827);
+  border-radius: 8px;
+  border: 1px dashed var(--color-border, #374151);
+}
+
+.eq-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.5;
+}
+
+.eq-empty-state p {
+  margin-bottom: 0.75rem;
+}
+
+/* Equipment item */
+.eq-item {
+  background: var(--color-bg-secondary, #111827);
+  border: 1px solid var(--color-border, #374151);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  transition: border-color 0.15s;
+}
+
+.eq-item:hover {
+  border-color: var(--color-border-hover, #4b5563);
+}
+
+.eq-item.new {
+  border-color: var(--color-success, #059669);
+  background: rgba(5, 150, 105, 0.1);
+}
+
+.eq-number {
+  background: var(--color-primary, #3b82f6);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.eq-item.new .eq-number {
+  background: var(--color-success, #059669);
+}
+
+.eq-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.eq-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.eq-badge-new {
+  background: var(--color-success, #059669);
+  color: white;
+  font-size: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.eq-serial {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, #9ca3af);
+  margin-bottom: 0.5rem;
+}
+
+.eq-defect-box {
+  background: var(--color-bg-tertiary, #374151);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--color-text-primary, #d1d5db);
+}
+
+.eq-defect-label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted, #6b7280);
+  margin-bottom: 0.2rem;
+}
+
+.eq-actions {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+/* Lote preview */
+.lote-preview {
+  background: rgba(30, 58, 95, 0.5);
+  border: 1px solid var(--color-primary, #3b82f6);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.lote-icon {
+  font-size: 1.5rem;
+}
+
+.lote-text {
+  flex: 1;
+  min-width: 150px;
+}
+
+.lote-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.lote-desc {
+  font-size: 0.8rem;
+  color: var(--color-primary-light, #93c5fd);
+}
+
+.lote-numbers {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.lote-num {
+  background: var(--color-primary, #3b82f6);
+  color: white;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Form actions */
+.form-actions-lote {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border, #374151);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.summary-info {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #9ca3af);
+}
+
+.summary-info strong {
+  color: var(--color-text-primary, #f3f4f6);
+}
+
+.form-actions-right {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Hint */
+.hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #6b7280);
+  margin-top: 0.35rem;
+}
+
+/* ============================================ */
+/* Light theme                                 */
+/* ============================================ */
+[data-theme="light"] .eq-empty-state {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .eq-item {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .eq-item:hover {
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .eq-item.new {
+  background: rgba(5, 150, 105, 0.05);
+}
+
+[data-theme="light"] .eq-defect-box {
+  background: #e2e8f0;
+  color: #374151;
+}
+
+[data-theme="light"] .lote-preview {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+[data-theme="light"] .lote-desc {
+  color: #3b82f6;
+}
+
+[data-theme="light"] .summary-info strong {
+  color: #1e293b;
+}

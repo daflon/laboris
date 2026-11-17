@@ -19,6 +19,7 @@ import EquipmentForm from './pages/Equipment/EquipmentForm';
 import EquipmentHistory from './pages/Equipment/EquipmentHistory';
 import ServiceOrdersList from './pages/ServiceOrders/ServiceOrdersList';
 import ServiceOrderForm from './pages/ServiceOrders/ServiceOrderForm';
+import ServiceOrderFormLote from './pages/ServiceOrders/ServiceOrderFormLote';
 import ServiceOrderDetails from './pages/ServiceOrders/ServiceOrderDetails';
 import AddToLote from './pages/ServiceOrders/AddToLote';
 import CompanySettingsPage from './pages/Settings/CompanySettings';
@@ -71,7 +72,8 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
 
           <Route path="/os" element={<ServiceOrdersList />} />
-          <Route path="/os/nova" element={<ServiceOrderForm />} />
+          <Route path="/os/nova" element={<ServiceOrderFormLote />} />
+          <Route path="/os/nova-simples" element={<ServiceOrderForm />} />
           <Route path="/os/:id" element={<ServiceOrderDetails />} />
           <Route path="/os/:id/editar" element={<ServiceOrderForm />} />
           <Route path="/os/:id/adicionar-lote" element={<AddToLote />} />
