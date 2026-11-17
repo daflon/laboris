@@ -75,6 +75,25 @@ export interface AluguelStats {
   disponiveis: number;
 }
 
+export interface CalendarioItem {
+  id: string;
+  numero: number;
+  data_prevista_devolucao: string;
+  data_inicio: string;
+  status: string;
+  valor_acordado: number;
+  patrimonio_id: string;
+  patrimonio_codigo: string;
+  patrimonio_nome: string;
+  patrimonio_categoria?: string;
+  client_name: string;
+}
+
+export interface CalendarioResponse {
+  periodo: { inicio: string; fim: string };
+  items: CalendarioItem[];
+}
+
 // ==================== PATRIMÔNIO ====================
 
 export const patrimonioService = {
@@ -174,6 +193,42 @@ export const alugueisService = {
 
   async gerarFatura(id: string, incluirPendente: boolean = true) {
     const response = await api.post(`/alugueis/${id}/fatura`, { incluir_pendente: incluirPendente });
+    return response.data;
+  },
+
+  async renovar(id: string, data: {
+    nova_data_devolucao?: string;
+    dias_adicionais?: number;
+    novo_valor_diaria?: number;
+    observacoes?: string;
+  }) {
+    const response = await api.post(`/alugueis/${id}/renovar`, data);
+    return response.data;
+  },
+
+  async getCalendario(year?: number, month?: number) {
+    const params: Record<string, any> = {};
+    if (year) params.year = year;
+    if (month) params.month = month;
+    const response = await api.get('/alugueis/calendario', { params });
+    return response.data;
+  },
+
+  getContratoUrl(id: string): string {
+    const token = localStorage.getItem('token');
+    const baseUrl = api.defaults.baseURL || '';
+    return `${baseUrl}/alugueis/${id}/contrato?token=${token}`;
+  }
+};
+
+// Patrimônio - novo método para manutenção
+export const patrimonioManutencaoService = {
+  async marcarManutencao(id: string, data: {
+    criar_os?: boolean;
+    defeito_relatado?: string;
+    observacoes?: string;
+  }) {
+    const response = await api.post(`/alugueis/patrimonio/${id}/manutencao`, data);
     return response.data;
   }
 };

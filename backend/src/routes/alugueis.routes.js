@@ -6,7 +6,9 @@
  */
 
 const { Router } = require('express');
+const PDFDocument = require('pdfkit');
 const db = require('../database/connection');
+const companySettingsRepository = require('../repositories/companySettings.repository');
 
 const router = Router();
 
@@ -890,5 +892,506 @@ router.post('/:id/fatura', async (req, res) => {
     res.status(500).json({ success: false, error: { message: 'Erro ao gerar fatura' } });
   }
 });
+
+// ==================== NOVAS FUNCIONALIDADES ====================
+
+/**
+ * POST /api/v1/alugueis/:id/renovar
+ * Renova um aluguel (estende o período)
+ */
+router.post('/:id/renovar', async (req, res) => {
+  try {
+    const tenantId = req.tenantId;
+    const { nova_data_devolucao, dias_adicionais, novo_valor_diaria, observacoes } = req.body;
+
+    // Buscar aluguel
+    const aluguel = await db('alugueis')
+      .where({ id: req.params.id, tenant_id: tenantId })
+      .first();
+
+    if (!aluguel) {
+      return res.status(404).json({ success: false, error: { message: 'Aluguel não encontrado' } });
+    }
+
+    if (aluguel.status !== 'ativo' && aluguel.status !== 'atrasado') {
+      return res.status(400).json({ 
+        success: false, 
+        error: { message: 'Só é possível renovar aluguéis ativos ou atrasados' } 
+      });
+    }
+
+    // Calcular nova data de devolução
+    let novaDataDevolucao;
+    if (nova_data_devolucao) {
+      novaDataDevolucao = new Date(nova_data_devolucao);
+    } else if (dias_adicionais) {
+      novaDataDevolucao = new Date(aluguel.data_prevista_devolucao);
+      novaDataDevolucao.setDate(novaDataDevolucao.getDate() + parseInt(dias_adicionais));
+    } else {
+      return res.status(400).json({ 
+        success: false, 
+        error: { message: 'Informe nova_data_devolucao ou dias_adicionais' } 
+      });
+    }
+
+    // Calcular valor adicional
+    const dataAtual = new Date(aluguel.data_prevista_devolucao);
+    const diffTime = Math.abs(novaDataDevolucao - dataAtual);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Buscar valor da diária do patrimônio se não informado
+    let valorDiaria = novo_valor_diaria;
+    if (!valorDiaria) {
+      const patrimonio = await db('patrimonio').where({ id: aluguel.patrimonio_id }).first();
+      valorDiaria = patrimonio?.valor_diaria || 0;
+    }
+
+    const valorAdicional = diffDays * parseFloat(valorDiaria);
+    const novoValorTotal = parseFloat(aluguel.valor_acordado) + valorAdicional;
+
+    // Atualizar aluguel
+    const [updated] = await db('alugueis')
+      .where({ id: req.params.id })
+      .update({
+        data_prevista_devolucao: novaDataDevolucao,
+        valor_acordado: novoValorTotal,
+        status: 'ativo', // Volta pra ativo se estava atrasado
+        observacoes: observacoes 
+          ? `${aluguel.observacoes || ''}\n[RENOVAÇÃO ${new Date().toLocaleDateString('pt-BR')}] +${diffDays} dias, +R$ ${valorAdicional.toFixed(2)}. ${observacoes}`.trim()
+          : `${aluguel.observacoes || ''}\n[RENOVAÇÃO ${new Date().toLocaleDateString('pt-BR')}] +${diffDays} dias, +R$ ${valorAdicional.toFixed(2)}`.trim(),
+        updated_at: db.fn.now()
+      })
+      .returning('*');
+
+    res.json({ 
+      success: true, 
+      data: updated,
+      renovacao: {
+        dias_adicionais: diffDays,
+        valor_adicional: valorAdicional,
+        novo_valor_total: novoValorTotal
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao renovar aluguel:', error);
+    res.status(500).json({ success: false, error: { message: 'Erro ao renovar aluguel' } });
+  }
+});
+
+/**
+ * GET /api/v1/alugueis/calendario
+ * Retorna dados para o calendário visual de devoluções
+ */
+router.get('/calendario', async (req, res) => {
+  try {
+    const tenantId = req.tenantId;
+    const { year, month, inicio, fim, categoria } = req.query;
+
+    let dataInicio, dataFim;
+
+    // Se passou year e month, usa para filtrar o mês específico
+    if (year && month) {
+      dataInicio = new Date(parseInt(year), parseInt(month) - 1, 1);
+      dataFim = new Date(parseInt(year), parseInt(month), 0); // Último dia do mês
+    } else {
+      // Período padrão: próximas 4 semanas
+      dataInicio = inicio ? new Date(inicio) : new Date();
+      dataFim = fim ? new Date(fim) : new Date(Date.now() + 28 * 24 * 60 * 60 * 1000);
+    }
+
+    // Buscar aluguéis ativos/atrasados com devolução prevista no período
+    const alugueis = await db('alugueis')
+      .where({ 'alugueis.tenant_id': tenantId })
+      .whereIn('status', ['ativo', 'atrasado'])
+      .where('data_prevista_devolucao', '>=', dataInicio.toISOString().split('T')[0])
+      .where('data_prevista_devolucao', '<=', dataFim.toISOString().split('T')[0])
+      .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
+      .leftJoin('clients', 'clients.id', 'alugueis.client_id')
+      .select(
+        'alugueis.id',
+        'alugueis.numero',
+        'alugueis.patrimonio_id',
+        'alugueis.data_inicio',
+        'alugueis.data_prevista_devolucao',
+        'alugueis.status',
+        'alugueis.valor_acordado',
+        'patrimonio.codigo as patrimonio_codigo',
+        'patrimonio.nome as patrimonio_nome',
+        'patrimonio.categoria as patrimonio_categoria',
+        'clients.name as client_name'
+      )
+      .orderBy('data_prevista_devolucao', 'asc');
+
+    // Retornar lista simplificada de itens para o calendário
+    const items = alugueis.map(a => ({
+      id: a.id,
+      numero: a.numero,
+      data_prevista_devolucao: a.data_prevista_devolucao,
+      data_inicio: a.data_inicio,
+      status: a.status,
+      valor_acordado: a.valor_acordado,
+      patrimonio_id: a.patrimonio_id,
+      patrimonio_codigo: a.patrimonio_codigo,
+      patrimonio_nome: a.patrimonio_nome,
+      patrimonio_categoria: a.patrimonio_categoria,
+      client_name: a.client_name
+    }));
+
+    res.json({ 
+      success: true, 
+      data: {
+        periodo: { inicio: dataInicio, fim: dataFim },
+        items
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao buscar calendário:', error);
+    res.status(500).json({ success: false, error: { message: 'Erro ao buscar calendário' } });
+  }
+});
+
+/**
+ * GET /api/v1/alugueis/:id/contrato
+ * Gera PDF do contrato de locação (formato A5, duas vias)
+ */
+router.get('/:id/contrato', async (req, res) => {
+  try {
+    const tenantId = req.tenantId;
+
+    // Buscar aluguel completo
+    const aluguel = await db('alugueis')
+      .where({ 'alugueis.id': req.params.id, 'alugueis.tenant_id': tenantId })
+      .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
+      .leftJoin('clients', 'clients.id', 'alugueis.client_id')
+      .select(
+        'alugueis.*',
+        'patrimonio.nome as patrimonio_nome',
+        'patrimonio.codigo as patrimonio_codigo',
+        'patrimonio.marca as patrimonio_marca',
+        'patrimonio.modelo as patrimonio_modelo',
+        'patrimonio.numero_serie as patrimonio_serie',
+        'clients.name as client_name',
+        'clients.document as client_document',
+        'clients.phone as client_phone',
+        'clients.email as client_email',
+        'clients.address_street',
+        'clients.address_number',
+        'clients.address_neighborhood',
+        'clients.address_city',
+        'clients.address_state',
+        'clients.address_zip'
+      )
+      .first();
+
+    if (!aluguel) {
+      return res.status(404).json({ success: false, error: { message: 'Aluguel não encontrado' } });
+    }
+
+    // Buscar dados da empresa
+    const company = await companySettingsRepository.get(tenantId);
+
+    // Criar PDF A4 (duas vias A5)
+    const doc = new PDFDocument({ size: 'A4', margin: 20 });
+
+    const fileName = `Contrato-Aluguel-${String(aluguel.numero).padStart(4, '0')}.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename=${fileName}`);
+    doc.pipe(res);
+
+    const halfPage = doc.page.height / 2;
+
+    // Renderizar duas vias (superior e inferior)
+    renderContratoAluguel(doc, aluguel, company, 20);
+    
+    // Linha de corte
+    doc.save();
+    doc.moveTo(20, halfPage).lineTo(doc.page.width - 20, halfPage).dash(5, { space: 3 }).stroke('#999');
+    doc.undash();
+    doc.restore();
+
+    // Segunda via
+    renderContratoAluguel(doc, aluguel, company, halfPage + 10);
+
+    doc.end();
+  } catch (error) {
+    console.error('Erro ao gerar contrato:', error);
+    res.status(500).json({ success: false, error: { message: 'Erro ao gerar contrato' } });
+  }
+});
+
+/**
+ * POST /api/v1/alugueis/patrimonio/:id/manutencao
+ * Marca patrimônio como em manutenção e opcionalmente cria OS
+ */
+router.post('/patrimonio/:id/manutencao', async (req, res) => {
+  try {
+    const tenantId = req.tenantId;
+    const userId = req.user.userId;
+    const { criar_os, defeito_relatado, observacoes } = req.body;
+
+    // Buscar patrimônio
+    const patrimonio = await db('patrimonio')
+      .where({ id: req.params.id, tenant_id: tenantId })
+      .whereNull('deleted_at')
+      .first();
+
+    if (!patrimonio) {
+      return res.status(404).json({ success: false, error: { message: 'Equipamento não encontrado' } });
+    }
+
+    // Atualizar status para manutenção
+    await db('patrimonio')
+      .where({ id: req.params.id })
+      .update({ 
+        status: 'manutencao', 
+        observacoes: observacoes 
+          ? `${patrimonio.observacoes || ''}\n[MANUTENÇÃO ${new Date().toLocaleDateString('pt-BR')}] ${observacoes}`.trim()
+          : patrimonio.observacoes,
+        updated_at: db.fn.now() 
+      });
+
+    let osData = null;
+
+    // Criar OS de manutenção se solicitado
+    if (criar_os) {
+      // Verificar se existe um equipamento cadastrado para este patrimônio
+      // Se não existir, criar um registro genérico de equipamento
+      let equipmentId = null;
+      
+      // Buscar tenant como cliente (equipamento próprio da empresa)
+      const tenant = await db('tenants').where({ id: tenantId }).first();
+      
+      // Buscar ou criar cliente "interno" para manutenção de patrimônio
+      let clienteInterno = await db('clients')
+        .where({ tenant_id: tenantId, name: 'MANUTENÇÃO INTERNA' })
+        .whereNull('deleted_at')
+        .first();
+
+      if (!clienteInterno) {
+        [clienteInterno] = await db('clients')
+          .insert({
+            tenant_id: tenantId,
+            name: 'MANUTENÇÃO INTERNA',
+            phone: tenant.phone || '',
+            document: tenant.document || ''
+          })
+          .returning('*');
+      }
+
+      // Criar ou buscar equipamento correspondente ao patrimônio
+      let equipment = await db('equipment')
+        .where({ 
+          tenant_id: tenantId, 
+          serial_number: patrimonio.numero_serie || `PAT-${patrimonio.codigo}`
+        })
+        .whereNull('deleted_at')
+        .first();
+
+      if (!equipment) {
+        [equipment] = await db('equipment')
+          .insert({
+            tenant_id: tenantId,
+            client_id: clienteInterno.id,
+            type: patrimonio.categoria || 'Patrimônio',
+            brand: patrimonio.marca || 'N/A',
+            model: patrimonio.modelo || patrimonio.nome,
+            serial_number: patrimonio.numero_serie || `PAT-${patrimonio.codigo}`
+          })
+          .returning('*');
+      }
+
+      // Gerar próximo número de OS
+      const lastOs = await db('service_orders')
+        .where({ tenant_id: tenantId })
+        .max('order_number as max')
+        .first();
+      const orderNumber = (lastOs?.max || 0) + 1;
+
+      // Criar OS
+      const [newOs] = await db('service_orders')
+        .insert({
+          tenant_id: tenantId,
+          client_id: clienteInterno.id,
+          equipment_id: equipment.id,
+          order_number: orderNumber,
+          status: 'aberta',
+          entry_date: new Date(),
+          reported_defect: defeito_relatado || `Manutenção de patrimônio: ${patrimonio.nome} (${patrimonio.codigo})`,
+          created_by: userId
+        })
+        .returning('*');
+
+      // Atualizar patrimônio com referência à OS
+      await db('patrimonio')
+        .where({ id: req.params.id })
+        .update({ 
+          observacoes: `${patrimonio.observacoes || ''}\n[OS #${String(orderNumber).padStart(4, '0')} criada para manutenção]`.trim()
+        });
+
+      osData = {
+        id: newOs.id,
+        order_number: orderNumber
+      };
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Patrimônio marcado como em manutenção',
+      data: {
+        patrimonio_id: req.params.id,
+        status: 'manutencao',
+        os_criada: osData
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao marcar manutenção:', error);
+    res.status(500).json({ success: false, error: { message: 'Erro ao marcar manutenção' } });
+  }
+});
+
+// ==================== HELPERS ====================
+
+/**
+ * Renderiza uma via do contrato de aluguel
+ */
+function renderContratoAluguel(doc, aluguel, company, startY) {
+  const leftMargin = 25;
+  const pageWidth = doc.page.width - 50;
+  const halfHeight = (doc.page.height / 2) - 30;
+  let y = startY;
+
+  // Logo da empresa
+  const hasLogo = company && company.logo_url && company.logo_url.startsWith('data:image');
+  let textStartX = leftMargin;
+
+  if (hasLogo) {
+    try {
+      doc.image(company.logo_url, leftMargin, y, { 
+        width: 50,
+        height: 35,
+        fit: [50, 35]
+      });
+      textStartX = leftMargin + 55;
+    } catch (e) {
+      console.error('Erro ao carregar logo:', e.message);
+    }
+  }
+
+  // Cabeçalho empresa
+  doc.fontSize(10).font('Helvetica-Bold');
+  doc.text(company?.name || 'Empresa', textStartX, y + 3, { width: pageWidth - 60 });
+  
+  doc.fontSize(6).font('Helvetica');
+  const phones = [company?.phone, company?.phone2].filter(Boolean).join(' | ');
+  if (phones) {
+    doc.text(phones, textStartX, y + 15, { width: pageWidth - 60 });
+  }
+  y += 40;
+
+  // Linha
+  doc.moveTo(leftMargin, y).lineTo(doc.page.width - 25, y).lineWidth(0.5).stroke('#333');
+  y += 5;
+
+  // Título
+  doc.fontSize(9).font('Helvetica-Bold').fillColor('#1e40af');
+  doc.text('CONTRATO DE LOCAÇÃO DE EQUIPAMENTO', leftMargin, y, { width: pageWidth, align: 'center' });
+  doc.fontSize(11).fillColor('#e11d48');
+  const numeroFormatado = String(aluguel.numero).padStart(4, '0');
+  doc.text(`#${numeroFormatado}`, leftMargin, y + 12, { width: pageWidth, align: 'center' });
+  doc.fillColor('#000');
+  y += 28;
+
+  // Dados do locatário
+  doc.fontSize(7).font('Helvetica-Bold');
+  doc.text('LOCATÁRIO', leftMargin, y);
+  y += 9;
+  doc.font('Helvetica').fontSize(7);
+  doc.text(`Nome: ${aluguel.client_name || ''}`, leftMargin, y);
+  doc.text(`Tel: ${formatPhoneHelper(aluguel.client_phone)}`, 320, y);
+  y += 9;
+  doc.text(`Doc: ${formatDocumentHelper(aluguel.client_document)}`, leftMargin, y);
+  y += 12;
+
+  // Dados do equipamento
+  doc.font('Helvetica-Bold');
+  doc.text('EQUIPAMENTO', leftMargin, y);
+  y += 9;
+  doc.font('Helvetica');
+  const equipDesc = `${aluguel.patrimonio_nome} (${aluguel.patrimonio_codigo})${aluguel.patrimonio_marca ? ' - ' + aluguel.patrimonio_marca : ''}${aluguel.patrimonio_modelo ? ' ' + aluguel.patrimonio_modelo : ''}`;
+  doc.text(equipDesc, leftMargin, y, { width: pageWidth });
+  y += 9;
+  if (aluguel.patrimonio_serie) {
+    doc.text(`N/S: ${aluguel.patrimonio_serie}`, leftMargin, y);
+    y += 9;
+  }
+
+  // Período e valores
+  y += 3;
+  doc.font('Helvetica-Bold');
+  doc.text('PERÍODO E VALORES', leftMargin, y);
+  y += 9;
+  doc.font('Helvetica');
+  
+  const dataInicio = new Date(aluguel.data_inicio).toLocaleDateString('pt-BR');
+  const dataFim = new Date(aluguel.data_prevista_devolucao).toLocaleDateString('pt-BR');
+  const tipoCobranca = { diaria: 'Diária', semanal: 'Semanal', mensal: 'Mensal', fixo: 'Fixo' }[aluguel.tipo_cobranca] || aluguel.tipo_cobranca;
+  
+  doc.text(`Retirada: ${dataInicio}`, leftMargin, y);
+  doc.text(`Devolução: ${dataFim}`, 180, y);
+  doc.text(`Cobrança: ${tipoCobranca}`, 320, y);
+  y += 9;
+
+  // Valor em destaque
+  doc.rect(leftMargin, y, pageWidth, 18).fill('#f1f5f9').stroke('#ccc');
+  doc.fillColor('#000').font('Helvetica-Bold').fontSize(9);
+  doc.text(`VALOR TOTAL: R$ ${Number(aluguel.valor_acordado).toFixed(2)}`, leftMargin + 5, y + 4, { width: pageWidth - 10, align: 'center' });
+  doc.fontSize(7);
+  y += 22;
+
+  // Condição do equipamento
+  if (aluguel.condicao_saida) {
+    doc.font('Helvetica-Bold').fontSize(6);
+    doc.text('CONDIÇÃO NA RETIRADA:', leftMargin, y);
+    y += 7;
+    doc.font('Helvetica');
+    doc.text(aluguel.condicao_saida, leftMargin, y, { width: pageWidth });
+    y += 12;
+  }
+
+  // Termos resumidos
+  doc.fontSize(5).font('Helvetica-Oblique').fillColor('#666');
+  const termos = 'Declaro ter recebido o equipamento em perfeitas condições. Comprometo-me a devolvê-lo no prazo acordado e nas mesmas condições. Em caso de atraso ou dano, responsabilizo-me pelos custos adicionais conforme tabela vigente.';
+  doc.text(termos, leftMargin, y, { width: pageWidth, align: 'justify' });
+  doc.fillColor('#000');
+  y += 18;
+
+  // Assinaturas
+  const signatureWidth = (pageWidth - 30) / 2;
+  doc.moveTo(leftMargin, y + 15).lineTo(leftMargin + signatureWidth, y + 15).lineWidth(0.5).stroke('#333');
+  doc.moveTo(leftMargin + signatureWidth + 30, y + 15).lineTo(doc.page.width - 25, y + 15).stroke('#333');
+  
+  doc.fontSize(5);
+  doc.text('Assinatura do Locatário', leftMargin, y + 18, { width: signatureWidth, align: 'center' });
+  doc.text('Assinatura do Locador', leftMargin + signatureWidth + 30, y + 18, { width: signatureWidth, align: 'center' });
+}
+
+/**
+ * Helpers de formatação
+ */
+function formatPhoneHelper(phone) {
+  if (!phone) return '';
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  if (digits.length === 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return phone;
+}
+
+function formatDocumentHelper(doc) {
+  if (!doc) return '';
+  const digits = doc.replace(/\D/g, '');
+  if (digits.length === 11) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+  if (digits.length === 14) return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12)}`;
+  return doc;
+}
 
 module.exports = router;

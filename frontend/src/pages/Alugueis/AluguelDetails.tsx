@@ -33,8 +33,16 @@ export default function AluguelDetails() {
   const [showPagamentoModal, setShowPagamentoModal] = useState(false);
   const [showCancelarModal, setShowCancelarModal] = useState(false);
   const [showFaturaModal, setShowFaturaModal] = useState(false);
+  const [showRenovarModal, setShowRenovarModal] = useState(false);
   const [faturaData, setFaturaData] = useState<any>(null);
   const [gerandoFatura, setGerandoFatura] = useState(false);
+
+  // Form de renovação
+  const [renovarForm, setRenovarForm] = useState({
+    dias_adicionais: 7,
+    nova_data_devolucao: '',
+    observacoes: ''
+  });
 
   // Form de devolução
   const [devolucaoForm, setDevolucaoForm] = useState({
@@ -161,6 +169,25 @@ export default function AluguelDetails() {
       toast.error(error.response?.data?.error?.message || 'Erro ao gerar fatura');
     } finally {
       setGerandoFatura(false);
+    }
+  };
+
+  const handleContrato = () => {
+    const url = alugueisService.getContratoUrl(id!);
+    window.open(url, '_blank');
+  };
+
+  const handleRenovar = async () => {
+    try {
+      const response = await alugueisService.renovar(id!, {
+        dias_adicionais: renovarForm.dias_adicionais,
+        observacoes: renovarForm.observacoes
+      });
+      toast.success(`Aluguel renovado! +${response.renovacao.dias_adicionais} dias, +${formatCurrency(response.renovacao.valor_adicional)}`);
+      setShowRenovarModal(false);
+      loadAluguel();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error?.message || 'Erro ao renovar aluguel');
     }
   };
 
@@ -435,14 +462,28 @@ export default function AluguelDetails() {
         </button>
         <button 
           className="btn" 
+          onClick={handleContrato}
+          style={{ background: '#334155', color: 'white' }}
+        >
+          <FiFileText /> Contrato
+        </button>
+        <button 
+          className="btn" 
           onClick={handleGerarFatura}
           disabled={gerandoFatura}
           style={{ background: '#7c3aed', color: 'white' }}
         >
-          <FiFileText /> {gerandoFatura ? 'Gerando...' : 'Gerar Fatura'}
+          <FiPrinter /> {gerandoFatura ? 'Gerando...' : 'Fatura'}
         </button>
         {isAtivo && (
           <>
+            <button 
+              className="btn" 
+              onClick={() => setShowRenovarModal(true)}
+              style={{ background: '#f59e0b', color: '#1e293b' }}
+            >
+              🔄 Renovar
+            </button>
             <button className="btn btn-success" onClick={() => setShowDevolverModal(true)}>
               <FiCheckCircle /> Devolver
             </button>
@@ -932,6 +973,97 @@ export default function AluguelDetails() {
                 style={{ background: '#7c3aed', color: 'white' }}
               >
                 <FiPrinter /> Imprimir Fatura
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Renovar */}
+      {showRenovarModal && (
+        <div className="modal-overlay" onClick={() => setShowRenovarModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '450px' }}>
+            <h3 style={{ color: '#f59e0b' }}>🔄 Renovar Aluguel</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+              Estenda o período do aluguel. O valor adicional será calculado proporcionalmente.
+            </p>
+            
+            <div style={{ 
+              background: 'var(--bg-secondary)', 
+              padding: '1rem', 
+              borderRadius: '8px', 
+              marginBottom: '1rem',
+              fontSize: '0.9rem'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <span>Previsão Atual:</span>
+                <strong>{formatDate(aluguel.data_prevista_devolucao)}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Valor Diário (estimado):</span>
+                <strong>{formatCurrency(aluguel.valor_acordado / 7)}/dia</strong>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Dias Adicionais</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="number"
+                  value={renovarForm.dias_adicionais}
+                  onChange={e => setRenovarForm(prev => ({ ...prev, dias_adicionais: parseInt(e.target.value) || 0 }))}
+                  min={1}
+                  max={365}
+                  style={{ width: '100px' }}
+                />
+                <span style={{ color: 'var(--text-secondary)' }}>dias</span>
+              </div>
+            </div>
+
+            {renovarForm.dias_adicionais > 0 && (
+              <div style={{ 
+                background: '#fef3c7', 
+                border: '1px solid #f59e0b',
+                borderRadius: '8px', 
+                padding: '1rem',
+                marginBottom: '1rem'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <span>Nova Data Devolução:</span>
+                  <strong>
+                    {new Date(new Date(aluguel.data_prevista_devolucao).getTime() + (renovarForm.dias_adicionais * 24 * 60 * 60 * 1000)).toLocaleDateString('pt-BR')}
+                  </strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem' }}>
+                  <span>Valor Adicional:</span>
+                  <strong style={{ color: '#d97706' }}>
+                    + {formatCurrency((aluguel.valor_acordado / 7) * renovarForm.dias_adicionais)}
+                  </strong>
+                </div>
+              </div>
+            )}
+
+            <div className="form-group">
+              <label>Observações (opcional)</label>
+              <textarea
+                value={renovarForm.observacoes}
+                onChange={e => setRenovarForm(prev => ({ ...prev, observacoes: e.target.value }))}
+                rows={2}
+                placeholder="Motivo da renovação..."
+              />
+            </div>
+
+            <div className="modal-actions">
+              <button className="btn btn-secondary" onClick={() => setShowRenovarModal(false)}>
+                Cancelar
+              </button>
+              <button 
+                className="btn" 
+                onClick={handleRenovar}
+                disabled={renovarForm.dias_adicionais < 1}
+                style={{ background: '#f59e0b', color: '#1e293b' }}
+              >
+                🔄 Confirmar Renovação
               </button>
             </div>
           </div>

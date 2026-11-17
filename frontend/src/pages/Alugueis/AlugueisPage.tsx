@@ -12,6 +12,7 @@ import {
   STATUS_ALUGUEL, STATUS_PATRIMONIO, formatAluguelNumero 
 } from '../../services/alugueis.service';
 import PageHeader from '../../components/PageHeader';
+import CalendarioAlugueis from './CalendarioAlugueis';
 import './AlugueisPage.css';
 
 function formatCurrency(value: number) {
@@ -59,7 +60,7 @@ function getEquipamentoIcon(categoria?: string): string {
 
 export default function AlugueisPage() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<'ativos' | 'historico' | 'patrimonio'>('ativos');
+  const [tab, setTab] = useState<'ativos' | 'historico' | 'patrimonio' | 'calendario'>('ativos');
   const [stats, setStats] = useState<AluguelStats | null>(null);
   const [alugueis, setAlugueis] = useState<Aluguel[]>([]);
   const [patrimonio, setPatrimonio] = useState<Patrimonio[]>([]);
@@ -213,6 +214,12 @@ export default function AlugueisPage() {
           onClick={() => setTab('ativos')}
         >
           <FiClock /> Ativos ({alugueisAtivos.length})
+        </button>
+        <button 
+          className={`tab-btn ${tab === 'calendario' ? 'active' : ''}`}
+          onClick={() => setTab('calendario')}
+        >
+          <FiCalendar /> Calendário
         </button>
         <button 
           className={`tab-btn ${tab === 'historico' ? 'active' : ''}`}
@@ -451,6 +458,9 @@ export default function AlugueisPage() {
           )}
         </div>
       )}
+
+      {/* ==================== ABA CALENDÁRIO ==================== */}
+      {tab === 'calendario' && <CalendarioAlugueis />}
 
       {/* ==================== ABA PATRIMÔNIO ==================== */}
       {tab === 'patrimonio' && (

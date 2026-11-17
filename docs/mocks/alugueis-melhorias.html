@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OS Laboris - Melhorias Módulo Aluguéis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: #0f172a; 
+      color: #f8fafc;
+      padding: 2rem;
+      line-height: 1.5;
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #334155;
+    }
+    
+    .page-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .page-header p { color: #94a3b8; }
+    
+    .feature-section {
+      max-width: 1200px;
+      margin: 0 auto 4rem;
+    }
+    
+    .feature-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .feature-title h2 {
+      font-size: 1.5rem;
+    }
+    
+    .feature-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-novo { background: #22c55e; color: #052e16; }
+    .badge-melhoria { background: #3b82f6; color: white; }
+    
+    .feature-description {
+      color: #94a3b8;
+      margin-bottom: 1.5rem;
+      max-width: 800px;
+    }
+
+    /* ========================================
+       MOCK CONTAINER
+       ======================================== */
+    .mock-container {
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    
+    .mock-header {
+      background: #334155;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .mock-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .mock-dot.red { background: #ef4444; }
+    .mock-dot.yellow { background: #f59e0b; }
+    .mock-dot.green { background: #22c55e; }
+    
+    .mock-content {
+      padding: 1.5rem;
+    }
+
+    /* ========================================
+       1. CONTRATO PDF
+       ======================================== */
+    .pdf-preview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    
+    @media (max-width: 900px) {
+      .pdf-preview { grid-template-columns: 1fr; }
+    }
+    
+    .pdf-page {
+      background: white;
+      color: #1e293b;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      font-size: 0.85rem;
+    }
+    
+    .pdf-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #3b82f6;
+      margin-bottom: 1rem;
+    }
+    
+    .pdf-logo {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+    }
+    
+    .pdf-company {
+      text-align: right;
+    }
+    
+    .pdf-company h3 {
+      font-size: 1.1rem;
+      color: #1e293b;
+    }
+    
+    .pdf-company p {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+    
+    .pdf-title {
+      text-align: center;
+      background: #f1f5f9;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+    
+    .pdf-title h2 {
+      font-size: 1rem;
+      color: #1e293b;
+      margin-bottom: 0.25rem;
+    }
+    
+    .pdf-title .numero {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #3b82f6;
+    }
+    
+    .pdf-section {
+      margin-bottom: 1rem;
+    }
+    
+    .pdf-section h4 {
+      font-size: 0.8rem;
+      color: #3b82f6;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .pdf-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    
+    .pdf-field {
+      font-size: 0.75rem;
+    }
+    
+    .pdf-field label {
+      color: #64748b;
+      display: block;
+    }
+    
+    .pdf-field span {
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .pdf-equipment {
+      background: #f8fafc;
+      padding: 1rem;
+      border-radius: 6px;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .pdf-equipment-img {
+      width: 60px;
+      height: 60px;
+      background: #e2e8f0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    .pdf-values {
+      background: #1e293b;
+      color: white;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+    }
+    
+    .pdf-values-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0;
+      font-size: 0.8rem;
+    }
+    
+    .pdf-values-row.total {
+      border-top: 1px solid #475569;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    
+    .pdf-signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-top: 1rem;
+    }
+    
+    .pdf-signature {
+      text-align: center;
+    }
+    
+    .pdf-signature-line {
+      border-top: 1px solid #1e293b;
+      margin-bottom: 0.25rem;
+      margin-top: 2rem;
+    }
+    
+    .pdf-signature p {
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+    
+    .pdf-footer {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+      font-size: 0.65rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+    
+    .pdf-terms {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 6px;
+      padding: 0.75rem;
+      margin-top: 1rem;
+    }
+    
+    .pdf-terms h5 {
+      font-size: 0.75rem;
+      color: #92400e;
+      margin-bottom: 0.5rem;
+    }
+    
+    .pdf-terms ul {
+      font-size: 0.7rem;
+      color: #78350f;
+      margin-left: 1rem;
+    }
+    
+    .pdf-terms li {
+      margin-bottom: 0.25rem;
+    }
+
+    /* ========================================
+       2. CALENDÁRIO VISUAL
+       ======================================== */
+    .calendar-container {
+      background: #1e293b;
+    }
+    
+    .calendar-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .calendar-nav button {
+      background: #334155;
+      border: none;
+      color: #f8fafc;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .calendar-nav button:hover {
+      background: #475569;
+    }
+    
+    .calendar-nav h3 {
+      font-size: 1.25rem;
+      min-width: 200px;
+      text-align: center;
+    }
+    
+    .calendar-views {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .calendar-views button {
+      background: #334155;
+      border: none;
+      color: #94a3b8;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    
+    .calendar-views button.active {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: 150px repeat(7, 1fr);
+      gap: 1px;
+      background: #334155;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .calendar-header-cell {
+      background: #334155;
+      padding: 0.75rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    
+    .calendar-header-cell.equipment {
+      text-align: left;
+    }
+    
+    .calendar-header-cell .day-name {
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-weight: 400;
+    }
+    
+    .calendar-row {
+      display: contents;
+    }
+    
+    .calendar-equipment {
+      background: #1e293b;
+      padding: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+    
+    .calendar-equipment-icon {
+      width: 32px;
+      height: 32px;
+      background: #334155;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .calendar-equipment-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .calendar-equipment-name {
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .calendar-equipment-code {
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+    
+    .calendar-cell {
+      background: #1e293b;
+      padding: 0.5rem;
+      min-height: 50px;
+      position: relative;
+    }
+    
+    .calendar-cell.today {
+      background: #1e3a5f;
+    }
+    
+    .calendar-cell.weekend {
+      background: #0f172a;
+    }
+    
+    .rental-bar {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 28px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      padding: 0 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: white;
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    
+    .rental-bar:hover {
+      filter: brightness(1.1);
+    }
+    
+    .rental-bar.ativo {
+      background: #3b82f6;
+    }
+    
+    .rental-bar.atrasado {
+      background: #ef4444;
+    }
+    
+    .rental-bar.reservado {
+      background: #8b5cf6;
+      border: 2px dashed #a78bfa;
+    }
+    
+    .rental-bar.start {
+      left: 0.25rem;
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+    }
+    
+    .rental-bar.end {
+      right: 0.25rem;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+    
+    .rental-bar.middle {
+      left: 0;
+      right: 0;
+      border-radius: 0;
+    }
+    
+    .rental-bar.full {
+      left: 0.25rem;
+      right: 0.25rem;
+    }
+    
+    .calendar-legend {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #334155;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+    
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+    
+    .legend-color.ativo { background: #3b82f6; }
+    .legend-color.atrasado { background: #ef4444; }
+    .legend-color.reservado { background: #8b5cf6; border: 2px dashed #a78bfa; }
+    .legend-color.disponivel { background: #1e293b; border: 1px solid #334155; }
+
+    /* ========================================
+       3. RENOVAR CONTRATO
+       ======================================== */
+    .details-container {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 1.5rem;
+    }
+    
+    @media (max-width: 900px) {
+      .details-container { grid-template-columns: 1fr; }
+    }
+    
+    .details-main {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    
+    .details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #334155;
+    }
+    
+    .details-title h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .details-title .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .status.ativo { background: #1e3a5f; color: #60a5fa; }
+    .status.atrasado { background: #450a0a; color: #fca5a5; }
+    
+    .details-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+    
+    .btn-success {
+      background: #22c55e;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #16a34a;
+    }
+    
+    .btn-warning {
+      background: #f59e0b;
+      color: #1e293b;
+    }
+    
+    .btn-warning:hover {
+      background: #d97706;
+    }
+    
+    .btn-secondary {
+      background: #334155;
+      color: #f8fafc;
+    }
+    
+    .btn-secondary:hover {
+      background: #475569;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #f8fafc;
+    }
+    
+    .btn-outline:hover {
+      background: #334155;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 700px) {
+      .info-grid { grid-template-columns: 1fr 1fr; }
+    }
+    
+    .info-card {
+      background: #0f172a;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    
+    .info-card label {
+      font-size: 0.75rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    
+    .info-card .value {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    
+    .info-card .value.highlight {
+      color: #3b82f6;
+      font-size: 1.25rem;
+    }
+    
+    .info-card .value.danger {
+      color: #ef4444;
+    }
+    
+    .details-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .sidebar-card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    
+    .sidebar-card h3 {
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #334155;
+    }
+    
+    .equipment-preview {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .equipment-img {
+      width: 80px;
+      height: 80px;
+      background: #334155;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    
+    .equipment-info h4 {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .equipment-info p {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    
+    .client-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .client-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .client-row .icon {
+      color: #64748b;
+    }
+
+    /* ========================================
+       MODAL RENOVAR
+       ======================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    
+    .modal {
+      background: #1e293b;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem;
+      border-bottom: 1px solid #334155;
+    }
+    
+    .modal-header h3 {
+      font-size: 1.1rem;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      color: #64748b;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    .modal-body {
+      padding: 1.25rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #f8fafc;
+      font-size: 0.9rem;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    .current-info {
+      background: #0f172a;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    
+    .current-info h4 {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+    }
+    
+    .current-info .dates {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+    
+    .arrow-icon {
+      color: #64748b;
+    }
+    
+    .renewal-preview {
+      background: #1e3a5f;
+      border: 1px solid #3b82f6;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .renewal-preview h4 {
+      font-size: 0.85rem;
+      color: #60a5fa;
+      margin-bottom: 0.75rem;
+    }
+    
+    .renewal-preview .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      padding: 0.25rem 0;
+    }
+    
+    .renewal-preview .row.total {
+      border-top: 1px solid #3b82f6;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      font-weight: 700;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding: 1.25rem;
+      border-top: 1px solid #334155;
+    }
+
+    /* ========================================
+       NOTAS / DESTAQUE
+       ======================================== */
+    .feature-notes {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #0f172a;
+      border-radius: 8px;
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .feature-notes h4 {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      color: #60a5fa;
+    }
+    
+    .feature-notes ul {
+      margin-left: 1.25rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    
+    .feature-notes li {
+      margin-bottom: 0.25rem;
+    }
+    
+    .divider {
+      height: 1px;
+      background: #334155;
+      margin: 4rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <h1>🔧 Módulo de Aluguéis — Melhorias Propostas</h1>
+    <p>Mockups das novas funcionalidades para elevar o nível do sistema</p>
+  </div>
+
+  <!-- ==================== 1. CONTRATO PDF ==================== -->
+  <section class="feature-section">
+    <div class="feature-title">
+      <h2>📄 1. Contrato PDF</h2>
+      <span class="feature-badge badge-novo">NOVO</span>
+    </div>
+    <p class="feature-description">
+      Geração automática de contrato de locação em PDF, com os dados do aluguel, termos e condições, 
+      e espaço para assinatura. Mesmo padrão profissional do PDF de OS.
+    </p>
+    
+    <div class="mock-container">
+      <div class="mock-header">
+        <div class="mock-dot red"></div>
+        <div class="mock-dot yellow"></div>
+        <div class="mock-dot green"></div>
+      </div>
+      <div class="mock-content">
+        <div class="pdf-preview">
+          <!-- Página 1 do PDF -->
+          <div class="pdf-page">
+            <div class="pdf-header">
+              <div class="pdf-logo">🔧</div>
+              <div class="pdf-company">
+                <h3>Eletrotécnica São Miguel</h3>
+                <p>CNPJ: 12.345.678/0001-90</p>
+                <p>Rua das Ferramentas, 123 - Centro</p>
+                <p>(11) 99999-9999</p>
+              </div>
+            </div>
+            
+            <div class="pdf-title">
+              <h2>CONTRATO DE LOCAÇÃO DE EQUIPAMENTO</h2>
+              <div class="numero">#0042</div>
+            </div>
+            
+            <div class="pdf-section">
+              <h4>Locatário</h4>
+              <div class="pdf-grid">
+                <div class="pdf-field">
+                  <label>Nome/Razão Social</label>
+                  <span>João Carlos da Silva</span>
+                </div>
+                <div class="pdf-field">
+                  <label>CPF/CNPJ</label>
+                  <span>123.456.789-00</span>
+                </div>
+                <div class="pdf-field">
+                  <label>Telefone</label>
+                  <span>(11) 98765-4321</span>
+                </div>
+                <div class="pdf-field">
+                  <label>Endereço</label>
+                  <span>Av. Brasil, 500 - Centro</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="pdf-section">
+              <h4>Equipamento Locado</h4>
+              <div class="pdf-equipment">
+                <div class="pdf-equipment-img">🔨</div>
+                <div>
+                  <strong>Martelete Perfurador Bosch GBH 2-26</strong>
+                  <p style="font-size: 0.75rem; color: #64748b;">Código: EQP-0015 | N/S: 789456123</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="pdf-section">
+              <h4>Período e Valores</h4>
+              <div class="pdf-grid">
+                <div class="pdf-field">
+                  <label>Data de Retirada</label>
+                  <span>28/10/2026 às 08:00</span>
+                </div>
+                <div class="pdf-field">
+                  <label>Previsão de Devolução</label>
+                  <span>04/11/2026 às 18:00</span>
+                </div>
+                <div class="pdf-field">
+                  <label>Tipo de Cobrança</label>
+                  <span>Diária</span>
+                </div>
+                <div class="pdf-field">
+                  <label>Valor da Diária</label>
+                  <span>R$ 80,00</span>
+                </div>
+              </div>
+              
+              <div class="pdf-values">
+                <div class="pdf-values-row">
+                  <span>7 diárias × R$ 80,00</span>
+                  <span>R$ 560,00</span>
+                </div>
+                <div class="pdf-values-row">
+                  <span>Desconto</span>
+                  <span>- R$ 0,00</span>
+                </div>
+                <div class="pdf-values-row total">
+                  <span>VALOR TOTAL</span>
+                  <span>R$ 560,00</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="pdf-terms">
+              <h5>⚠️ Termos e Condições</h5>
+              <ul>
+                <li>O equipamento deve ser devolvido nas mesmas condições em que foi retirado.</li>
+                <li>Em caso de atraso, será cobrada multa de 10% + R$ 20,00 por dia excedente.</li>
+                <li>Danos ao equipamento serão cobrados conforme avaliação técnica.</li>
+                <li>É proibido sublocar ou ceder o equipamento a terceiros.</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Página 2 do PDF (assinaturas) -->
+          <div class="pdf-page">
+            <div class="pdf-section">
+              <h4>Condição na Retirada</h4>
+              <p style="font-size: 0.8rem; color: #64748b; padding: 1rem; background: #f8fafc; border-radius: 6px;">
+                Equipamento em perfeito estado de funcionamento. Acompanha maleta original, 
+                mandril SDS-Plus, punho auxiliar e limitador de profundidade. Cabo de força sem danos.
+              </p>
+            </div>
+            
+            <div class="pdf-section">
+              <h4>Condição na Devolução</h4>
+              <p style="font-size: 0.8rem; color: #94a3b8; padding: 1rem; background: #f8fafc; border-radius: 6px; font-style: italic;">
+                (A ser preenchido no momento da devolução)
+              </p>
+            </div>
+            
+            <div class="pdf-signatures">
+              <div class="pdf-signature">
+                <div class="pdf-signature-line"></div>
+                <p><strong>Locador</strong></p>
+                <p>Eletrotécnica São Miguel</p>
+              </div>
+              <div class="pdf-signature">
+                <div class="pdf-signature-line"></div>
+                <p><strong>Locatário</strong></p>
+                <p>João Carlos da Silva</p>
+              </div>
+            </div>
+            
+            <div class="pdf-footer">
+              <p>Contrato gerado em 28/10/2026 às 07:45 | OS Laboris v1.5</p>
+              <p style="margin-top: 0.5rem;">
+                Em caso de dúvidas ou problemas, entre em contato: (11) 99999-9999 | contato@eletrotecnica.com.br
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="feature-notes">
+      <h4>💡 Implementação</h4>
+      <ul>
+        <li>Botão "📄 Contrato" nos detalhes do aluguel (ao lado de Devolver)</li>
+        <li>Usar mesma estrutura do PDF de OS (PDFKit)</li>
+        <li>Incluir logo da empresa e dados configuráveis</li>
+        <li>Campo de observações editável para condição do equipamento</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== 2. CALENDÁRIO VISUAL ==================== -->
+  <section class="feature-section">
+    <div class="feature-title">
+      <h2>📅 2. Calendário de Disponibilidade</h2>
+      <span class="feature-badge badge-novo">NOVO</span>
+    </div>
+    <p class="feature-description">
+      Visualização em timeline da ocupação de cada equipamento. Permite ver rapidamente 
+      o que está disponível, alugado ou reservado em qualquer período.
+    </p>
+    
+    <div class="mock-container">
+      <div class="mock-header">
+        <div class="mock-dot red"></div>
+        <div class="mock-dot yellow"></div>
+        <div class="mock-dot green"></div>
+      </div>
+      <div class="mock-content calendar-container">
+        <div class="calendar-toolbar">
+          <div class="calendar-nav">
+            <button>← Anterior</button>
+            <h3>📅 Outubro 2026</h3>
+            <button>Próxima →</button>
+          </div>
+          <div class="calendar-views">
+            <button class="active">Semana</button>
+            <button>Mês</button>
+          </div>
+        </div>
+        
+        <div class="calendar-grid">
+          <!-- Header -->
+          <div class="calendar-header-cell equipment">Equipamento</div>
+          <div class="calendar-header-cell">
+            <div>27</div>
+            <div class="day-name">Seg</div>
+          </div>
+          <div class="calendar-header-cell">
+            <div>28</div>
+            <div class="day-name">Ter</div>
+          </div>
+          <div class="calendar-header-cell">
+            <div>29</div>
+            <div class="day-name">Qua</div>
+          </div>
+          <div class="calendar-header-cell">
+            <div>30</div>
+            <div class="day-name">Qui</div>
+          </div>
+          <div class="calendar-header-cell">
+            <div>31</div>
+            <div class="day-name">Sex</div>
+          </div>
+          <div class="calendar-header-cell" style="background: #1e293b;">
+            <div>01</div>
+            <div class="day-name">Sáb</div>
+          </div>
+          <div class="calendar-header-cell" style="background: #1e293b;">
+            <div>02</div>
+            <div class="day-name">Dom</div>
+          </div>
+          
+          <!-- Equipamento 1: Martelete -->
+          <div class="calendar-equipment">
+            <div class="calendar-equipment-icon">🔨</div>
+            <div class="calendar-equipment-info">
+              <div class="calendar-equipment-name">Martelete Bosch</div>
+              <div class="calendar-equipment-code">EQP-0015</div>
+            </div>
+          </div>
+          <div class="calendar-cell">
+            <div class="rental-bar ativo start" style="width: calc(100% - 0.25rem);">João Silva</div>
+          </div>
+          <div class="calendar-cell today">
+            <div class="rental-bar ativo middle" style="width: 100%;"></div>
+          </div>
+          <div class="calendar-cell">
+            <div class="rental-bar ativo middle" style="width: 100%;"></div>
+          </div>
+          <div class="calendar-cell">
+            <div class="rental-bar ativo middle" style="width: 100%;"></div>
+          </div>
+          <div class="calendar-cell">
+            <div class="rental-bar ativo end" style="width: calc(100% - 0.25rem);"></div>
+          </div>
+          <div class="calendar-cell weekend"></div>
+          <div class="calendar-cell weekend"></div>
+          
+          <!-- Equipamento 2: Furadeira -->
+          <div class="calendar-equipment">
+            <div class="calendar-equipment-icon">🔧</div>
+            <div class="calendar-equipment-info">
+              <div class="calendar-equipment-name">Furadeira DeWalt</div>
+              <div class="calendar-equipment-code">EQP-0008</div>
+            </div>
+          </div>
+          <div class="calendar-cell"></div>
+          <div class="calendar-cell today"></div>
+          <div class="calendar-cell">
+            <div class="rental-bar reservado start" style="width: calc(100% - 0.25rem);">Maria (reserva)</div>
+          </div>
+          <div class="calendar-cell">
+            <div class="rental-bar reservado middle" style="width: 100%;"></div>
+          </div>
+          <div class="calendar-cell">
+            <div class="rental-bar reservado end" style="width: calc(100% - 0.25rem);"></div>
+          </div>
+          <div class="calendar-cell weekend"></div>
+          <div class="calendar-cell weekend"></div>
+          
+          <!-- Equipamento 3: Esmerilhadeira -->
+          <div class="calendar-equipment">
+            <div class="calendar-equipment-icon">⚙️</div>
+            <div class="calendar-equipment-info">
+              <div class="calendar-equipment-name">Esmerilhadeira Makita</div>
+              <div class="calendar-equipment-code">EQP-0022</div>
+            </div>
+          </div>
+          <div class="calendar-cell">
+            <div class="rental-bar atrasado start" style="width: calc(100% - 0.25rem);">Carlos - ATRASADO</div>
+          </div>
+          <div class="calendar-cell today">
+            <div class="rental-bar atrasado middle" style="width: 100%;"></div>
+          </div>
+          <div class="calendar-cell">
+            <div class="rental-bar atrasado middle" style="width: 100%;"></div>
+          </div>
+          <div class="calendar-cell"></div>
+          <div class="calendar-cell"></div>
+          <div class="calendar-cell weekend"></div>
+          <div class="calendar-cell weekend"></div>
+          
+          <!-- Equipamento 4: Serra Circular -->
+          <div class="calendar-equipment">
+            <div class="calendar-equipment-icon">🪚</div>
+            <div class="calendar-equipment-info">
+              <div class="calendar-equipment-name">Serra Circular Bosch</div>
+              <div class="calendar-equipment-code">EQP-0031</div>
+            </div>
+          </div>
+          <div class="calendar-cell"></div>
+          <div class="calendar-cell today"></div>
+          <div class="calendar-cell"></div>
+          <div class="calendar-cell"></div>
+          <div class="calendar-cell"></div>
+          <div class="calendar-cell weekend"></div>
+          <div class="calendar-cell weekend"></div>
+          
+          <!-- Equipamento 5: Compactador -->
+          <div class="calendar-equipment">
+            <div class="calendar-equipment-icon">🏗️</div>
+            <div class="calendar-equipment-info">
+              <div class="calendar-equipment-name">Compactador de Solo</div>
+              <div class="calendar-equipment-code">EQP-0003</div>
+            </div>
+          </div>
+          <div class="calendar-cell"></div>
+          <div class="calendar-cell today"></div>
+          <div class="calendar-cell"></div>
+          <div class="calendar-cell">
+            <div class="rental-bar ativo start" style="width: calc(100% - 0.25rem);">Construtora ABC</div>
+          </div>
+          <div class="calendar-cell">
+            <div class="rental-bar ativo middle" style="width: 100%;"></div>
+          </div>
+          <div class="calendar-cell weekend">
+            <div class="rental-bar ativo middle" style="width: 100%;"></div>
+          </div>
+          <div class="calendar-cell weekend">
+            <div class="rental-bar ativo middle" style="width: 100%;"></div>
+          </div>
+        </div>
+        
+        <div class="calendar-legend">
+          <div class="legend-item">
+            <div class="legend-color ativo"></div>
+            <span>Alugado</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color atrasado"></div>
+            <span>Atrasado</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color reservado"></div>
+            <span>Reservado</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color disponivel"></div>
+            <span>Disponível</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="feature-notes">
+      <h4>💡 Implementação</h4>
+      <ul>
+        <li>Nova aba "📅 Calendário" na página de Aluguéis</li>
+        <li>Clicar na barra abre detalhes do aluguel</li>
+        <li>Clicar em célula vazia abre formulário de novo aluguel pré-preenchido</li>
+        <li>Filtro por categoria de equipamento</li>
+        <li>Visão semanal e mensal</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== 3. RENOVAR CONTRATO ==================== -->
+  <section class="feature-section">
+    <div class="feature-title">
+      <h2>🔄 3. Renovar Contrato</h2>
+      <span class="feature-badge badge-melhoria">MELHORIA</span>
+    </div>
+    <p class="feature-description">
+      Botão para estender o período de aluguel sem precisar criar um novo contrato. 
+      Mantém o histórico, ajusta valores e atualiza a data de devolução.
+    </p>
+    
+    <div class="mock-container">
+      <div class="mock-header">
+        <div class="mock-dot red"></div>
+        <div class="mock-dot yellow"></div>
+        <div class="mock-dot green"></div>
+      </div>
+      <div class="mock-content">
+        <div class="details-container">
+          <div class="details-main">
+            <div class="details-header">
+              <div class="details-title">
+                <h2>Aluguel #0042</h2>
+                <span class="status ativo">📋 Ativo</span>
+              </div>
+              <div class="details-actions">
+                <button class="btn btn-outline">📄 Contrato</button>
+                <button class="btn btn-warning">🔄 Renovar</button>
+                <button class="btn btn-success">✅ Devolver</button>
+              </div>
+            </div>
+            
+            <div class="info-grid">
+              <div class="info-card">
+                <label>Data Início</label>
+                <div class="value">28/10/2026</div>
+              </div>
+              <div class="info-card">
+                <label>Previsão Devolução</label>
+                <div class="value">04/11/2026</div>
+              </div>
+              <div class="info-card">
+                <label>Dias Restantes</label>
+                <div class="value highlight">6 dias</div>
+              </div>
+              <div class="info-card">
+                <label>Tipo Cobrança</label>
+                <div class="value">Diária</div>
+              </div>
+              <div class="info-card">
+                <label>Valor Acordado</label>
+                <div class="value highlight">R$ 560,00</div>
+              </div>
+              <div class="info-card">
+                <label>Pagamentos</label>
+                <div class="value">R$ 280,00 <span style="color: #64748b; font-size: 0.8rem;">(50%)</span></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="details-sidebar">
+            <div class="sidebar-card">
+              <h3>🔧 Equipamento</h3>
+              <div class="equipment-preview">
+                <div class="equipment-img">🔨</div>
+                <div class="equipment-info">
+                  <h4>Martelete Bosch GBH 2-26</h4>
+                  <p>EQP-0015</p>
+                  <p>Diária: R$ 80,00</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="sidebar-card">
+              <h3>👤 Cliente</h3>
+              <div class="client-info">
+                <div class="client-row">
+                  <span class="icon">👤</span>
+                  <span>João Carlos da Silva</span>
+                </div>
+                <div class="client-row">
+                  <span class="icon">📱</span>
+                  <span>(11) 98765-4321</span>
+                </div>
+                <div class="client-row">
+                  <span class="icon">📄</span>
+                  <span>123.456.789-00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal de Renovação -->
+    <div style="margin-top: 2rem;">
+      <p style="color: #94a3b8; margin-bottom: 1rem;">👆 Ao clicar em "Renovar", abre o modal:</p>
+      
+      <div class="mock-container">
+        <div class="mock-header">
+          <div class="mock-dot red"></div>
+          <div class="mock-dot yellow"></div>
+          <div class="mock-dot green"></div>
+        </div>
+        <div class="mock-content" style="padding: 0;">
+          <div class="modal" style="position: relative; max-width: 100%;">
+            <div class="modal-header">
+              <h3>🔄 Renovar Aluguel #0042</h3>
+              <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+              <div class="current-info">
+                <h4>Período Atual</h4>
+                <div class="dates">
+                  <span>28/10/2026</span>
+                  <span class="arrow-icon">→</span>
+                  <span>04/11/2026</span>
+                  <span style="color: #64748b;">(7 dias)</span>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Nova Data de Devolução</label>
+                  <input type="date" value="2026-11-11">
+                </div>
+                <div class="form-group">
+                  <label>Dias Adicionais</label>
+                  <input type="number" value="7" min="1">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Valor da Diária (pode alterar)</label>
+                <input type="text" value="R$ 80,00">
+              </div>
+              
+              <div class="renewal-preview">
+                <h4>📊 Resumo da Renovação</h4>
+                <div class="row">
+                  <span>Período original (7 dias)</span>
+                  <span>R$ 560,00</span>
+                </div>
+                <div class="row">
+                  <span>+ Extensão (7 dias × R$ 80,00)</span>
+                  <span>R$ 560,00</span>
+                </div>
+                <div class="row">
+                  <span>Já pago</span>
+                  <span style="color: #22c55e;">- R$ 280,00</span>
+                </div>
+                <div class="row total">
+                  <span>Novo Total a Pagar</span>
+                  <span>R$ 840,00</span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary">Cancelar</button>
+              <button class="btn btn-primary">✅ Confirmar Renovação</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="feature-notes">
+      <h4>💡 Implementação</h4>
+      <ul>
+        <li>Botão "🔄 Renovar" só aparece para aluguéis ativos</li>
+        <li>Atualiza <code>data_prevista_devolucao</code> e <code>valor_acordado</code></li>
+        <li>Registra no histórico/auditoria: "Aluguel renovado por +7 dias"</li>
+        <li>Opção de gerar novo contrato PDF com a extensão</li>
+        <li>Não cria novo registro, apenas atualiza o existente</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== RESUMO ==================== -->
+  <section class="feature-section">
+    <div class="feature-title">
+      <h2>📋 Resumo das Implementações</h2>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+      <div class="sidebar-card">
+        <h3>📄 Contrato PDF</h3>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+          Estimativa: <strong style="color: #22c55e;">~4 horas</strong>
+        </p>
+        <ul style="color: #94a3b8; font-size: 0.85rem; margin-left: 1.25rem;">
+          <li>Rota GET /alugueis/:id/contrato</li>
+          <li>Template PDFKit (copiar estrutura do PDF de OS)</li>
+          <li>Botão na página de detalhes</li>
+          <li>Campos de termos configuráveis por tenant</li>
+        </ul>
+      </div>
+      
+      <div class="sidebar-card">
+        <h3>📅 Calendário Visual</h3>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+          Estimativa: <strong style="color: #f59e0b;">~8 horas</strong>
+        </p>
+        <ul style="color: #94a3b8; font-size: 0.85rem; margin-left: 1.25rem;">
+          <li>Novo componente CalendarioAlugueis.tsx</li>
+          <li>Rota GET /alugueis/calendario?inicio=&fim=</li>
+          <li>Grid CSS (sem lib externa)</li>
+          <li>Navegação semana/mês</li>
+          <li>Clique para detalhes/novo aluguel</li>
+        </ul>
+      </div>
+      
+      <div class="sidebar-card">
+        <h3>🔄 Renovar Contrato</h3>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+          Estimativa: <strong style="color: #22c55e;">~3 horas</strong>
+        </p>
+        <ul style="color: #94a3b8; font-size: 0.85rem; margin-left: 1.25rem;">
+          <li>Rota POST /alugueis/:id/renovar</li>
+          <li>Modal com formulário de extensão</li>
+          <li>Recalcular valor_acordado</li>
+          <li>Log de auditoria</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div style="margin-top: 2rem; padding: 1.5rem; background: #1e293b; border-radius: 12px; text-align: center;">
+      <p style="font-size: 1.25rem; margin-bottom: 0.5rem;">
+        ⏱️ Tempo Total Estimado: <strong style="color: #3b82f6;">~15 horas</strong>
+      </p>
+      <p style="color: #64748b;">
+        (~2 dias de trabalho focado)
+      </p>
+    </div>
+  </section>
+
+</body>
+</html>
