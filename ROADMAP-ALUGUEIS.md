@@ -1,8 +1,9 @@
 # Módulo de Controle de Aluguéis
 
-> **Status:** ✅ Implementado (02/10/2026)  
+> **Status:** 📋 Em estudo  
 > **Origem:** Demanda ESM (Eletrotécnica São Miguel)  
-> **Data:** Agosto/2026
+> **Data:** Agosto/2026  
+> **Veja também:** [docs/ROADMAP.md](docs/ROADMAP.md#módulo-de-aluguéis-de-equipamentos)
 
 ## Contexto
 
