@@ -150,7 +150,8 @@ router.get('/monthly', async (req, res, next) => {
     const colValor = leftMargin + 460;
     const tableRight = doc.page.width - 30;
 
-    doc.rect(colNum, y, tableRight - colNum, 16).fill('#f1f5f9').stroke('#ddd');
+    doc.rect(colNum, y, tableRight - colNum, 16).fill('#f1f5f9');
+    doc.rect(colNum, y, tableRight - colNum, 16).stroke('#ddd');
     doc.fillColor('#333').fontSize(7).font('Helvetica-Bold');
     doc.text('Nº OS', colNum + 3, y + 4);
     doc.text('Data', colData + 3, y + 4);
