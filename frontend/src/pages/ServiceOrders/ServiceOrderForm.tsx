@@ -17,6 +17,7 @@ import PageHeader from '../../components/PageHeader';
 import QuickClientModal from '../../components/QuickClientModal';
 import QuickEquipmentModal from '../../components/QuickEquipmentModal';
 import PhotoCapture from '../../components/PhotoCapture';
+import SearchableSelect from '../../components/SearchableSelect';
 import { formatDocument } from '../../utils/masks';
 import { useFormDraft } from '../../hooks/useFormDraft';
 
@@ -427,12 +428,21 @@ export default function ServiceOrderForm() {
             <div className="form-group">
               <label htmlFor="client_id">Cliente *</label>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <select id="client_id" name="client_id" value={form.client_id} onChange={handleChange} required style={{ flex: 1 }}>
-                  <option value="">Selecione</option>
-                  {clients.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name} — {formatDocument(c.document)}</option>
-                  ))}
-                </select>
+                <div style={{ flex: 1 }}>
+                  <SearchableSelect
+                    id="client_id"
+                    name="client_id"
+                    value={form.client_id}
+                    onChange={(value) => setForm(prev => ({ ...prev, client_id: value, equipment_id: '' }))}
+                    options={clients.map(c => ({
+                      value: c.id,
+                      label: c.name,
+                      sublabel: formatDocument(c.document)
+                    }))}
+                    placeholder="Selecione ou digite para buscar..."
+                    required
+                  />
+                </div>
                 <button type="button" className="btn btn-primary" title="Cadastrar novo cliente" onClick={() => setShowClientModal(true)} style={{ padding: '0.4rem 0.6rem' }}>
                   <FiPlus />
                 </button>
