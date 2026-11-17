@@ -7,12 +7,16 @@ class AppError extends Error {
   constructor(message, statusCode, code) { super(message); this.statusCode = statusCode; this.code = code; }
 }
 
-// Função para obter data local no formato YYYY-MM-DD
-function getLocalDateString() {
+// Função para obter data no fuso horário do Brasil (UTC-3)
+function getBrazilDateString() {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
+  const brazilOffset = -3 * 60;
+  const utcOffset = now.getTimezoneOffset();
+  const brazilTime = new Date(now.getTime() + (utcOffset + brazilOffset) * 60000);
+  
+  const year = brazilTime.getFullYear();
+  const month = String(brazilTime.getMonth() + 1).padStart(2, '0');
+  const day = String(brazilTime.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
@@ -125,7 +129,7 @@ const serviceOrdersService = {
       notes: '',
       payment_method: original.payment_method || '',
       warranty_days: original.warranty_days || 90,
-      entry_date: getLocalDateString(),
+      entry_date: getBrazilDateString(),
     };
 
     return serviceOrdersRepository.createInLote(tenantId, newOrderData, data.items || [], loteNumero);
@@ -160,7 +164,7 @@ const serviceOrdersService = {
       notes: '',
       payment_method: original.payment_method || '',
       warranty_days: original.warranty_days || 90,
-      entry_date: getLocalDateString(),
+      entry_date: getBrazilDateString(),
     };
 
     // Copiar itens se não foram fornecidos novos

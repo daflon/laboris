@@ -3,12 +3,17 @@ const db = require('../database/connection');
 const TABLE = 'service_orders';
 const ITEMS_TABLE = 'service_order_items';
 
-// Função para obter data local no formato YYYY-MM-DD
-function getLocalDateString() {
+// Função para obter data no fuso horário do Brasil (UTC-3)
+function getBrazilDateString() {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
+  // Ajusta para UTC-3 (horário de Brasília)
+  const brazilOffset = -3 * 60; // -3 horas em minutos
+  const utcOffset = now.getTimezoneOffset(); // offset local em minutos
+  const brazilTime = new Date(now.getTime() + (utcOffset + brazilOffset) * 60000);
+  
+  const year = brazilTime.getFullYear();
+  const month = String(brazilTime.getMonth() + 1).padStart(2, '0');
+  const day = String(brazilTime.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
@@ -57,7 +62,7 @@ const serviceOrdersRepository = {
       payment_method: data.payment_method || null,
       deposit_amount: data.deposit_amount || null,
       warranty_days: data.warranty_days ?? 90,
-      entry_date: data.entry_date || getLocalDateString(),
+      entry_date: data.entry_date || getBrazilDateString(),
       completion_date: data.completion_date || null,
       lote_numero: data.lote_numero || null,
       lote_sufixo: data.lote_sufixo || null,
@@ -103,7 +108,7 @@ const serviceOrdersRepository = {
       payment_method: data.payment_method || null,
       deposit_amount: data.deposit_amount || null,
       warranty_days: data.warranty_days ?? 90,
-      entry_date: data.entry_date || getLocalDateString(),
+      entry_date: data.entry_date || getBrazilDateString(),
       completion_date: data.completion_date || null,
       lote_numero: loteNumero,
       lote_sufixo: sufixo,

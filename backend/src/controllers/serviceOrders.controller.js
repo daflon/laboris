@@ -2,12 +2,16 @@ const serviceOrdersService = require('../services/serviceOrders.service');
 const { getPaginationParams, buildPaginationMeta } = require('../utils/pagination');
 const db = require('../database/connection');
 
-// Função para obter data local no formato YYYY-MM-DD
-function getLocalDateString() {
+// Função para obter data no fuso horário do Brasil (UTC-3)
+function getBrazilDateString() {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
+  const brazilOffset = -3 * 60;
+  const utcOffset = now.getTimezoneOffset();
+  const brazilTime = new Date(now.getTime() + (utcOffset + brazilOffset) * 60000);
+  
+  const year = brazilTime.getFullYear();
+  const month = String(brazilTime.getMonth() + 1).padStart(2, '0');
+  const day = String(brazilTime.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
@@ -119,7 +123,7 @@ const serviceOrdersController = {
           notes: `Duplicada da OS #${String(original.order_number).padStart(4, '0')}`,
           payment_method: original.payment_method || '',
           warranty_days: original.warranty_days || 90,
-          entry_date: getLocalDateString(),
+          entry_date: getBrazilDateString(),
           items: (original.items || []).map((item) => ({ quantity: item.quantity, description: item.description, unit_price: item.unit_price })),
         });
       }
