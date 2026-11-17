@@ -125,8 +125,14 @@ export default function ServiceOrdersList() {
   };
 
   const handleDuplicate = async (order: ServiceOrder) => {
-    toast.success(`Duplicar OS #${formatOrderNumber(order)} (em breve)`);
-    // TODO: Implementar duplicação
+    try {
+      const response = await serviceOrdersService.duplicate(order.id);
+      const newOrder = response.data;
+      toast.success(`OS duplicada! Nova OS #${formatOrderNumber(newOrder)}`);
+      navigate(`/os/${newOrder.id}`);
+    } catch {
+      toast.error('Erro ao duplicar OS');
+    }
   };
 
   return (
