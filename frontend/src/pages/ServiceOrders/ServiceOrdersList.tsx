@@ -130,8 +130,9 @@ export default function ServiceOrdersList() {
       const newOrder = response.data;
       toast.success(`OS duplicada! Nova OS #${formatOrderNumber(newOrder)}`);
       navigate(`/os/${newOrder.id}`);
-    } catch {
-      toast.error('Erro ao duplicar OS');
+    } catch (error: any) {
+      console.error('Erro ao duplicar:', error);
+      toast.error(error?.response?.data?.message || 'Erro ao duplicar OS');
     }
   };
 

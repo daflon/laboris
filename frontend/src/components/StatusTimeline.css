@@ -32,7 +32,7 @@
 /* Linha conectora */
 .timeline-connector {
   position: absolute;
-  top: 14px;
+  top: 16px;
   right: 50%;
   width: 100%;
   height: 2px;
@@ -46,29 +46,29 @@
 
 /* Dot central */
 .timeline-dot {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: white;
   font-weight: 600;
   z-index: 1;
   position: relative;
   transition: all 0.2s ease;
-  overflow: hidden;
 }
 
 .timeline-step.done .timeline-dot {
   background: #22c55e;
+  font-size: 0.85rem;
 }
 
 .timeline-step.current .timeline-dot {
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
-  transform: scale(1.15);
+  transform: scale(1.1);
 }
 
 /* Label do status */
@@ -107,9 +107,13 @@
   }
   
   .timeline-dot {
-    width: 26px;
-    height: 26px;
-    font-size: 0.8rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+  
+  .timeline-step.done .timeline-dot {
+    font-size: 0.75rem;
   }
   
   .timeline-label {
@@ -122,7 +126,7 @@
   }
   
   .timeline-connector {
-    top: 13px;
+    top: 14px;
   }
 }
 
