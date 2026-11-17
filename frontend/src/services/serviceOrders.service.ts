@@ -76,35 +76,11 @@ export const STATUSES = [
 ];
 
 /**
- * Retorna o emoji correspondente a um status
- */
-export function getStatusEmoji(status: string): string {
-  const found = STATUSES.find(s => s.value === status);
-  return found?.emoji || '';
-}
-
-/**
  * Retorna o label SEM emoji (para usar em selects que já mostram emoji na option)
  */
 export function getStatusLabel(status: string): string {
   const found = STATUSES.find(s => s.value === status);
   return found?.label || status;
-}
-
-/**
- * Retorna o label COM emoji para badges e textos
- */
-export function getStatusLabelWithEmoji(status: string): string {
-  const found = STATUSES.find(s => s.value === status);
-  return found ? `${found.emoji} ${found.label}` : status;
-}
-
-/**
- * Retorna as classes CSS para um status de OS
- * Uso: <span className={getStatusBadgeClass(status)}>{label}</span>
- */
-export function getStatusBadgeClass(status: string): string {
-  return `status-badge status-${status}`;
 }
 
 /**

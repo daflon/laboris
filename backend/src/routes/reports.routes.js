@@ -13,25 +13,31 @@ const router = Router();
 router.get('/monthly', async (req, res, next) => {
   try {
     const tenantId = req.tenantId;
-    console.log('[Reports] Gerando relatório mensal para tenant:', tenantId);
-    
     if (!tenantId) {
-      console.log('[Reports] Erro: tenant não encontrado');
       return res.status(401).json({ success: false, error: { message: 'Não autenticado' } });
     }
 
-    const month = parseInt(req.query.month) || new Date().getMonth() + 1;
-    const year = parseInt(req.query.year) || new Date().getFullYear();
-    
-    console.log('[Reports] Período:', month, '/', year);
+    // Validar parâmetros
+    const currentDate = new Date();
+    let month = parseInt(req.query.month);
+    let year = parseInt(req.query.year);
+
+    // Validar month (1-12)
+    if (isNaN(month) || month < 1 || month > 12) {
+      month = currentDate.getMonth() + 1;
+    }
+
+    // Validar year (razoável: 2020-2100)
+    if (isNaN(year) || year < 2020 || year > 2100) {
+      year = currentDate.getFullYear();
+    }
 
     // Data início e fim do mês
     const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
-    const endDate = new Date(year, month, 0).toISOString().split('T')[0]; // Último dia do mês
+    const lastDay = new Date(year, month, 0).getDate();
+    const endDate = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
 
     // Buscar OS do período
-    console.log('[Reports] Buscando OS de', startDate, 'até', endDate);
-    
     const orders = await db('service_orders')
       .where('service_orders.tenant_id', tenantId)
       .whereNull('service_orders.deleted_at')
@@ -48,14 +54,27 @@ router.get('/monthly', async (req, res, next) => {
       )
       .orderBy('service_orders.entry_date', 'asc');
 
-    console.log('[Reports] Encontradas', orders.length, 'OS');
+    // Buscar todos os itens de uma vez (evita N+1)
+    const orderIds = orders.map(o => o.id);
+    const allItems = orderIds.length > 0 
+      ? await db('service_order_items').whereIn('service_order_id', orderIds)
+      : [];
 
-    // Buscar itens de cada OS para calcular valores
-    for (const order of orders) {
-      const items = await db('service_order_items').where({ service_order_id: order.id });
-      order.items = items;
-      order.total = items.reduce((sum, item) => sum + parseFloat(item.quantity) * parseFloat(item.unit_price), 0);
-    }
+    // Agrupar itens por OS e calcular totais
+    const itemsByOrder = {};
+    allItems.forEach(item => {
+      if (!itemsByOrder[item.service_order_id]) {
+        itemsByOrder[item.service_order_id] = [];
+      }
+      itemsByOrder[item.service_order_id].push(item);
+    });
+
+    // Adicionar itens e total a cada OS
+    orders.forEach(order => {
+      order.items = itemsByOrder[order.id] || [];
+      order.total = order.items.reduce((sum, item) => 
+        sum + parseFloat(item.quantity) * parseFloat(item.unit_price), 0);
+    });
 
     const company = await companySettingsRepository.get(tenantId);
 
@@ -132,64 +151,76 @@ router.get('/monthly', async (req, res, next) => {
       .map(([status, count]) => `${statusLabels[status] || status}: ${count}`)
       .join('  |  ');
     
-    doc.fontSize(8).fillColor('#666');
-    doc.text(statusParts, leftMargin, y, { width: pageWidth });
-    doc.fillColor('#000');
+    if (statusParts) {
+      doc.fontSize(8).fillColor('#666');
+      doc.text(statusParts, leftMargin, y, { width: pageWidth });
+      doc.fillColor('#000');
+    }
     y += 25;
 
-    // Tabela de OS
-    doc.moveTo(leftMargin, y).lineTo(doc.page.width - 30, y).stroke('#ddd');
-    y += 10;
+    // Mensagem se não houver OS
+    if (orders.length === 0) {
+      doc.fontSize(11).fillColor('#666');
+      doc.text('Nenhuma ordem de serviço encontrada neste período.', leftMargin, y + 20, { 
+        width: pageWidth, 
+        align: 'center' 
+      });
+      doc.fillColor('#000');
+    } else {
+      // Tabela de OS
+      doc.moveTo(leftMargin, y).lineTo(doc.page.width - 30, y).stroke('#ddd');
+      y += 10;
 
-    // Header da tabela
-    const colNum = leftMargin;
-    const colData = leftMargin + 50;
-    const colCliente = leftMargin + 110;
-    const colEquip = leftMargin + 250;
-    const colStatus = leftMargin + 380;
-    const colValor = leftMargin + 460;
-    const tableRight = doc.page.width - 30;
+      // Header da tabela
+      const colNum = leftMargin;
+      const colData = leftMargin + 50;
+      const colCliente = leftMargin + 110;
+      const colEquip = leftMargin + 250;
+      const colStatus = leftMargin + 380;
+      const colValor = leftMargin + 460;
+      const tableRight = doc.page.width - 30;
 
-    doc.rect(colNum, y, tableRight - colNum, 16).fill('#f1f5f9');
-    doc.rect(colNum, y, tableRight - colNum, 16).stroke('#ddd');
-    doc.fillColor('#333').fontSize(7).font('Helvetica-Bold');
-    doc.text('Nº OS', colNum + 3, y + 4);
-    doc.text('Data', colData + 3, y + 4);
-    doc.text('Cliente', colCliente + 3, y + 4);
-    doc.text('Equipamento', colEquip + 3, y + 4);
-    doc.text('Status', colStatus + 3, y + 4);
-    doc.text('Valor', colValor + 3, y + 4);
-    doc.fillColor('#000');
-    y += 16;
+      doc.rect(colNum, y, tableRight - colNum, 16).fill('#f1f5f9');
+      doc.rect(colNum, y, tableRight - colNum, 16).stroke('#ddd');
+      doc.fillColor('#333').fontSize(7).font('Helvetica-Bold');
+      doc.text('Nº OS', colNum + 3, y + 4);
+      doc.text('Data', colData + 3, y + 4);
+      doc.text('Cliente', colCliente + 3, y + 4);
+      doc.text('Equipamento', colEquip + 3, y + 4);
+      doc.text('Status', colStatus + 3, y + 4);
+      doc.text('Valor', colValor + 3, y + 4);
+      doc.fillColor('#000');
+      y += 16;
 
-    // Linhas
-    doc.font('Helvetica').fontSize(7);
-    const rowHeight = 14;
-    
-    for (const order of orders) {
-      // Verificar se precisa nova página
-      if (y + rowHeight > doc.page.height - 50) {
-        doc.addPage();
-        y = 30;
+      // Linhas
+      doc.font('Helvetica').fontSize(7);
+      const rowHeight = 14;
+      
+      for (const order of orders) {
+        // Verificar se precisa nova página
+        if (y + rowHeight > doc.page.height - 50) {
+          doc.addPage();
+          y = 30;
+        }
+
+        const osNum = order.lote_sufixo 
+          ? `${String(order.order_number).padStart(4, '0')}-${order.lote_sufixo}`
+          : String(order.order_number).padStart(4, '0');
+        
+        const dataFormatted = order.entry_date 
+          ? new Date(order.entry_date).toLocaleDateString('pt-BR')
+          : '—';
+
+        doc.rect(colNum, y, tableRight - colNum, rowHeight).stroke('#eee');
+        doc.text(osNum, colNum + 3, y + 3, { width: 45 });
+        doc.text(dataFormatted, colData + 3, y + 3, { width: 55 });
+        doc.text((order.client_name || '').substring(0, 25), colCliente + 3, y + 3, { width: 135 });
+        doc.text(`${order.equipment_brand || ''} ${order.equipment_type || ''}`.substring(0, 22), colEquip + 3, y + 3, { width: 125 });
+        doc.text(statusLabels[order.status] || order.status, colStatus + 3, y + 3, { width: 75 });
+        doc.text(`R$ ${order.total.toFixed(2)}`, colValor + 3, y + 3, { width: 70 });
+        
+        y += rowHeight;
       }
-
-      const osNum = order.lote_sufixo 
-        ? `${String(order.order_number).padStart(4, '0')}-${order.lote_sufixo}`
-        : String(order.order_number).padStart(4, '0');
-      
-      const dataFormatted = order.entry_date 
-        ? new Date(order.entry_date).toLocaleDateString('pt-BR')
-        : '—';
-
-      doc.rect(colNum, y, tableRight - colNum, rowHeight).stroke('#eee');
-      doc.text(osNum, colNum + 3, y + 3, { width: 45 });
-      doc.text(dataFormatted, colData + 3, y + 3, { width: 55 });
-      doc.text((order.client_name || '').substring(0, 25), colCliente + 3, y + 3, { width: 135 });
-      doc.text(`${order.equipment_brand || ''} ${order.equipment_type || ''}`.substring(0, 22), colEquip + 3, y + 3, { width: 125 });
-      doc.text(statusLabels[order.status] || order.status, colStatus + 3, y + 3, { width: 75 });
-      doc.text(`R$ ${order.total.toFixed(2)}`, colValor + 3, y + 3, { width: 70 });
-      
-      y += rowHeight;
     }
 
     // Rodapé
@@ -203,7 +234,7 @@ router.get('/monthly', async (req, res, next) => {
 
     doc.end();
   } catch (error) {
-    console.error('[Reports] Erro ao gerar relatório:', error.message, error.stack);
+    console.error('Erro ao gerar relatório:', error.message);
     next(error);
   }
 });

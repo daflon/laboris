@@ -110,13 +110,11 @@
   }
   
   .timeline-dot {
-    width: 28px;
-    height: 28px;
-    font-size: 0.9rem;
-  }
-  
-  .timeline-step.done .timeline-dot {
-    font-size: 0.75rem;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 0.85rem;
   }
   
   .timeline-label {
@@ -129,7 +127,7 @@
   }
   
   .timeline-connector {
-    top: 14px;
+    top: 16px;
   }
 }
 

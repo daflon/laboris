@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { FiPlus, FiEye, FiEdit2, FiTrash2, FiCopy, FiMessageCircle, FiPrinter } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { serviceOrdersService, ServiceOrder, STATUSES, getStatusEmoji } from '../../services/serviceOrders.service';
+import { serviceOrdersService, ServiceOrder, STATUSES } from '../../services/serviceOrders.service';
 import PageHeader from '../../components/PageHeader';
 import SearchInput from '../../components/SearchInput';
 import PinModal from '../../components/PinModal';

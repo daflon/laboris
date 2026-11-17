@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiClipboard, FiUsers, FiAlertCircle, FiCheckCircle, FiClock, FiFileText } from 'react-icons/fi';
+import { FiClipboard, FiUsers, FiAlertCircle, FiCheckCircle, FiClock, FiFileText, FiCalendar } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { STATUSES } from '../../services/serviceOrders.service';
@@ -40,6 +40,9 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportMonth, setReportMonth] = useState(new Date().getMonth() + 1);
+  const [reportYear, setReportYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     api.get('/dashboard/stats')
@@ -54,15 +57,12 @@ export default function Dashboard() {
   const totalOpen = (data.statuses.aberta || 0) + (data.statuses.aprovada || 0) + (data.statuses.aguardando_peca || 0);
 
   const handleMonthlyReport = async () => {
-    const month = new Date().getMonth() + 1;
-    const year = new Date().getFullYear();
-    
     const token = localStorage.getItem('token');
     const baseUrl = window.location.hostname === 'localhost' 
       ? 'http://localhost:3000' 
       : `${window.location.protocol}//${window.location.host}`;
     
-    const url = `${baseUrl}/api/v1/reports/monthly?month=${month}&year=${year}`;
+    const url = `${baseUrl}/api/v1/reports/monthly?month=${reportMonth}&year=${reportYear}`;
     
     try {
       toast.loading('Gerando relatório...', { id: 'report' });
@@ -74,9 +74,12 @@ export default function Dashboard() {
       if (!response.ok) throw new Error('Erro ao gerar relatório');
       
       const blob = await response.blob();
-      const file = new File([blob], `Relatorio-${month}-${year}.pdf`, { type: 'application/pdf' });
+      const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                          'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+      const file = new File([blob], `Relatorio-${monthNames[reportMonth-1]}-${reportYear}.pdf`, { type: 'application/pdf' });
       
       toast.dismiss('report');
+      setShowReportModal(false);
       
       // No celular: tentar compartilhar
       if (/Android|iPhone|iPad/i.test(navigator.userAgent) && navigator.canShare?.({ files: [file] })) {
@@ -92,12 +95,15 @@ export default function Dashboard() {
     }
   };
 
+  const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0 }}>Dashboard</h2>
         <button
-          onClick={handleMonthlyReport}
+          onClick={() => setShowReportModal(true)}
           className="btn btn-secondary"
           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
@@ -285,6 +291,107 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Modal de Relatório Mensal */}
+      {showReportModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem'
+          }}
+          onClick={() => setShowReportModal(false)}
+        >
+          <div
+            style={{
+              background: 'var(--bg-primary, #1e293b)',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              width: '100%',
+              maxWidth: '320px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <FiCalendar /> Relatório Mensal
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
+              Selecione o período do relatório:
+            </p>
+
+            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>Mês</label>
+                <select
+                  value={reportMonth}
+                  onChange={(e) => setReportMonth(parseInt(e.target.value))}
+                  style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+                >
+                  {monthNames.map((name, i) => (
+                    <option key={i} value={i + 1}>{name}</option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>Ano</label>
+                <select
+                  value={reportYear}
+                  onChange={(e) => setReportYear(parseInt(e.target.value))}
+                  style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+                >
+                  {[2024, 2025, 2026, 2027].map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                onClick={() => setShowReportModal(false)}
+                style={{
+                  flex: 1,
+                  padding: '0.75rem',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleMonthlyReport}
+                style={{
+                  flex: 1,
+                  padding: '0.75rem',
+                  background: 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <FiFileText /> Gerar PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
