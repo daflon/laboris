@@ -13,18 +13,25 @@ const router = Router();
 router.get('/monthly', async (req, res, next) => {
   try {
     const tenantId = req.tenantId;
+    console.log('[Reports] Gerando relatório mensal para tenant:', tenantId);
+    
     if (!tenantId) {
+      console.log('[Reports] Erro: tenant não encontrado');
       return res.status(401).json({ success: false, error: { message: 'Não autenticado' } });
     }
 
     const month = parseInt(req.query.month) || new Date().getMonth() + 1;
     const year = parseInt(req.query.year) || new Date().getFullYear();
+    
+    console.log('[Reports] Período:', month, '/', year);
 
     // Data início e fim do mês
     const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
     const endDate = new Date(year, month, 0).toISOString().split('T')[0]; // Último dia do mês
 
     // Buscar OS do período
+    console.log('[Reports] Buscando OS de', startDate, 'até', endDate);
+    
     const orders = await db('service_orders')
       .where('service_orders.tenant_id', tenantId)
       .whereNull('service_orders.deleted_at')
@@ -40,6 +47,8 @@ router.get('/monthly', async (req, res, next) => {
         'technicians.name as technician_name'
       )
       .orderBy('service_orders.entry_date', 'asc');
+
+    console.log('[Reports] Encontradas', orders.length, 'OS');
 
     // Buscar itens de cada OS para calcular valores
     for (const order of orders) {
@@ -193,7 +202,7 @@ router.get('/monthly', async (req, res, next) => {
 
     doc.end();
   } catch (error) {
-    console.error('Erro ao gerar relatório:', error);
+    console.error('[Reports] Erro ao gerar relatório:', error.message, error.stack);
     next(error);
   }
 });
