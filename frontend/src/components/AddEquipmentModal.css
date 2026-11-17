@@ -19,8 +19,6 @@
   border-radius: 16px;
   width: 100%;
   max-width: 580px;
-  max-height: 85vh;
-  overflow: hidden;
   border: 1px solid var(--color-border, #374151);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   animation: modalSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -79,8 +77,6 @@
 /* Body */
 .add-equipment-modal .modal-body {
   padding: 1.25rem 1.5rem;
-  overflow-y: auto;
-  flex: 1;
 }
 
 /* Tabs */
@@ -350,10 +346,11 @@
   padding: 0.85rem 1rem;
   color: var(--color-text-primary, #f3f4f6);
   font-size: 0.95rem;
-  resize: vertical;
-  min-height: 90px;
+  resize: none;
+  height: 80px;
   transition: all 0.15s;
   font-family: inherit;
+  overflow-y: hidden;
 }
 
 .eq-defect-section .form-group textarea::placeholder {
