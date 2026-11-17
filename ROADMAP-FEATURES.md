@@ -4,15 +4,17 @@
 - [x] OS em Lote (múltiplos equipamentos por cliente)
 - [x] Registro Fotográfico (PhotoCapture)
 - [x] Duplicar OS (página de detalhes)
-- [x] Duplicar OS (listagem) - **v1.4** ✨
+- [x] Duplicar OS (listagem) - **v1.4**
 - [x] PDF individual e do lote
 - [x] WhatsApp manual
 - [x] Modal AddEquipment responsivo
 - [x] Correção timezone (data entrada)
 - [x] Busca Global (header do sistema)
 - [x] Alerta de OS Parada (destaque visual na lista)
-- [x] Histórico de Status - Mini Timeline Visual - **v1.4** ✨
-- [x] Relatório Mensal PDF (Dashboard) - **v1.4** ✨
+- [x] Histórico de Status - Mini Timeline Visual - **v1.4**
+- [x] Relatório Mensal PDF com seletor de período - **v1.4**
+- [x] Campo de Cliente com busca por digitação - **v1.4**
+- [x] Refatoração de código (imports, N+1 query, validações) - **v1.4**
 
 ---
 
@@ -26,9 +28,15 @@
 - **Descrição**: Diagnósticos pré-definidos por tipo de equipamento
 - **Motivo do adiamento**: Baixa prioridade no momento
 
-### Melhoria Visual Timeline
-- **Descrição**: Ajuste no tamanho do dot para emojis não cortarem
-- **Status**: Cosmético, baixa prioridade
+---
+
+## 💡 Ideias para Próximas Versões
+
+- Dashboard com gráficos (OS por mês, faturamento)
+- Relatório por técnico
+- Integração com impressora térmica
+- App mobile (PWA)
+- Notificações push
 
 ---
 
