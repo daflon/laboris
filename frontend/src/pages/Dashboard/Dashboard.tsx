@@ -309,29 +309,38 @@ export default function Dashboard() {
         >
           <div
             style={{
-              background: 'var(--bg-primary, #1e293b)',
+              background: '#1e293b',
               borderRadius: '12px',
               padding: '1.5rem',
               width: '100%',
               maxWidth: '320px',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+              boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+              border: '1px solid #334155'
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f1f5f9' }}>
               <FiCalendar /> Relatório Mensal
             </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
+            <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
               Selecione o período do relatório:
             </p>
 
             <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem' }}>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>Mês</label>
+                <label style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.25rem', display: 'block' }}>Mês</label>
                 <select
                   value={reportMonth}
                   onChange={(e) => setReportMonth(parseInt(e.target.value))}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.5rem', 
+                    borderRadius: '6px', 
+                    border: '1px solid #475569', 
+                    background: '#334155', 
+                    color: '#f1f5f9',
+                    cursor: 'pointer'
+                  }}
                 >
                   {monthNames.map((name, i) => (
                     <option key={i} value={i + 1}>{name}</option>
@@ -339,11 +348,19 @@ export default function Dashboard() {
                 </select>
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>Ano</label>
+                <label style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.25rem', display: 'block' }}>Ano</label>
                 <select
                   value={reportYear}
                   onChange={(e) => setReportYear(parseInt(e.target.value))}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.5rem', 
+                    borderRadius: '6px', 
+                    border: '1px solid #475569', 
+                    background: '#334155', 
+                    color: '#f1f5f9',
+                    cursor: 'pointer'
+                  }}
                 >
                   {[2024, 2025, 2026, 2027].map((year) => (
                     <option key={year} value={year}>{year}</option>
@@ -358,9 +375,9 @@ export default function Dashboard() {
                 style={{
                   flex: 1,
                   padding: '0.75rem',
-                  background: 'var(--bg-secondary)',
-                  color: 'var(--text-primary)',
-                  border: '1px solid var(--border-color)',
+                  background: '#334155',
+                  color: '#f1f5f9',
+                  border: '1px solid #475569',
                   borderRadius: '8px',
                   fontSize: '0.9rem',
                   cursor: 'pointer'
@@ -373,7 +390,7 @@ export default function Dashboard() {
                 style={{
                   flex: 1,
                   padding: '0.75rem',
-                  background: 'var(--color-primary)',
+                  background: '#3b82f6',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
