@@ -2,6 +2,15 @@ const serviceOrdersService = require('../services/serviceOrders.service');
 const { getPaginationParams, buildPaginationMeta } = require('../utils/pagination');
 const db = require('../database/connection');
 
+// Função para obter data local no formato YYYY-MM-DD
+function getLocalDateString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 const serviceOrdersController = {
   async create(req, res, next) {
     try {
@@ -110,7 +119,7 @@ const serviceOrdersController = {
           notes: `Duplicada da OS #${String(original.order_number).padStart(4, '0')}`,
           payment_method: original.payment_method || '',
           warranty_days: original.warranty_days || 90,
-          entry_date: new Date().toISOString().split('T')[0],
+          entry_date: getLocalDateString(),
           items: (original.items || []).map((item) => ({ quantity: item.quantity, description: item.description, unit_price: item.unit_price })),
         });
       }

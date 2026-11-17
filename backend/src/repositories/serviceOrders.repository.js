@@ -3,6 +3,15 @@ const db = require('../database/connection');
 const TABLE = 'service_orders';
 const ITEMS_TABLE = 'service_order_items';
 
+// Função para obter data local no formato YYYY-MM-DD
+function getLocalDateString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 const serviceOrdersRepository = {
   async getNextOrderNumber(tenantId) {
     const result = await db(TABLE).where({ tenant_id: tenantId }).max('order_number as max').first();
@@ -48,7 +57,7 @@ const serviceOrdersRepository = {
       payment_method: data.payment_method || null,
       deposit_amount: data.deposit_amount || null,
       warranty_days: data.warranty_days ?? 90,
-      entry_date: data.entry_date || new Date().toISOString().split('T')[0],
+      entry_date: data.entry_date || getLocalDateString(),
       completion_date: data.completion_date || null,
       lote_numero: data.lote_numero || null,
       lote_sufixo: data.lote_sufixo || null,
@@ -94,7 +103,7 @@ const serviceOrdersRepository = {
       payment_method: data.payment_method || null,
       deposit_amount: data.deposit_amount || null,
       warranty_days: data.warranty_days ?? 90,
-      entry_date: data.entry_date || new Date().toISOString().split('T')[0],
+      entry_date: data.entry_date || getLocalDateString(),
       completion_date: data.completion_date || null,
       lote_numero: loteNumero,
       lote_sufixo: sufixo,

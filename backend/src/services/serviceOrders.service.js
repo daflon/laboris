@@ -7,6 +7,15 @@ class AppError extends Error {
   constructor(message, statusCode, code) { super(message); this.statusCode = statusCode; this.code = code; }
 }
 
+// Função para obter data local no formato YYYY-MM-DD
+function getLocalDateString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 const serviceOrdersService = {
   async create(tenantId, data) {
     const client = await clientsRepository.findById(tenantId, data.client_id);
@@ -116,7 +125,7 @@ const serviceOrdersService = {
       notes: '',
       payment_method: original.payment_method || '',
       warranty_days: original.warranty_days || 90,
-      entry_date: new Date().toISOString().split('T')[0],
+      entry_date: getLocalDateString(),
     };
 
     return serviceOrdersRepository.createInLote(tenantId, newOrderData, data.items || [], loteNumero);
@@ -151,7 +160,7 @@ const serviceOrdersService = {
       notes: '',
       payment_method: original.payment_method || '',
       warranty_days: original.warranty_days || 90,
-      entry_date: new Date().toISOString().split('T')[0],
+      entry_date: getLocalDateString(),
     };
 
     // Copiar itens se não foram fornecidos novos

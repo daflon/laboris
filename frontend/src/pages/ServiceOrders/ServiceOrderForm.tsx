@@ -22,6 +22,15 @@ import { useFormDraft } from '../../hooks/useFormDraft';
 
 const emptyItem: ServiceOrderItem = { quantity: 1, description: '', unit_price: 0 };
 
+// Função para obter data local no formato YYYY-MM-DD
+function getLocalDateString(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 const emptyForm: ServiceOrderFormData = {
   client_id: '',
   equipment_id: '',
@@ -33,7 +42,7 @@ const emptyForm: ServiceOrderFormData = {
   payment_method: '',
   deposit_amount: undefined,
   warranty_days: 90,
-  entry_date: new Date().toISOString().split('T')[0],
+  entry_date: getLocalDateString(),
   completion_date: '',
   items: [],
 };

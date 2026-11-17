@@ -36,7 +36,14 @@ export default function ServiceOrderFormLote() {
   const [clientId, setClientId] = useState('');
   const [technicianId, setTechnicianId] = useState('');
   const [status, setStatus] = useState('aberta');
-  const [entryDate, setEntryDate] = useState(new Date().toISOString().split('T')[0]);
+  // Usar data local ao invés de UTC
+  const [entryDate, setEntryDate] = useState(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
   const [paymentMethod, setPaymentMethod] = useState('');
   const [warrantyDays, setWarrantyDays] = useState(90);
 
