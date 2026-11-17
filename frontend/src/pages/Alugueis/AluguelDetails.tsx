@@ -78,9 +78,13 @@ export default function AluguelDetails() {
         ...prev,
         valor_final: String(response.data.valor_acordado)
       }));
+      // Calcula saldo devedor para o form de pagamento
+      const totalPago = response.data.pagamentos?.reduce((sum: number, p: any) => sum + p.valor, 0) || 0;
+      const valorFinal = response.data.valor_final || response.data.valor_acordado;
+      const saldoDevedor = valorFinal - totalPago;
       setPagamentoForm(prev => ({
         ...prev,
-        valor: String(response.data.valor_acordado)
+        valor: saldoDevedor > 0 ? String(saldoDevedor) : String(response.data.valor_acordado)
       }));
     } catch {
       toast.error('Erro ao carregar aluguel');
@@ -841,6 +845,23 @@ export default function AluguelDetails() {
         <div className="modal-overlay" onClick={() => setShowPagamentoModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
             <h3><FiDollarSign /> Registrar Pagamento</h3>
+            
+            {/* Info do saldo devedor */}
+            {saldoDevedor > 0 && (
+              <div style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '8px',
+                padding: '0.75rem',
+                marginBottom: '1rem',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Saldo Devedor</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#ef4444' }}>
+                  {formatCurrency(saldoDevedor)}
+                </div>
+              </div>
+            )}
             
             <div className="form-group">
               <label>Valor (R$)</label>

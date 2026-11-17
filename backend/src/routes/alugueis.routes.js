@@ -417,6 +417,75 @@ router.get('/calendario', async (req, res) => {
 });
 
 /**
+ * GET /api/v1/alugueis/:id/contrato
+ * Gera PDF do contrato de locação (formato A5, duas vias)
+ */
+router.get('/:id/contrato', async (req, res) => {
+  try {
+    const tenantId = req.tenantId;
+
+    // Buscar aluguel completo
+    const aluguel = await db('alugueis')
+      .where({ 'alugueis.id': req.params.id, 'alugueis.tenant_id': tenantId })
+      .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
+      .leftJoin('clients', 'clients.id', 'alugueis.client_id')
+      .select(
+        'alugueis.*',
+        'patrimonio.nome as patrimonio_nome',
+        'patrimonio.codigo as patrimonio_codigo',
+        'patrimonio.marca as patrimonio_marca',
+        'patrimonio.modelo as patrimonio_modelo',
+        'patrimonio.numero_serie as patrimonio_serie',
+        'clients.name as client_name',
+        'clients.document as client_document',
+        'clients.phone as client_phone',
+        'clients.email as client_email',
+        'clients.address_street',
+        'clients.address_number',
+        'clients.address_neighborhood',
+        'clients.address_city',
+        'clients.address_state',
+        'clients.address_zip'
+      )
+      .first();
+
+    if (!aluguel) {
+      return res.status(404).json({ success: false, error: { message: 'Aluguel não encontrado' } });
+    }
+
+    // Buscar dados da empresa
+    const company = await companySettingsRepository.get(tenantId);
+
+    // Criar PDF A4 (duas vias A5)
+    const doc = new PDFDocument({ size: 'A4', margin: 20 });
+
+    const fileName = `Contrato-Aluguel-${String(aluguel.numero).padStart(4, '0')}.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename=${fileName}`);
+    doc.pipe(res);
+
+    const halfPage = doc.page.height / 2;
+
+    // Renderizar duas vias (superior e inferior)
+    renderContratoAluguel(doc, aluguel, company, 20);
+    
+    // Linha de corte
+    doc.save();
+    doc.moveTo(20, halfPage).lineTo(doc.page.width - 20, halfPage).dash(5, { space: 3 }).stroke('#999');
+    doc.undash();
+    doc.restore();
+
+    // Segunda via
+    renderContratoAluguel(doc, aluguel, company, halfPage + 10);
+
+    doc.end();
+  } catch (error) {
+    console.error('Erro ao gerar contrato:', error);
+    res.status(500).json({ success: false, error: { message: 'Erro ao gerar contrato' } });
+  }
+});
+
+/**
  * GET /api/v1/alugueis/:id
  * Busca um aluguel específico
  */
@@ -1141,75 +1210,6 @@ router.post('/:id/renovar', async (req, res) => {
   } catch (error) {
     console.error('Erro ao renovar aluguel:', error);
     res.status(500).json({ success: false, error: { message: 'Erro ao renovar aluguel' } });
-  }
-});
-
-/**
- * GET /api/v1/alugueis/:id/contrato
- * Gera PDF do contrato de locação (formato A5, duas vias)
- */
-router.get('/:id/contrato', async (req, res) => {
-  try {
-    const tenantId = req.tenantId;
-
-    // Buscar aluguel completo
-    const aluguel = await db('alugueis')
-      .where({ 'alugueis.id': req.params.id, 'alugueis.tenant_id': tenantId })
-      .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
-      .leftJoin('clients', 'clients.id', 'alugueis.client_id')
-      .select(
-        'alugueis.*',
-        'patrimonio.nome as patrimonio_nome',
-        'patrimonio.codigo as patrimonio_codigo',
-        'patrimonio.marca as patrimonio_marca',
-        'patrimonio.modelo as patrimonio_modelo',
-        'patrimonio.numero_serie as patrimonio_serie',
-        'clients.name as client_name',
-        'clients.document as client_document',
-        'clients.phone as client_phone',
-        'clients.email as client_email',
-        'clients.address_street',
-        'clients.address_number',
-        'clients.address_neighborhood',
-        'clients.address_city',
-        'clients.address_state',
-        'clients.address_zip'
-      )
-      .first();
-
-    if (!aluguel) {
-      return res.status(404).json({ success: false, error: { message: 'Aluguel não encontrado' } });
-    }
-
-    // Buscar dados da empresa
-    const company = await companySettingsRepository.get(tenantId);
-
-    // Criar PDF A4 (duas vias A5)
-    const doc = new PDFDocument({ size: 'A4', margin: 20 });
-
-    const fileName = `Contrato-Aluguel-${String(aluguel.numero).padStart(4, '0')}.pdf`;
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename=${fileName}`);
-    doc.pipe(res);
-
-    const halfPage = doc.page.height / 2;
-
-    // Renderizar duas vias (superior e inferior)
-    renderContratoAluguel(doc, aluguel, company, 20);
-    
-    // Linha de corte
-    doc.save();
-    doc.moveTo(20, halfPage).lineTo(doc.page.width - 20, halfPage).dash(5, { space: 3 }).stroke('#999');
-    doc.undash();
-    doc.restore();
-
-    // Segunda via
-    renderContratoAluguel(doc, aluguel, company, halfPage + 10);
-
-    doc.end();
-  } catch (error) {
-    console.error('Erro ao gerar contrato:', error);
-    res.status(500).json({ success: false, error: { message: 'Erro ao gerar contrato' } });
   }
 });
 
