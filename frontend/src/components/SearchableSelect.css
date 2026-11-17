@@ -107,10 +107,10 @@
   left: 0;
   right: 0;
   margin-top: 4px;
-  background: var(--bg-primary);
+  background: var(--bg-primary, #1e293b);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   z-index: 1000;
   overflow: hidden;
 }
@@ -122,7 +122,7 @@
   gap: 0.5rem;
   padding: 0.75rem;
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+  background: var(--bg-secondary, #334155);
 }
 
 .searchable-select-search-icon {
@@ -159,11 +159,11 @@
 }
 
 .searchable-select-option:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary, #475569);
 }
 
 .searchable-select-option.selected {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(59, 130, 246, 0.2);
 }
 
 .searchable-select-option.selected .searchable-select-option-label {
