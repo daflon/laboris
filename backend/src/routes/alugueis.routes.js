@@ -436,6 +436,7 @@ router.get('/calendario', async (req, res) => {
 router.get('/:id/contrato', async (req, res) => {
   try {
     const tenantId = req.tenantId;
+    console.log('Contrato - buscando aluguel:', req.params.id, 'tenant:', tenantId);
 
     // Buscar aluguel completo
     const aluguel = await db('alugueis')
@@ -461,6 +462,8 @@ router.get('/:id/contrato', async (req, res) => {
         'clients.address_zip'
       )
       .first();
+
+    console.log('Contrato - aluguel encontrado:', !!aluguel);
 
     if (!aluguel) {
       return res.status(404).json({ success: false, error: { message: 'Aluguel não encontrado' } });
@@ -700,6 +703,8 @@ router.post('/:id/devolver', async (req, res) => {
 
     // Se equipamento danificado, cria OS de manutenção
     if (equipamento_danificado) {
+      console.log('Devolução danificada - criando OS para patrimônio:', aluguel.patrimonio_codigo);
+      
       // Buscar ou criar cliente "interno" para manutenção de patrimônio
       let clienteInterno = await db('clients')
         .where({ tenant_id: tenantId, name: 'MANUTENÇÃO INTERNA' })
@@ -707,6 +712,7 @@ router.post('/:id/devolver', async (req, res) => {
         .first();
 
       if (!clienteInterno) {
+        console.log('Criando cliente MANUTENÇÃO INTERNA');
         const tenant = await db('tenants').where({ id: tenantId }).first();
         [clienteInterno] = await db('clients')
           .insert({
@@ -717,17 +723,22 @@ router.post('/:id/devolver', async (req, res) => {
           })
           .returning('*');
       }
+      console.log('Cliente interno:', clienteInterno?.id);
 
       // Criar ou buscar equipamento correspondente ao patrimônio
+      const serialNumber = aluguel.patrimonio_serie || `PAT-${aluguel.patrimonio_codigo}`;
+      console.log('Buscando equipamento com serial:', serialNumber);
+      
       let equipment = await db('equipment')
         .where({ 
           tenant_id: tenantId, 
-          serial_number: aluguel.patrimonio_serie || `PAT-${aluguel.patrimonio_codigo}`
+          serial_number: serialNumber
         })
         .whereNull('deleted_at')
         .first();
 
       if (!equipment) {
+        console.log('Criando equipamento para patrimônio');
         [equipment] = await db('equipment')
           .insert({
             tenant_id: tenantId,
@@ -735,10 +746,11 @@ router.post('/:id/devolver', async (req, res) => {
             type: aluguel.patrimonio_categoria || 'Patrimônio',
             brand: aluguel.patrimonio_marca || 'N/A',
             model: aluguel.patrimonio_modelo || aluguel.patrimonio_nome,
-            serial_number: aluguel.patrimonio_serie || `PAT-${aluguel.patrimonio_codigo}`
+            serial_number: serialNumber
           })
           .returning('*');
       }
+      console.log('Equipamento:', equipment?.id);
 
       // Gerar próximo número de OS
       const lastOs = await db('service_orders')
@@ -746,6 +758,7 @@ router.post('/:id/devolver', async (req, res) => {
         .max('order_number as max')
         .first();
       const orderNumber = (lastOs?.max || 0) + 1;
+      console.log('Criando OS número:', orderNumber);
 
       // Criar OS
       const [newOs] = await db('service_orders')
@@ -761,6 +774,7 @@ router.post('/:id/devolver', async (req, res) => {
         })
         .returning('*');
 
+      console.log('OS criada:', newOs?.id);
       osData = {
         id: newOs.id,
         order_number: orderNumber
