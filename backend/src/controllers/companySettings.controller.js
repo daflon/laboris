@@ -9,9 +9,17 @@ const companySettingsController = {
   },
   async upsert(req, res, next) {
     try {
+      console.log('[CompanySettings] Atualizando tenant:', req.tenantId);
+      console.log('[CompanySettings] Body keys:', Object.keys(req.body));
+      console.log('[CompanySettings] Logo size:', req.body.logo_url ? req.body.logo_url.length : 0);
+      
       const settings = await companySettingsRepository.upsert(req.tenantId, req.body);
+      console.log('[CompanySettings] Salvo com sucesso');
       res.json({ success: true, data: settings });
-    } catch (error) { next(error); }
+    } catch (error) {
+      console.error('[CompanySettings] Erro:', error.message);
+      next(error);
+    }
   },
 };
 
