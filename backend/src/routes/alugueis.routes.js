@@ -765,6 +765,17 @@ router.post('/:id/devolver', async (req, res) => {
       }
       console.log('Equipamento:', equipment?.id);
 
+      // Buscar primeiro técnico disponível do tenant
+      const technician = await db('technicians')
+        .where({ tenant_id: tenantId })
+        .first();
+      
+      if (!technician) {
+        console.log('Nenhum técnico encontrado para o tenant');
+        return res.status(400).json({ error: 'Nenhum técnico cadastrado. Cadastre um técnico antes de registrar equipamento danificado.' });
+      }
+      console.log('Técnico encontrado:', technician.id, technician.name);
+
       // Gerar próximo número de OS
       const lastOs = await db('service_orders')
         .where({ tenant_id: tenantId })
@@ -779,6 +790,7 @@ router.post('/:id/devolver', async (req, res) => {
           tenant_id: tenantId,
           client_id: clienteInterno.id,
           equipment_id: equipment.id,
+          technician_id: technician.id,
           order_number: orderNumber,
           status: 'aberta',
           entry_date: new Date(),
