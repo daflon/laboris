@@ -9,6 +9,7 @@ import {
   alugueisService, Aluguel, 
   STATUS_ALUGUEL, FORMAS_PAGAMENTO, formatAluguelNumero 
 } from '../../services/alugueis.service';
+import { companyService } from '../../services/company.service';
 import PageHeader from '../../components/PageHeader';
 
 function formatCurrency(value: number) {
@@ -36,6 +37,7 @@ export default function AluguelDetails() {
   const [showRenovarModal, setShowRenovarModal] = useState(false);
   const [faturaData, setFaturaData] = useState<any>(null);
   const [gerandoFatura, setGerandoFatura] = useState(false);
+  const [company, setCompany] = useState<any>(null);
 
   // Form de renovação
   const [renovarForm, setRenovarForm] = useState({
@@ -66,7 +68,17 @@ export default function AluguelDetails() {
 
   useEffect(() => {
     loadAluguel();
+    loadCompany();
   }, [id]);
+
+  const loadCompany = async () => {
+    try {
+      const response = await companyService.get();
+      setCompany(response.data);
+    } catch {
+      // Ignora erro - logo é opcional
+    }
+  };
 
   const loadAluguel = async () => {
     try {
@@ -230,8 +242,13 @@ export default function AluguelDetails() {
     const renderFatura = () => `
       <div class="fatura">
         <div class="fatura-header">
+          ${company?.logo_url ? `
+            <div class="fatura-logo">
+              <img src="${company.logo_url}" alt="Logo" />
+            </div>
+          ` : ''}
           <div class="fatura-title">
-            <span class="fatura-label">Fatura - Aluguel #002</span>
+            ${company?.name ? `<span class="empresa-nome">${company.name}</span>` : ''}
             <h1>FATURA DE ALUGUEL</h1>
             <span class="fatura-numero">Nº ${formatAluguelNumero(faturaData.aluguel_numero)}</span>
           </div>
@@ -347,6 +364,28 @@ export default function AluguelDetails() {
             border-bottom: 1px solid #333;
             padding-bottom: 4mm;
             margin-bottom: 3mm;
+            gap: 10px;
+          }
+          
+          .fatura-logo {
+            flex-shrink: 0;
+          }
+          
+          .fatura-logo img {
+            max-width: 60px;
+            max-height: 40px;
+            object-fit: contain;
+          }
+          
+          .fatura-title {
+            flex: 1;
+          }
+          
+          .fatura-title .empresa-nome {
+            font-size: 10px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 2px;
           }
           
           .fatura-title h1 {
