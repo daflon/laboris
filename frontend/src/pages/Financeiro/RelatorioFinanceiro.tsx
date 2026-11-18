@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { FiDownload, FiTrendingUp, FiTrendingDown, FiDollarSign } from 'react-icons/fi';
+import { FiDownload, FiTrendingUp, FiTrendingDown, FiDollarSign, FiTool, FiPackage, FiEdit3 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { financeiroService } from '../../services/financeiro.service';
 import PageHeader from '../../components/PageHeader';
@@ -35,12 +35,25 @@ interface LancamentoData {
   amount: number;
 }
 
+interface BreakdownItem {
+  total: number;
+  count: number;
+}
+
+interface BreakdownData {
+  os: BreakdownItem;
+  avulso: BreakdownItem;
+  alugueis?: BreakdownItem;
+}
+
 interface RelatorioData {
   periodo: { startDate: string; endDate: string };
   resumo: ResumoData;
   comparativo: ComparativoData;
   graficoDiario: DailyData[];
   lancamentos: LancamentoData[];
+  breakdown?: BreakdownData;
+  hasAlugueis?: boolean;
 }
 
 function formatCurrency(value: number) {
@@ -378,6 +391,115 @@ export default function RelatorioFinanceiro() {
               </table>
             )}
           </div>
+
+          {/* Breakdown por origem - só mostra se tiver dados */}
+          {data.breakdown && data.resumo.totalReceitas > 0 && (
+            <div style={{ 
+              background: 'var(--color-card)', 
+              borderRadius: '12px', 
+              padding: '1.5rem',
+              marginBottom: '1.5rem'
+            }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>Receitas por Origem</h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* OS */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a1a1aa' }}>
+                      <FiTool size={14} /> Ordens de Serviço
+                      <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>({data.breakdown.os.count})</span>
+                    </span>
+                    <strong style={{ color: '#6366f1' }}>{formatCurrency(data.breakdown.os.total)}</strong>
+                  </div>
+                  <div style={{ background: 'var(--color-bg)', borderRadius: '4px', height: '8px', overflow: 'hidden' }}>
+                    <div 
+                      style={{ 
+                        background: '#6366f1', 
+                        height: '100%', 
+                        width: `${data.resumo.totalReceitas > 0 ? (data.breakdown.os.total / data.resumo.totalReceitas * 100) : 0}%`,
+                        borderRadius: '4px',
+                        transition: 'width 0.3s'
+                      }} 
+                    />
+                  </div>
+                </div>
+
+                {/* Aluguéis - só se módulo ativo */}
+                {data.breakdown.alugueis && (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a1a1aa' }}>
+                        <FiPackage size={14} /> Aluguéis
+                        <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>({data.breakdown.alugueis.count})</span>
+                      </span>
+                      <strong style={{ color: '#7c3aed' }}>{formatCurrency(data.breakdown.alugueis.total)}</strong>
+                    </div>
+                    <div style={{ background: 'var(--color-bg)', borderRadius: '4px', height: '8px', overflow: 'hidden' }}>
+                      <div 
+                        style={{ 
+                          background: '#7c3aed', 
+                          height: '100%', 
+                          width: `${data.resumo.totalReceitas > 0 ? (data.breakdown.alugueis.total / data.resumo.totalReceitas * 100) : 0}%`,
+                          borderRadius: '4px',
+                          transition: 'width 0.3s'
+                        }} 
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Avulso */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a1a1aa' }}>
+                      <FiEdit3 size={14} /> Lançamentos Avulsos
+                      <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>({data.breakdown.avulso.count})</span>
+                    </span>
+                    <strong style={{ color: '#f59e0b' }}>{formatCurrency(data.breakdown.avulso.total)}</strong>
+                  </div>
+                  <div style={{ background: 'var(--color-bg)', borderRadius: '4px', height: '8px', overflow: 'hidden' }}>
+                    <div 
+                      style={{ 
+                        background: '#f59e0b', 
+                        height: '100%', 
+                        width: `${data.resumo.totalReceitas > 0 ? (data.breakdown.avulso.total / data.resumo.totalReceitas * 100) : 0}%`,
+                        borderRadius: '4px',
+                        transition: 'width 0.3s'
+                      }} 
+                    />
+                  </div>
+                </div>
+
+                {/* Legenda de percentuais */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  gap: '1.5rem', 
+                  marginTop: '0.5rem',
+                  paddingTop: '1rem',
+                  borderTop: '1px solid var(--color-border)',
+                  fontSize: '0.75rem',
+                  color: '#6b7280'
+                }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <span style={{ width: '10px', height: '10px', background: '#6366f1', borderRadius: '2px' }}></span>
+                    OS {data.resumo.totalReceitas > 0 ? Math.round(data.breakdown.os.total / data.resumo.totalReceitas * 100) : 0}%
+                  </span>
+                  {data.breakdown.alugueis && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <span style={{ width: '10px', height: '10px', background: '#7c3aed', borderRadius: '2px' }}></span>
+                      Aluguéis {data.resumo.totalReceitas > 0 ? Math.round(data.breakdown.alugueis.total / data.resumo.totalReceitas * 100) : 0}%
+                    </span>
+                  )}
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <span style={{ width: '10px', height: '10px', background: '#f59e0b', borderRadius: '2px' }}></span>
+                    Avulso {data.resumo.totalReceitas > 0 ? Math.round(data.breakdown.avulso.total / data.resumo.totalReceitas * 100) : 0}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Resumo final */}
           <div style={{ 
