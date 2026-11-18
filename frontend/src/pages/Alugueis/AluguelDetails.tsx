@@ -104,6 +104,28 @@ export default function AluguelDetails() {
     window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
+  // Verifica saldo devedor antes de abrir modal de devolução
+  const handleDevolverClick = () => {
+    if (!aluguel) return;
+    
+    const totalPago = aluguel.pagamentos?.reduce((sum: number, p: any) => sum + p.valor, 0) || 0;
+    const valorFinal = aluguel.valor_final || aluguel.valor_acordado;
+    const saldoDevedor = valorFinal - totalPago;
+    
+    if (saldoDevedor > 0) {
+      toast.error(`Saldo devedor de ${formatCurrency(saldoDevedor)}. Registre o pagamento antes de devolver.`);
+      // Atualiza valor do form de pagamento com saldo devedor
+      setPagamentoForm(prev => ({
+        ...prev,
+        valor: String(saldoDevedor)
+      }));
+      setShowPagamentoModal(true);
+      return;
+    }
+    
+    setShowDevolverModal(true);
+  };
+
   const handleDevolver = async () => {
     try {
       await alugueisService.devolver(id!, {
@@ -488,7 +510,7 @@ export default function AluguelDetails() {
             >
               🔄 Renovar
             </button>
-            <button className="btn btn-success" onClick={() => setShowDevolverModal(true)}>
+            <button className="btn btn-success" onClick={handleDevolverClick}>
               <FiCheckCircle /> Devolver
             </button>
             <button 
