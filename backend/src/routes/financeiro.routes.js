@@ -32,6 +32,11 @@ router.get('/relatorio', async (req, res, next) => {
       return res.status(400).json({ success: false, error: { message: 'startDate e endDate são obrigatórios' } });
     }
 
+    // Verificar módulos do tenant
+    const tenant = await db('tenants').where({ id: req.tenantId }).first();
+    const modules = typeof tenant.modules === 'string' ? JSON.parse(tenant.modules) : (tenant.modules || []);
+    const hasAlugueis = modules.includes('alugueis');
+
     // Buscar lançamentos do período (exceto cancelados)
     const entries = await db('financial_entries')
       .where({ tenant_id: req.tenantId })
@@ -51,6 +56,30 @@ router.get('/relatorio', async (req, res, next) => {
     const receitasPendentes = receitas.filter(e => e.status === 'pendente').reduce((s, e) => s + parseFloat(e.amount), 0);
     const despesasPagas = despesas.filter(e => e.status === 'pago').reduce((s, e) => s + parseFloat(e.amount), 0);
     const despesasPendentes = despesas.filter(e => e.status === 'pendente').reduce((s, e) => s + parseFloat(e.amount), 0);
+
+    // Breakdown por origem (receitas)
+    const receitasOS = receitas.filter(e => e.service_order_id != null);
+    const receitasAlugueis = receitas.filter(e => e.aluguel_id != null);
+    const receitasAvulsas = receitas.filter(e => e.service_order_id == null && e.aluguel_id == null);
+    
+    const breakdown = {
+      os: {
+        total: receitasOS.reduce((s, e) => s + parseFloat(e.amount), 0),
+        count: receitasOS.length
+      },
+      avulso: {
+        total: receitasAvulsas.reduce((s, e) => s + parseFloat(e.amount), 0),
+        count: receitasAvulsas.length
+      }
+    };
+    
+    // Só inclui aluguéis se módulo ativo
+    if (hasAlugueis) {
+      breakdown.alugueis = {
+        total: receitasAlugueis.reduce((s, e) => s + parseFloat(e.amount), 0),
+        count: receitasAlugueis.length
+      };
+    }
 
     // Agrupar por dia para o gráfico
     const dailyData = {};
@@ -105,6 +134,8 @@ router.get('/relatorio', async (req, res, next) => {
           despesasPagas,
           despesasPendentes,
         },
+        breakdown,
+        hasAlugueis,
         comparativo: {
           variacaoReceitas: Math.round(variacaoReceitas),
           variacaoDespesas: Math.round(variacaoDespesas),
@@ -123,6 +154,7 @@ router.get('/relatorio', async (req, res, next) => {
           status: e.status,
           amount: parseFloat(e.amount),
           service_order_id: e.service_order_id,
+          aluguel_id: e.aluguel_id,
         })),
       },
     });
