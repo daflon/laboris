@@ -435,7 +435,20 @@ router.get('/calendario', async (req, res) => {
  */
 router.get('/:id/contrato', async (req, res) => {
   try {
-    const tenantId = req.tenantId;
+    // Tentar pegar tenantId do middleware ou do token na query
+    let tenantId = req.tenantId;
+    
+    // Se não tem tenantId (acesso via URL direta), extrair do token na query
+    if (!tenantId && req.query.token) {
+      try {
+        const jwt = require('jsonwebtoken');
+        const decoded = jwt.verify(req.query.token, process.env.JWT_SECRET);
+        tenantId = decoded.tenantId;
+      } catch (e) {
+        console.log('Erro ao decodificar token:', e.message);
+      }
+    }
+    
     console.log('Contrato - buscando aluguel:', req.params.id, 'tenant:', tenantId);
 
     // Buscar aluguel completo
@@ -769,8 +782,7 @@ router.post('/:id/devolver', async (req, res) => {
           order_number: orderNumber,
           status: 'aberta',
           entry_date: new Date(),
-          reported_defect: `Equipamento danificado na devolução do Aluguel #${String(aluguel.numero).padStart(4, '0')}.\n${aluguel.patrimonio_nome} (${aluguel.patrimonio_codigo})\nCliente: ${aluguel.client_name}\n${condicao_devolucao ? `Condição: ${condicao_devolucao}` : ''}`,
-          created_by: userId
+          reported_defect: `Equipamento danificado na devolução do Aluguel #${String(aluguel.numero).padStart(4, '0')}.\n${aluguel.patrimonio_nome} (${aluguel.patrimonio_codigo})\nCliente: ${aluguel.client_name}\n${condicao_devolucao ? `Condição: ${condicao_devolucao}` : ''}`
         })
         .returning('*');
 
