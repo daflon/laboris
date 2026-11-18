@@ -381,9 +381,9 @@ router.get('/calendario', async (req, res) => {
     // Buscar aluguéis ativos/atrasados com devolução prevista no período
     const alugueis = await db('alugueis')
       .where({ 'alugueis.tenant_id': tenantId })
-      .whereIn('status', ['ativo', 'atrasado'])
-      .where('data_prevista_devolucao', '>=', dataInicioStr)
-      .where('data_prevista_devolucao', '<=', dataFimStr)
+      .whereIn('alugueis.status', ['ativo', 'atrasado'])
+      .where('alugueis.data_prevista_devolucao', '>=', dataInicioStr)
+      .where('alugueis.data_prevista_devolucao', '<=', dataFimStr)
       .leftJoin('patrimonio', 'patrimonio.id', 'alugueis.patrimonio_id')
       .leftJoin('clients', 'clients.id', 'alugueis.client_id')
       .select(
@@ -399,7 +399,7 @@ router.get('/calendario', async (req, res) => {
         'patrimonio.categoria as patrimonio_categoria',
         'clients.name as client_name'
       )
-      .orderBy('data_prevista_devolucao', 'asc');
+      .orderBy('alugueis.data_prevista_devolucao', 'asc');
 
     // Retornar lista simplificada de itens para o calendário
     const items = alugueis.map(a => ({
